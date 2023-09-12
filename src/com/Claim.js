@@ -1,6 +1,6 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
-import { Card, Col, Row, } from 'antd';
+import { Card, Col, Input, Row, } from 'antd';
 import { connect } from 'react-redux';
 import "./Claim.scss"
 
@@ -95,7 +95,7 @@ class Claim extends React.Component {
 
                         <Row className="mt-3 har-control">
                             <Col span={24 / 4 * 3}>
-                                <input id="inputIn" type="number" className="custom-input" placeholder="0" />
+                                <Input id="inputIn" type="number" className="custom-input" placeholder="0" />
                             </Col>
                             <Col span={24 / 4}>
                                 <div className="d-flex justify-content-end align-items-center">
@@ -117,7 +117,7 @@ class Claim extends React.Component {
                         <Row className="har-control">
                             <Row>
                                 <Col span={24 / 4 * 3}>
-                                    <input id="inputOut" type="number" className="custom-input" placeholder="0" readOnly />
+                                    <Input id="inputOut" type="number" className="custom-input" placeholder="0" readOnly />
                                 </Col>
                                 <Col span={24 / 4}>
                                     <div className="d-flex justify-content-end align-items-center">
