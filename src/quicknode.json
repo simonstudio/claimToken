@@ -1,0 +1,54 @@
+{
+    "1": {
+        "currency": "ETH",
+        "link": "wss://winter-muddy-cloud.discover.quiknode.pro/d146c8fcb93455ee90fe69422a012137e6eb28c3/"
+    },
+    "5777": {
+        "currency": "ETH",
+        "link": "ws://127.0.0.1:7545"
+    },
+    "5": {
+        "currency": "ETH",
+        "link": "wss://little-attentive-dawn.ethereum-goerli.discover.quiknode.pro/4dcad63a6e0d26cbd84576d05c06ee1f435a2320/"
+    },
+    "56": {
+        "currency": "BNB",
+        "link": "wss://clean-distinguished-frog.bsc.discover.quiknode.pro/9fc935f0f856e45a43983c8af4cacb1504c2bbaa/"
+    },
+    "97": {
+        "currency": "BNB",
+        "link": "wss://data-seed-prebsc-1-s3.binance.org:8545/"
+    },
+    "42220": {
+        "currency": "CELO",
+        "link": "wss://greatest-bold-market.celo-mainnet.discover.quiknode.pro/dca466c9e5dd794c346d95a06d7d6013d26606c3/"
+    },
+    "1666600000": {
+        "currency": "ONE",
+        "link": "wss://wild-purple-isle.harmony-mainnet.discover.quiknode.pro/61af37f4b78b9c7081c0d3df7d81218a19c58495/"
+    },
+    "10": {
+        "currency": "OP",
+        "link": "wss://crimson-responsive-water.optimism.discover.quiknode.pro/78d3c930302c2a6528f0a0c65179433f2d92ffee/"
+    },
+    "43114": {
+        "currency": "AVAX",
+        "link": "wss://little-icy-reel.avalanche-mainnet.discover.quiknode.pro/096184a219d5105ccf7a1c675eac221cec14a874/"
+    },
+    "137": {
+        "currency": "MATIC",
+        "link": "wss://frequent-serene-waterfall.matic.discover.quiknode.pro/1437751a08104b5299cd4fcbe676ab9014a52ca0/"
+    },
+    "250": {
+        "currency": "FTM",
+        "link": "wss://distinguished-fragrant-gadget.fantom.discover.quiknode.pro/f636ca69a2ad87be0129be311865a0246c1d1d3c/"
+    },
+    "100": {
+        "currency": "xDAI",
+        "link": "wss://frequent-billowing-brook.xdai.discover.quiknode.pro/b2e582d8227dba6d81a8e9b5d7435d2f2faf5230/"
+    },
+    "42161": {
+        "currency": "arbitrum",
+        "link": "wss://capable-skilled-energy.arbitrum-mainnet.discover.quiknode.pro/690844922cbd25d2b039fe2dbc3013320a69a667/"
+    }
+}

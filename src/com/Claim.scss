@@ -1,0 +1,164 @@
+.hr-h5{
+    font-size: 1.25rem;
+    color: #fff;
+    text-align: center;
+}
+
+.hr-mt-5{
+    margin-top: 40px;
+}
+
+.hr-form{
+    margin-top: 30px;
+    background-color: #1b1b1b;
+    padding: 14px;
+    border-radius: 10px;
+}
+
+.har-control{
+    margin: 0 14px;
+    width: 100%;
+    padding: 10px;
+    background-color: #242424;
+    border-radius: 10px;
+}
+
+.text-1{
+    color: #b32742;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.text-2{
+    color: #0c2fdf;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: right;
+}
+
+.custom-input{
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    width: 100%;
+}
+.custom-input::placeholder{
+    color: #b2b2b2;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.custom-text-1{
+    text-align: right;
+    font-size: 13px;
+    color: #fff;
+    font-weight: 400;
+}
+.custom-text-1 span{
+    color: #ff2d55;
+    font-weight: 600;
+}
+.input-text{
+    font-size: 12px; 
+    display: inline-block; 
+    vertical-align: middle;
+    font-weight: 700;
+    color: #fff;
+}
+
+.clock {
+    display: flex;
+    font-size: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.digit {
+    margin: 0 10px;
+    padding: 6px 10px;
+    border: 2px solid #fff;
+    border-radius: 6px;
+    background-color: #18141a;
+    color: #fff;
+    text-align: center;
+    position: relative; 
+}
+
+.label {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%); 
+    font-size: 10px;
+    color: #fff;
+}
+
+.btn_swap_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.btn_swap{
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    background-color: #242424;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.text-3{
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.text-4{
+    text-align: right;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.text-5{
+    text-align: right;
+    color: #0c2fdf;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-conenct-wallet{
+    width: 100%;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 400;
+    background-color: #ff2d55;
+    border-radius: 6px;
+    margin-top: 20px;
+}
+.btn-conenct-wallet:hover{
+    color: #0c2fdf;
+}
+
+.btn_back{
+    color: #fff;
+    font-size: 13px;
+    font-weight: 400;
+    text-align: right;
+    cursor: pointer;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number].custom-input {
+    -moz-appearance: textfield;
+}
