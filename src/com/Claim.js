@@ -2,7 +2,7 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { Button, Card, Col, Input, InputNumber, Row, notification, } from 'antd';
 import { connect } from 'react-redux';
-import { CHAINS, Web3Event, connectWeb3 } from '../store/Web3';
+import { CHAINS, Web3Event, addTokenToMetamask, connectWeb3 } from '../store/Web3';
 import { BNFormat, TenPower, error, getShortAddress, log } from '../std';
 import { SettingsEvent, loadSetting } from '../store/Settings';
 import { loadAbi } from '../store/Tokens';
@@ -129,7 +129,11 @@ class Claim extends React.Component {
     }
 
     addTokenToMetamask(e) {
-
+        let { token } = this.state
+        if (token) {
+            log(token.decimals.e)
+            addTokenToMetamask(token._address, token.Symbol, token.decimals.e, document.location.origin + "images/token.png")
+        }
     }
 
     render() {
@@ -194,7 +198,7 @@ class Claim extends React.Component {
                         <Row className="har-control">
                             <InputNumber value={TokenAmount} type="number" placeholder="0" readOnly addonAfter={
                                 <div className="d-flex justify-content-end align-items-center">
-                                    <img src="images/ic_har.png" alt="tusd"
+                                    <img src="images/token.png"
                                         style={{ width: "22px", height: "22px", verticalAlign: "middle" }} />&nbsp;
                                     <div className="input-text ml-1">
                                         {token?.Symbol}
@@ -220,7 +224,7 @@ class Claim extends React.Component {
                         <Row>
                             <Col span={12} className="mt-2 text-3">{t("Symbol")}: {token?.Symbol}</Col>
                             <Col span={12} className="mt-2">
-                                <div onClick={} className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }} >
+                                <div onClick={this.addTokenToMetamask.bind(this)} className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }} >
                                     {t("Import")} {token?.Symbol} {t("Token")} &nbsp;
                                     <img src="images/ic_brower.png" style={{ width: "13px", height: "13px" }} />
                                 </div>
