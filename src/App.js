@@ -51,7 +51,6 @@ class App extends React.Component {
       <Space direction="vertical" style={{ width: '100%' }} size={[0, 48]}>
         <Layout>
           {/* <Header /> */}
-          {settings?.language}
           <Content style={contentStyle}>
             <Claim />
           </Content>

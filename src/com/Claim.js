@@ -52,6 +52,7 @@ class Claim extends React.Component {
 
                 try {
                     let token = await this.loadToken(TokenAddress)
+                    token.priceUSD = parseInt(await token.methods.priceUSD().call())
                     let tokenBalance = new BigNumber(await token.methods.balanceOf(accounts[0]).call())
                     this.setState({ token, tokenBalance })
                 } catch (err) {
@@ -68,8 +69,6 @@ class Claim extends React.Component {
                     error(err)
                     notification.error({ message: "wrong address or chain: " + USDTAddress })
                 }
-
-
             }
         })
         count++;
@@ -124,8 +123,11 @@ class Claim extends React.Component {
     }
 
     onUSDTAmountChange(value) {
-        this.setState({ USDTAmount: Math.abs(value) })
-        // TokenAmount
+        let { token, USDTAmount } = this.state;
+        if (token && token.priceUSD) {
+            let TokenAmount = Math.abs(value) * token.priceUSD
+            this.setState({ USDTAmount: Math.abs(value), TokenAmount })
+        }
     }
 
     addTokenToMetamask(e) {
@@ -143,7 +145,7 @@ class Claim extends React.Component {
         return (
             <Card bordered={false} style={{ maxWidth: 375, margin: "auto" }}>
                 {/* <div style={style}> */}
-                <h5 className="hr-h5">{t("TIME REMAINING")} {settings.language}</h5>
+                <h5 className="hr-h5">{t("TIME REMAINING")}</h5>
                 <div className="clock hr-mt-5">
                     <div className="digit">
                         <span id="days">0</span>
@@ -212,7 +214,7 @@ class Claim extends React.Component {
 
                         <Row>
                             <Col span={12} className="text-3">Rate</Col>
-                            <Col span={12} className="text-4">1 USDT = 2,000 {token?.Symbol}</Col>
+                            <Col span={12} className="text-4">1 {USDT ? USDT?.Symbol : "USDT"} = {token?.priceUSD} {token?.Symbol}</Col>
                         </Row>
 
 
