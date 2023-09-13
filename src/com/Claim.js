@@ -1,14 +1,15 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
-import { Button, Card, Col, Input, InputNumber, Row, } from 'antd';
+import { Button, Card, Col, Input, InputNumber, Row, notification, } from 'antd';
 import { connect } from 'react-redux';
 import { CHAINS, Web3Event, connectWeb3 } from '../store/Web3';
-import { getShortAddress, log } from '../std';
+import { TenPower, error, getShortAddress, log } from '../std';
 import { SettingsEvent, loadSetting } from '../store/Settings';
 import { loadAbi } from '../store/Tokens';
 
 import "./Claim.scss"
 import BtnCopy from './BtnCopy';
+import BigNumber from 'bignumber.js';
 
 const style = {
 };
@@ -17,9 +18,9 @@ let count = 0;
 
 class Claim extends React.Component {
     state = {
-        token: undefined,
-        USDT: undefined,
-        TokenAmount: 0, USDTAmount: 0, 
+        token: undefined, USDT: undefined,
+        TokenAmount: 0, USDTAmount: 0,
+        tokenBalance: 0, USDTBalance: 0,
     }
 
     constructor(props) {
@@ -44,10 +45,31 @@ class Claim extends React.Component {
         })
 
         Web3Event.on("changed", async web3 => {
+            log(count++)
             if (this.props.settings?.TokenAddress) {
-                let token = await this.loadToken(this.props.settings.TokenAddress)
-                let USDT = await this.loadToken(this.props.settings.USDTAddress)
-                this.setState({ token, USDT })
+                let { accounts, } = this.props
+                let { TokenAddress, USDTAddress } = this.props.settings
+
+                try {
+                    let token = await this.loadToken(TokenAddress)
+                    let tokenBalance = await token.methods.balanceOf(accounts[0]).call()
+                    this.setState({ token, tokenBalance })
+                } catch (err) {
+                    error(err)
+                    notification.error({ message: "wrong address or chain: " + TokenAddress })
+                }
+
+                try {
+                    let USDT = await this.loadToken(USDTAddress, "USDT")
+                    let USDTBalance = new BigNumber(await USDT.methods.balanceOf(accounts[0]).call())
+                    log(USDTBalance.div(TenPower(await USDT.methods.decimals().call())).toString())
+                    this.setState({ USDT, USDTBalance: USDTBalance.toString() })
+                } catch (err) {
+                    error(err)
+                    notification.error({ message: "wrong address or chain: " + USDTAddress })
+                }
+
+
             }
         })
         count++;
@@ -57,8 +79,9 @@ class Claim extends React.Component {
         let { t, web3, accounts, chainId, chainName, settings } = this.props
         abi = await loadAbi(abi)
         let token = new web3.eth.Contract(abi, address)
-        log(await token.methods.USDAddress().call())
+        // log(await token.methods.USDAddress().call())
         token.Symbol = await token.methods.symbol().call()
+        return token;
     }
 
     updateClock(endDateTime) {
@@ -106,7 +129,7 @@ class Claim extends React.Component {
 
     render() {
         let { t, web3, accounts, chainId, chainName, settings } = this.props
-        let { token, USDT, TokenAmount, USDTAmount } = this.state
+        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount } = this.state
 
         return (
             <Card bordered={false} style={{ maxWidth: 375, margin: "auto" }}>
@@ -156,7 +179,7 @@ class Claim extends React.Component {
                                 </div>
                             } style={{ width: "100%" }} />
                             <Col span={24} className="custom-text-1">
-                                Balance: <span>0</span> | <span>Half</span>
+                                Balance: <span>{USDTBalance}</span> | <span>Half</span>
                             </Col>
                         </Row>
                         <Row className="btn_swap_container">
@@ -174,7 +197,7 @@ class Claim extends React.Component {
                                 </div>
                             } style={{ width: "100%" }} />
                             <Col span={24} className="custom-text-1">
-                                Balance: <span>0</span>
+                                Balance: <span>{tokenBalance}</span>
                             </Col>
                         </Row>
 
