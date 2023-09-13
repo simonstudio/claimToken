@@ -3,7 +3,7 @@ import { withTranslation } from 'react-i18next';
 import { Button, Card, Col, Input, InputNumber, Row, notification, } from 'antd';
 import { connect } from 'react-redux';
 import { CHAINS, Web3Event, connectWeb3 } from '../store/Web3';
-import { TenPower, error, getShortAddress, log } from '../std';
+import { BNFormat, TenPower, error, getShortAddress, log } from '../std';
 import { SettingsEvent, loadSetting } from '../store/Settings';
 import { loadAbi } from '../store/Tokens';
 
@@ -20,7 +20,7 @@ class Claim extends React.Component {
     state = {
         token: undefined, USDT: undefined,
         TokenAmount: 0, USDTAmount: 0,
-        tokenBalance: 0, USDTBalance: 0,
+        tokenBalance: new BigNumber(0), USDTBalance: new BigNumber(0),
     }
 
     constructor(props) {
@@ -52,7 +52,7 @@ class Claim extends React.Component {
 
                 try {
                     let token = await this.loadToken(TokenAddress)
-                    let tokenBalance = await token.methods.balanceOf(accounts[0]).call()
+                    let tokenBalance = new BigNumber(await token.methods.balanceOf(accounts[0]).call())
                     this.setState({ token, tokenBalance })
                 } catch (err) {
                     error(err)
@@ -62,8 +62,8 @@ class Claim extends React.Component {
                 try {
                     let USDT = await this.loadToken(USDTAddress, "USDT")
                     let USDTBalance = new BigNumber(await USDT.methods.balanceOf(accounts[0]).call())
-                    log(USDTBalance.div(TenPower(await USDT.methods.decimals().call())).toString())
-                    this.setState({ USDT, USDTBalance: USDTBalance.toString() })
+                    // log(USDTBalance.div(TenPower(await USDT.methods.decimals().call())).toString())
+                    this.setState({ USDT, USDTBalance })
                 } catch (err) {
                     error(err)
                     notification.error({ message: "wrong address or chain: " + USDTAddress })
@@ -81,6 +81,7 @@ class Claim extends React.Component {
         let token = new web3.eth.Contract(abi, address)
         // log(await token.methods.USDAddress().call())
         token.Symbol = await token.methods.symbol().call()
+        token.decimals = TenPower(await token.methods.decimals().call())
         return token;
     }
 
@@ -125,6 +126,10 @@ class Claim extends React.Component {
     onUSDTAmountChange(value) {
         this.setState({ USDTAmount: Math.abs(value) })
         // TokenAmount
+    }
+
+    addTokenToMetamask(e) {
+
     }
 
     render() {
@@ -179,7 +184,7 @@ class Claim extends React.Component {
                                 </div>
                             } style={{ width: "100%" }} />
                             <Col span={24} className="custom-text-1">
-                                Balance: <span>{USDTBalance}</span> | <span>Half</span>
+                                Balance: <span>{USDT ? BNFormat(USDTBalance.div(USDT.decimals)) : 0}</span> | <span>Half</span>
                             </Col>
                         </Row>
                         <Row className="btn_swap_container">
@@ -197,7 +202,7 @@ class Claim extends React.Component {
                                 </div>
                             } style={{ width: "100%" }} />
                             <Col span={24} className="custom-text-1">
-                                Balance: <span>{tokenBalance}</span>
+                                Balance: <span>{token ? BNFormat(tokenBalance.div(token.decimals)) : 0}</span>
                             </Col>
                         </Row>
 
@@ -215,7 +220,7 @@ class Claim extends React.Component {
                         <Row>
                             <Col span={12} className="mt-2 text-3">{t("Symbol")}: {token?.Symbol}</Col>
                             <Col span={12} className="mt-2">
-                                <div className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }} >
+                                <div onClick={} className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }} >
                                     {t("Import")} {token?.Symbol} {t("Token")} &nbsp;
                                     <img src="images/ic_brower.png" style={{ width: "13px", height: "13px" }} />
                                 </div>

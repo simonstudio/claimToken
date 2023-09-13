@@ -69,7 +69,7 @@ function getDomainName(hostName) {
 }
 
 function getShortAddress(address = "0x", start = 2, end = 3) {
-    return address.slice(0, start) + "..." + address.slice(address.length - end  )
+    return address.slice(0, start) + "..." + address.slice(address.length - end)
 }
 
 function cropLongString(string = "") {
