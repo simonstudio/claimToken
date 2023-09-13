@@ -2,34 +2,64 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { Button, Card, Col, Input, InputNumber, Row, } from 'antd';
 import { connect } from 'react-redux';
-import "./Claim.scss"
-import { connectWeb3 } from '../store/Web3';
-import { log } from '../std';
+import { CHAINS, Web3Event, connectWeb3 } from '../store/Web3';
+import { getShortAddress, log } from '../std';
 import { SettingsEvent, loadSetting } from '../store/Settings';
+import { loadAbi } from '../store/Tokens';
+
+import "./Claim.scss"
+import BtnCopy from './BtnCopy';
 
 const style = {
 };
 
+let count = 0;
 
 class Claim extends React.Component {
     state = {
-        token: { Symbol: "TK" },
-        TokenAmount: 0, USDTAmount: 0
+        token: undefined,
+        USDT: undefined,
+        TokenAmount: 0, USDTAmount: 0, 
+    }
+
+    constructor(props) {
+        super(props)
+        this.loadToken.bind(this)
     }
 
     componentDidMount() {
         let { t, settings, loadSetting } = this.props;
         // this.updateClock(settings?.endDateTime || "2023-09-31 23:59:59")
 
-        SettingsEvent.on("loaded", r => {
-            if (r.after?.endDateTime) this.updateClock(r.after.endDateTime)
+        SettingsEvent.on("loaded", async r => {
+            if (r.error) {
+                if (this.props.settings?.endDateTime) this.updateClock(this.props.settings.endDateTime)
+            } else {
+                let _settings = r.after;
+                if (_settings?.endDateTime) this.updateClock(_settings.endDateTime)
+                if (r.after?.TokenAddress != r.before?.TokenAddress && this.props.web3) {
+                    this.loadToken(r.after.TokenAddress)
+                }
+            }
         })
 
-        SettingsEvent.on("loadFailed", () => {
-            if (this.props.settings?.endDateTime) this.updateClock(this.props.settings.endDateTime)
+        Web3Event.on("changed", async web3 => {
+            if (this.props.settings?.TokenAddress) {
+                let token = await this.loadToken(this.props.settings.TokenAddress)
+                let USDT = await this.loadToken(this.props.settings.USDTAddress)
+                this.setState({ token, USDT })
+            }
         })
+        count++;
     }
 
+    async loadToken(address, abi = "Token") {
+        let { t, web3, accounts, chainId, chainName, settings } = this.props
+        abi = await loadAbi(abi)
+        let token = new web3.eth.Contract(abi, address)
+        log(await token.methods.USDAddress().call())
+        token.Symbol = await token.methods.symbol().call()
+    }
 
     updateClock(endDateTime) {
         const targetDate = new Date(endDateTime).getTime(); // Đặt ngày đích đến
@@ -71,11 +101,12 @@ class Claim extends React.Component {
 
     onUSDTAmountChange(value) {
         this.setState({ USDTAmount: Math.abs(value) })
+        // TokenAmount
     }
 
     render() {
         let { t, web3, accounts, chainId, chainName, settings } = this.props
-        let { token, TokenAmount, USDTAmount } = this.state
+        let { token, USDT, TokenAmount, USDTAmount } = this.state
 
         return (
             <Card bordered={false} style={{ maxWidth: 375, margin: "auto" }}>
@@ -103,10 +134,12 @@ class Claim extends React.Component {
                 <div className="hr-form">
                     <div className="claim">
                         <Row>
-                            <Col span={12} className="text-1">Buy {token.Symbol} Now</Col>
+                            <Col span={12} className="text-1">Buy {token?.Symbol} Now</Col>
                             <Col span={12}>
                                 <div className="text-2" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }}>
-                                    0x0000....000000
+                                    {token ?
+                                        (<a href={CHAINS[chainId].blockExplorerUrls + "address/" + token?._address} target='_blank'>{getShortAddress(token?._address)}</a>)
+                                        : ("0x0000....000000")}
                                     <img src="images/ic_brower.png" style={{ width: "13px", height: "13px" }} />
                                 </div>
                             </Col>
@@ -136,7 +169,7 @@ class Claim extends React.Component {
                                     <img src="images/ic_har.png" alt="tusd"
                                         style={{ width: "22px", height: "22px", verticalAlign: "middle" }} />&nbsp;
                                     <div className="input-text ml-1">
-                                        {token.Symbol}
+                                        {token?.Symbol}
                                     </div>
                                 </div>
                             } style={{ width: "100%" }} />
@@ -147,7 +180,7 @@ class Claim extends React.Component {
 
                         <Row>
                             <Col span={12} className="text-3">Rate</Col>
-                            <Col span={12} className="text-4">1 USDT = 2,000 {token.Symbol}</Col>
+                            <Col span={12} className="text-4">1 USDT = 2,000 {token?.Symbol}</Col>
                         </Row>
 
 
@@ -157,10 +190,10 @@ class Claim extends React.Component {
                         </Row>
 
                         <Row>
-                            <Col span={12} className="mt-2 text-3">{t("Symbol")}: {token.Symbol}</Col>
+                            <Col span={12} className="mt-2 text-3">{t("Symbol")}: {token?.Symbol}</Col>
                             <Col span={12} className="mt-2">
                                 <div className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }} >
-                                    {t("Import")} {token.Symbol} {t("Token")} &nbsp;
+                                    {t("Import")} {token?.Symbol} {t("Token")} &nbsp;
                                     <img src="images/ic_brower.png" style={{ width: "13px", height: "13px" }} />
                                 </div>
                             </Col>
@@ -169,16 +202,16 @@ class Claim extends React.Component {
                         <Row>
                             <Col span={12} className="mt-2 text-3">{t("Generate your referral code")}</Col>
                             <Col span={12} className="mt-2 text-5">
-                                <div className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }}>
-                                    {t("Copy")}&nbsp;
-                                    <img src="images/ic_copy.png" style={{ width: "13px", height: "13px" }} />
+                                <div onClick={e => { navigator.clipboard.writeText(token?._address); }} className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }}>
+                                    {getShortAddress(token?._address)} &nbsp;
+                                    <BtnCopy value={token?._address} />
                                 </div>
                             </Col>
                         </Row>
 
                         <Row>
                             <Col span={12} className="mt-2 text-3">{t("Route")}</Col>
-                            <Col span={12} className="mt-2 text-5">...</Col>
+                            <Col span={12} className="mt-2 text-5">{token ? ("USDT → " + token?.Symbol) : "..."}</Col>
                         </Row>
 
                         <Row>
@@ -208,7 +241,7 @@ const mapStateToProps = (state, ownProps) => ({
     accounts: state.Web3.accounts,
     chainId: state.Web3.chainId,
     chainName: state.Web3.chainName,
-    settings: state.Settings,
+    settings: state.Settings.settings,
 
 });
 

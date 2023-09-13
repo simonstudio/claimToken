@@ -23,7 +23,7 @@ export let event = new EventEmitter()
  * @param {string} name 
  * @returns {object} json object
  */
-async function loadAbi(name = "Token") {
+export async function loadAbi(name = "Token") {
     return axios.get("/contracts/" + name + ".json")
         .then(r => r.data)
 }

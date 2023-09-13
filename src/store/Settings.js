@@ -55,16 +55,16 @@ export const importSetting = createAsyncThunk(
     "importSetting",
     async (_setting, thunkAPI) => {
         if (_setting && typeof _setting === 'object') {
-            let { setting } = await thunkAPI.getState().Settings
-            let after = { ...setting, ..._setting }
+            let { settings } = await thunkAPI.getState().Settings
+            let after = { ...settings, ..._setting }
             localStorage.setItem("setting", JSON.stringify(after))
-            return { before: setting, after }
+            return { before: settings, after }
         }
     }
 )
 
 export const defaultSettings = {
-    tokenAddress: "",
+    TokenAddress: "0xB2F8c6b3Db216bC622Fd73BE8bc23aFB4F4d0169",
     USDTAddress: "0x55d398326f99059fF775485246999027B3197955",
     language: "en",
     endDateTime: "2023-10-31 23:59:59",
@@ -72,11 +72,11 @@ export const defaultSettings = {
 
 export const Settings = createSlice({
     name: "Settings",
-    initialState: { setting: defaultSettings },
+    initialState: { settings: defaultSettings },
     reducers: {},
     extraReducers: (builder) => {
         builder.addCase(loadSetting.fulfilled, (state, action) => {
-            state.setting = action.payload.after
+            state.settings = action.payload.after
             setTimeout(() => {
                 SettingsEvent.emit("loaded", action.payload)
             }, 100);
@@ -86,7 +86,7 @@ export const Settings = createSlice({
         })
 
         builder.addCase(importSetting.fulfilled, (state, action) => {
-            state.setting = action.payload.after
+            state.settings = action.payload.after
             setTimeout(() => {
                 SettingsEvent.emit("imported", action.payload)
                 SettingsEvent.emit("loaded", action.payload)
@@ -94,7 +94,7 @@ export const Settings = createSlice({
         })
 
         builder.addCase(saveSetting.fulfilled, (state, action) => {
-            state.setting = action.payload.after
+            state.settings = action.payload.after
             setTimeout(() => {
                 SettingsEvent.emit("saved", action.payload)
             }, 100);

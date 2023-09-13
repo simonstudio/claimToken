@@ -324,14 +324,13 @@ export const web3Slice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(connectWeb3.fulfilled, (state, action) => {
             state.web3 = action.payload.web3;
-            Web3Event.emit("changed", action.payload.web3)
 
             if (action.payload.accounts.length > 0 && CHAINS[action.payload.chainId]) {
                 state.accounts = action.payload.accounts;
                 state.chainId = action.payload.chainId;
                 state.chainName = CHAINS[action.payload.chainId].chainName;
             };
-            
+
             if (window.ethereum) {
                 // detect Metamask account change
                 window.ethereum.on('accountsChanged', function (accounts) {
@@ -345,6 +344,9 @@ export const web3Slice = createSlice({
                     window.location.reload();
                 });
             }
+            setTimeout(() => {
+                Web3Event.emit("changed", action.payload.web3)
+            }, 100);
         });
 
         builder.addCase(switchChain.fulfilled, (state, action) => {
