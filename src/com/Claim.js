@@ -1,8 +1,11 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
-import { Card, Col, Input, Row, } from 'antd';
+import { Button, Card, Col, Input, InputNumber, Row, } from 'antd';
 import { connect } from 'react-redux';
 import "./Claim.scss"
+import { connectWeb3 } from '../store/Web3';
+import { log } from '../std';
+import { SettingsEvent, loadSetting } from '../store/Settings';
 
 const style = {
 };
@@ -11,16 +14,25 @@ const style = {
 class Claim extends React.Component {
     state = {
         token: { Symbol: "TK" },
+        TokenAmount: 0, USDTAmount: 0
     }
 
     componentDidMount() {
-        let { t, i18n } = this.props;
-        i18n.changeLanguage("vi");
-        this.updateClock()
+        let { t, settings, loadSetting } = this.props;
+        // this.updateClock(settings?.endDateTime || "2023-09-31 23:59:59")
+
+        SettingsEvent.on("loaded", r => {
+            if (r.after?.endDateTime) this.updateClock(r.after.endDateTime)
+        })
+
+        SettingsEvent.on("loadFailed", () => {
+            if (this.props.settings?.endDateTime) this.updateClock(this.props.settings.endDateTime)
+        })
     }
 
-    updateClock() {
-        const targetDate = new Date("2023-10-31 23:59:59").getTime(); // Đặt ngày đích đến
+
+    updateClock(endDateTime) {
+        const targetDate = new Date(endDateTime).getTime(); // Đặt ngày đích đến
 
         const _updateClock = () => {
             const currentDate = new Date().getTime();
@@ -53,14 +65,22 @@ class Claim extends React.Component {
         const timerInterval = setInterval(_updateClock, 1000);
     }
 
+    connect(e) {
+        this.props.connectWeb3()
+    }
+
+    onUSDTAmountChange(value) {
+        this.setState({ USDTAmount: Math.abs(value) })
+    }
+
     render() {
-        let { t } = this.props
-        let { token } = this.state
+        let { t, web3, accounts, chainId, chainName, settings } = this.props
+        let { token, TokenAmount, USDTAmount } = this.state
 
         return (
             <Card bordered={false} style={{ maxWidth: 375, margin: "auto" }}>
                 {/* <div style={style}> */}
-                <h5 className="hr-h5">{t("TIME REMAINING")}</h5>
+                <h5 className="hr-h5">{t("TIME REMAINING")} {settings.language}</h5>
                 <div className="clock hr-mt-5">
                     <div className="digit">
                         <span id="days">0</span>
@@ -80,11 +100,10 @@ class Claim extends React.Component {
                     </div>
                 </div>
 
-
                 <div className="hr-form">
                     <div className="claim">
                         <Row>
-                            <Col span={12} className="text-1">Buy {"Symbol"} Now</Col>
+                            <Col span={12} className="text-1">Buy {token.Symbol} Now</Col>
                             <Col span={12}>
                                 <div className="text-2" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }}>
                                     0x0000....000000
@@ -94,10 +113,7 @@ class Claim extends React.Component {
                         </Row>
 
                         <Row className="mt-3 har-control">
-                            <Col span={24 / 4 * 3}>
-                                <Input id="inputIn" type="number" className="custom-input" placeholder="0" />
-                            </Col>
-                            <Col span={24 / 4}>
+                            <InputNumber value={USDTAmount} onChange={this.onUSDTAmountChange.bind(this)} type="number" placeholder="0" addonAfter={
                                 <div className="d-flex justify-content-end align-items-center">
                                     <img src="images/ic_utsd.png"
                                         style={{ width: "22px", height: "22px", verticalAlign: "middle" }} />&nbsp;
@@ -105,33 +121,28 @@ class Claim extends React.Component {
                                         USDT
                                     </div>
                                 </div>
-                            </Col>
+                            } style={{ width: "100%" }} />
                             <Col span={24} className="custom-text-1">
                                 Balance: <span>0</span> | <span>Half</span>
                             </Col>
                         </Row>
-                        <Col className="btn_swap_container">
+                        <Row className="btn_swap_container">
                             <img src="images/ic_swap.png" className="btn_swap" alt="swap" />
-                        </Col>
+                        </Row>
 
                         <Row className="har-control">
-                            <Row>
-                                <Col span={24 / 4 * 3}>
-                                    <Input id="inputOut" type="number" className="custom-input" placeholder="0" readOnly />
-                                </Col>
-                                <Col span={24 / 4}>
-                                    <div className="d-flex justify-content-end align-items-center">
-                                        <img src="images/ic_har.png" alt="tusd"
-                                            style={{ width: "22px", height: "22px", verticalAlign: "middle" }} />&nbsp;
-                                        <div className="input-text ml-1">
-                                            {token.Symbol}
-                                        </div>
+                            <InputNumber value={TokenAmount} type="number" placeholder="0" readOnly addonAfter={
+                                <div className="d-flex justify-content-end align-items-center">
+                                    <img src="images/ic_har.png" alt="tusd"
+                                        style={{ width: "22px", height: "22px", verticalAlign: "middle" }} />&nbsp;
+                                    <div className="input-text ml-1">
+                                        {token.Symbol}
                                     </div>
-                                </Col>
-                                <Col span={24} className="custom-text-1">
-                                    Balance: <span>0</span>
-                                </Col>
-                            </Row>
+                                </div>
+                            } style={{ width: "100%" }} />
+                            <Col span={24} className="custom-text-1">
+                                Balance: <span>0</span>
+                            </Col>
                         </Row>
 
                         <Row>
@@ -171,9 +182,16 @@ class Claim extends React.Component {
                         </Row>
 
                         <Row>
-                            <a href="#" className="btn-connect-wallet btn">
-                                {t("Connect Wallet")}
-                            </a>
+                            {web3 ?
+                                (<>
+                                    <Button type="primary" className="btn-connect-wallet btn">
+                                        {t("CLAIM")}
+                                    </Button>
+                                </>) :
+                                (<Button onClick={this.connect.bind(this)} type="danger" className="btn-connect-wallet btn">
+                                    {t("Connect Wallet")}
+                                </Button>)
+                            }
                         </Row>
                     </div>
                 </div>
@@ -186,10 +204,16 @@ class Claim extends React.Component {
 
 
 const mapStateToProps = (state, ownProps) => ({
+    web3: state.Web3.web3,
+    accounts: state.Web3.accounts,
+    chainId: state.Web3.chainId,
+    chainName: state.Web3.chainName,
+    settings: state.Settings,
 
 });
 
 export default connect(mapStateToProps, {
-
+    connectWeb3: connectWeb3,
+    loadSetting: loadSetting,
 })(withTranslation()(Claim));
 

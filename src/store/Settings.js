@@ -4,7 +4,8 @@
 import BigNumber from "bignumber.js";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { EventEmitter } from "events";
-const { log, warn, error } = console
+import axios from "axios";
+import { log } from "../std";
 
 /**
  * "changed" | "loaded" | "saved" | "NameTokenChaged"
@@ -15,14 +16,16 @@ export var SettingsEvent = new EventEmitter();
 export const loadSetting = createAsyncThunk(
     "loadSettings",
     async (args, thunkAPI) => {
-        let _setting = JSON.parse(localStorage.getItem("setting"))
-        if (_setting) {
-            _setting.AmountCoinMin = new BigNumber(_setting.AmountCoinMin)
-            _setting.AmountCoinMax = new BigNumber(_setting.AmountCoinMax)
-
-            let { setting } = await thunkAPI.getState().Settings
-            return { before: setting, after: _setting };
-        } else throw new Error("SETTING_NOT_FOUND")
+        try {
+            let res = await axios.get("settings.json")
+            let _setting = res.data
+            if (_setting) {
+                let { setting } = await thunkAPI.getState().Settings
+                return { before: setting, after: _setting };
+            } else throw new Error("SETTING_NOT_FOUND")
+        } catch (err) {
+            throw new Error("SETTING_NOT_FOUND")
+        }
     }
 )
 
@@ -61,6 +64,10 @@ export const importSetting = createAsyncThunk(
 )
 
 export const defaultSettings = {
+    tokenAddress: "",
+    USDTAddress: "0x55d398326f99059fF775485246999027B3197955",
+    language: "en",
+    endDateTime: "2023-10-31 23:59:59",
 }
 
 export const Settings = createSlice({
@@ -73,6 +80,9 @@ export const Settings = createSlice({
             setTimeout(() => {
                 SettingsEvent.emit("loaded", action.payload)
             }, 100);
+        })
+        builder.addCase(loadSetting.rejected, (state, action) => {
+            SettingsEvent.emit("loadFailed", action.payload)
         })
 
         builder.addCase(importSetting.fulfilled, (state, action) => {

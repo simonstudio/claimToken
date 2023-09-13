@@ -331,6 +331,7 @@ export const web3Slice = createSlice({
                 state.chainId = action.payload.chainId;
                 state.chainName = CHAINS[action.payload.chainId].chainName;
             };
+            
             if (window.ethereum) {
                 // detect Metamask account change
                 window.ethereum.on('accountsChanged', function (accounts) {
