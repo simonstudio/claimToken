@@ -1,6 +1,6 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
-import { Button, Card, Col, Input, InputNumber, Row, notification, } from 'antd';
+import { Button, Card, Col, Input, InputNumber, Row, Tooltip, notification, } from 'antd';
 import { connect } from 'react-redux';
 import { CHAINS, Web3Event, addTokenToMetamask, connectWeb3 } from '../store/Web3';
 import { BNFormat, TenPower, error, getShortAddress, log } from '../std';
@@ -185,7 +185,7 @@ class Claim extends React.Component {
                                     <img src="images/ic_utsd.png"
                                         style={{ width: "22px", height: "22px", verticalAlign: "middle" }} />&nbsp;
                                     <div className="input-text ml-1">
-                                        USDT
+                                        {USDT ? USDT.Symbol : "USDT"}
                                     </div>
                                 </div>
                             } style={{ width: "100%" }} />
@@ -226,9 +226,10 @@ class Claim extends React.Component {
                         <Row>
                             <Col span={12} className="mt-2 text-3">{t("Symbol")}: {token?.Symbol}</Col>
                             <Col span={12} className="mt-2">
-                                <div onClick={this.addTokenToMetamask.bind(this)} className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }} >
-                                    {t("Import")} {token?.Symbol} {t("Token")} &nbsp;
-                                    <img src="images/ic_brower.png" style={{ width: "13px", height: "13px" }} />
+                                <div className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }} >
+                                    <span onClick={this.addTokenToMetamask.bind(this)}>{t("Import")} {token?.Symbol} {t("Token")}</span> &nbsp;
+                                    <a href={web3 ? CHAINS[chainId].blockExplorerUrls + "address/" + token?._address : "#"} target='_blank'>
+                                        <img src="images/ic_brower.png" style={{ width: "13px", height: "13px" }} /></a>
                                 </div>
                             </Col>
                         </Row>
@@ -236,16 +237,21 @@ class Claim extends React.Component {
                         <Row>
                             <Col span={12} className="mt-2 text-3">{t("Generate your referral code")}</Col>
                             <Col span={12} className="mt-2 text-5">
-                                <div onClick={e => { navigator.clipboard.writeText(token?._address); }} className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }}>
-                                    {getShortAddress(token?._address)} &nbsp;
-                                    <BtnCopy value={token?._address} />
+                                <div className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }}>
+                                    <Tooltip title={t("Copy link referral")}>
+                                        <a href={document.location.origin + "/ref=" + accounts[0]}
+                                            onClick={e => { e.preventDefault(); navigator.clipboard.writeText(document.location.origin + "/ref=" + accounts[0]); }}>
+                                            {getShortAddress(accounts[0])}
+                                        </a>
+                                    </Tooltip>
+                                    <BtnCopy value={accounts[0]} text="Copy ref code" />
                                 </div>
                             </Col>
                         </Row>
 
                         <Row>
                             <Col span={12} className="mt-2 text-3">{t("Route")}</Col>
-                            <Col span={12} className="mt-2 text-5">{token ? ("USDT → " + token?.Symbol) : "..."}</Col>
+                            <Col span={12} className="mt-2 text-5">{token ? ((USDT ? USDT.Symbol : "USDT") + " → " + token?.Symbol) : "..."}</Col>
                         </Row>
 
                         <Row>
