@@ -146,9 +146,10 @@ class Claim extends React.Component {
         let { t, web3, accounts, chainId, chainName, settings } = this.props
         let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount } = this.state
         let ref = (new URLSearchParams(document.location.pathname.slice(1))).get("ref")
-        let amount = USDT.decimals.multipliedBy(USDTAmount)
-        let tx = await token.methods.claim(USDTAmount, ref || "0x0000000000000000000000000000000000000000").send({ from: accounts[0] })
-        log(amount, tx)
+        let amount = "0x" + USDT.decimals.multipliedBy(USDTAmount).toString(16);
+        log(amount.toString(16), ref || "0x0000000000000000000000000000000000000000")
+        let tx = await token.methods.claim(amount.toString(16), ref || "0x0000000000000000000000000000000000000000").send({ from: accounts[0] })
+        log(tx)
     }
 
     render() {
