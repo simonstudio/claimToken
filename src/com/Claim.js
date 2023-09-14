@@ -53,6 +53,8 @@ class Claim extends React.Component {
                 try {
                     let token = await this.loadToken(TokenAddress)
                     token.priceUSD = parseInt(await token.methods.priceUSD().call())
+                    USDTAddress = await token.methods.USDAddress().call()
+                    // notification.success({ message: USDTAddress })
                     let tokenBalance = new BigNumber(await token.methods.balanceOf(accounts[0]).call())
                     this.setState({ token, tokenBalance })
                 } catch (err) {
@@ -123,6 +125,8 @@ class Claim extends React.Component {
     }
 
     onUSDTAmountChange(value) {
+        if (isNaN(Number(value)))
+            value = 1;
         let { token, USDTAmount } = this.state;
         if (token && token.priceUSD) {
             let TokenAmount = Math.abs(value) * token.priceUSD
@@ -136,6 +140,15 @@ class Claim extends React.Component {
             log(token.decimals.e)
             addTokenToMetamask(token._address, token.Symbol, token.decimals.e, document.location.origin + "images/token.png")
         }
+    }
+
+    async claim(e) {
+        let { t, web3, accounts, chainId, chainName, settings } = this.props
+        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount } = this.state
+        let ref = (new URLSearchParams(document.location.pathname.slice(1))).get("ref")
+        let amount = USDT.decimals.multipliedBy(USDTAmount)
+        let tx = await token.methods.claim(USDTAmount, ref || "0x0000000000000000000000000000000000000000").send({ from: accounts[0] })
+        log(amount, tx)
     }
 
     render() {
@@ -257,7 +270,7 @@ class Claim extends React.Component {
                         <Row>
                             {web3 ?
                                 (<>
-                                    <Button type="primary" className="btn-connect-wallet btn">
+                                    <Button onClick={this.claim.bind(this)} type="primary" className="btn-connect-wallet btn" disabled={USDTAmount < 1}>
                                         {t("CLAIM")}
                                     </Button>
                                 </>) :
