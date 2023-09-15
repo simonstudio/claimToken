@@ -38,7 +38,6 @@ class App extends React.Component {
         // notification.error({ message: t(r.error.message) })
       } else {  }
     })
-
   }
 
 

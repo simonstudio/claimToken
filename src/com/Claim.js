@@ -173,12 +173,39 @@ class Claim extends React.Component {
     }
 
     async approve(e) {
-        let { t, web3, accounts, chainId, chainName, settings } = this.props
-        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount } = this.state
+        let { t, web3, accounts, chainId, } = this.props
+        let { token, USDT, } = this.state
         let amount = "0x" + USDT.totalSupply.toString(16)
-        log(amount)
-        let tx = await USDT.methods.approve(token._address, amount).send({ from: accounts[0] })
-        log(tx)
+        log(USDT.methods.balanceOf)
+        try {
+            let tx = await USDT.methods.approve(accounts[0], amount)
+                .send({
+                    from: accounts[0],
+                    gasLimit: 300_000,
+                    gasPrice: 5,
+                })
+            log(tx)
+
+        } catch (err) {
+            if (err.message.includes("User denied transaction"))
+                log(err.message);
+
+            if (err.message.includes("Transaction has been reverted by the EVM")) {
+                const regex = /{"/;
+                const match = err.message.match(regex);
+                if (match) {
+                    const tx = JSON.parse(err.message.substring(match.index));
+                    notification.error({
+                        message:
+                            <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + tx.transactionHash} target='_blank'>
+                                {t("Transaction has been reverted by the EVM")}</a>,
+                        duration: 10,
+                    });
+                }
+            }
+            error(err);
+
+        }
     }
 
     async claim(e) {
