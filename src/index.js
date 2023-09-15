@@ -7,11 +7,11 @@ import store from "./store/store";
 import App from './App';
 import "./i18n";
 
-import './index.css';
+import './index.scss';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <Suspense fallback={<div className="Suspense">loading...</div>} >
+  <Suspense fallback={<div className="suspense">loading...</div>} >
     <React.StrictMode>
       <Provider store={store}>
         <App />

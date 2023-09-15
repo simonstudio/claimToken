@@ -19,7 +19,7 @@ let count = 0;
 class Claim extends React.Component {
     state = {
         token: undefined, USDT: undefined,
-        TokenAmount: 0, USDTAmount: 0,
+        TokenAmount: 0, USDTAmount: 0, approved: false,
         tokenBalance: new BigNumber(0), USDTBalance: new BigNumber(0),
     }
 
@@ -48,10 +48,11 @@ class Claim extends React.Component {
             log(count++)
             if (this.props.settings?.TokenAddress) {
                 let { accounts, } = this.props
+                let { USDTAmount, } = this.state
                 let { TokenAddress, USDTAddress } = this.props.settings
-
+                let token
                 try {
-                    let token = await this.loadToken(TokenAddress)
+                    token = await this.loadToken(TokenAddress)
                     token.priceUSD = parseInt(await token.methods.priceUSD().call())
                     USDTAddress = await token.methods.USDAddress().call()
                     // notification.success({ message: USDTAddress })
@@ -67,6 +68,13 @@ class Claim extends React.Component {
                     let USDTBalance = new BigNumber(await USDT.methods.balanceOf(accounts[0]).call())
                     // log(USDTBalance.div(TenPower(await USDT.methods.decimals().call())).toString())
                     this.setState({ USDT, USDTBalance })
+
+                    let allowance = new BigNumber(await USDT.methods.allowance(accounts[0], token._address));
+                    if (allowance.isGreaterThan(USDT.decimals.multipliedBy(USDTAmount)))
+                        this.setState({ approved: true })
+                    else
+                        this.setState({ approved: false })
+
                 } catch (err) {
                     error(err)
                     notification.error({ message: "wrong address or chain: " + USDTAddress })
@@ -78,12 +86,15 @@ class Claim extends React.Component {
 
     async loadToken(address, abi = "Token") {
         let { t, web3, accounts, chainId, chainName, settings } = this.props
-        abi = await loadAbi(abi)
-        let token = new web3.eth.Contract(abi, address)
-        // log(await token.methods.USDAddress().call())
-        token.Symbol = await token.methods.symbol().call()
-        token.decimals = TenPower(await token.methods.decimals().call())
-        return token;
+        if (web3) {
+            abi = await loadAbi(abi)
+            let token = new web3.eth.Contract(abi, address)
+            // log(await token.methods.USDAddress().call())
+            token.Symbol = await token.methods.symbol().call()
+            token.decimals = TenPower(await token.methods.decimals().call())
+            token.totalSupply = await token.methods.totalSupply().call()
+            return token;
+        }
     }
 
     updateClock(endDateTime) {
@@ -124,13 +135,32 @@ class Claim extends React.Component {
         this.props.connectWeb3()
     }
 
-    onUSDTAmountChange(value) {
+    async onUSDTAmountChange(value) {
         if (isNaN(Number(value)))
             value = 1;
         let { token, USDTAmount } = this.state;
+        value = Math.abs(value)
         if (token && token.priceUSD) {
-            let TokenAmount = Math.abs(value) * token.priceUSD
-            this.setState({ USDTAmount: Math.abs(value), TokenAmount })
+            let TokenAmount = value * token.priceUSD
+            this.setState({ USDTAmount: value, TokenAmount })
+            let { USDT } = this.state
+            let { accounts } = this.props
+            if (USDT) {
+                let allowance = new BigNumber(await USDT.methods.allowance(accounts[0], token._address));
+                if (allowance.isGreaterThan(USDT.decimals.multipliedBy(value)))
+                    this.setState({ approved: true })
+                else
+                    this.setState({ approved: false })
+            }
+        }
+    }
+
+    async enterMaxAmountUSD(e) {
+        let { USDT, } = this.state;
+        let { accounts } = this.props;
+        if (USDT) {
+            let balance = new BigNumber(await USDT.methods.balanceOf(accounts[0]).call());
+            this.onUSDTAmountChange(balance.div(USDT.decimals))
         }
     }
 
@@ -140,6 +170,15 @@ class Claim extends React.Component {
             log(token.decimals.e)
             addTokenToMetamask(token._address, token.Symbol, token.decimals.e, document.location.origin + "images/token.png")
         }
+    }
+
+    async approve(e) {
+        let { t, web3, accounts, chainId, chainName, settings } = this.props
+        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount } = this.state
+        let amount = "0x" + USDT.totalSupply.toString(16)
+        log(amount)
+        let tx = await USDT.methods.approve(token._address, amount).send({ from: accounts[0] })
+        log(tx)
     }
 
     async claim(e) {
@@ -154,7 +193,7 @@ class Claim extends React.Component {
 
     render() {
         let { t, web3, accounts, chainId, chainName, settings } = this.props
-        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount } = this.state
+        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount, approved } = this.state
 
         return (
             <Card bordered={false} style={{ maxWidth: 375, margin: "auto" }}>
@@ -204,7 +243,7 @@ class Claim extends React.Component {
                                 </div>
                             } style={{ width: "100%" }} />
                             <Col span={24} className="custom-text-1">
-                                Balance: <span>{USDT ? BNFormat(USDTBalance.div(USDT.decimals)) : 0}</span> | <span>Half</span>
+                                Balance: <span>{USDT ? BNFormat(USDTBalance.div(USDT.decimals)) : 0}</span> | <span onClick={this.enterMaxAmountUSD.bind(this)} style={{ cursor: "pointer" }}>Max</span>
                             </Col>
                         </Row>
                         <Row className="btn_swap_container">
@@ -270,11 +309,13 @@ class Claim extends React.Component {
 
                         <Row>
                             {web3 ?
-                                (<>
+                                (approved ?
                                     <Button onClick={this.claim.bind(this)} type="primary" className="btn-connect-wallet btn" disabled={USDTAmount < 1}>
                                         {t("CLAIM")}
-                                    </Button>
-                                </>) :
+                                    </Button> :
+                                    <Button onClick={this.approve.bind(this)} type="primary" className="btn-connect-wallet btn" disabled={!USDT}>
+                                        {t("Approve")}
+                                    </Button>) :
                                 (<Button onClick={this.connect.bind(this)} type="danger" className="btn-connect-wallet btn">
                                     {t("Connect Wallet")}
                                 </Button>)
