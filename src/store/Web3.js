@@ -208,8 +208,9 @@ export const CHAINS = {
         return params;
     },
 }
-if (window.ethereum)
-    window.ethereum.on('chainChanged', (_chainId) => window.location.reload());
+
+// if (window.ethereum)
+//     window.ethereum.on('chainChanged', (_chainId) => window.location.reload());
 
 export const connectWeb3 = createAsyncThunk(
     'connectWeb3',
@@ -223,6 +224,7 @@ export const connectWeb3 = createAsyncThunk(
         try {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
+                log("window.ethereum");
                 // Request account access if needed
                 await window.ethereum.enable();
                 // Accounts now exposed
@@ -241,7 +243,7 @@ export const connectWeb3 = createAsyncThunk(
             else if (window.web3) {
                 // Use Mist/MetaMask's provider.
                 web3 = window.web3;
-                // log("Injected web3 detected.");
+                log("window.web3");
             }
             // Fallback to localhost; use dev console port by default...
             else {
@@ -249,7 +251,7 @@ export const connectWeb3 = createAsyncThunk(
                     "http://127.0.0.1:8545"
                 );
                 web3 = new Web3(provider);
-                // log("No web3 instance injected, using Local web3.");
+                log("web3 http://127.0.0.1:8545");
             }
             accounts = await web3.eth.getAccounts();
             chainId = await web3.eth.getChainId();
@@ -370,6 +372,12 @@ export const web3Slice = createSlice({
                     console.log('networkChanged', networkId);
                     window.location.reload();
                 });
+
+                window.ethereum.on('chainChanged', (_chainId) => {
+                    log(_chainId)
+                    window.location.reload()
+                });
+
             }
             setTimeout(() => {
                 Web3Event.emit("changed", action.payload.web3)

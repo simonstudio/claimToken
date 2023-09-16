@@ -1,6 +1,6 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
-import { ConfigProvider, Layout, Space, notification, theme } from 'antd';
+import { ConfigProvider, Layout, Space, theme } from 'antd';
 import { Content, } from 'antd/es/layout/layout';
 import { connect } from 'react-redux';
 import Claim from './com/Claim';
@@ -36,7 +36,7 @@ class App extends React.Component {
       if (r.error) {
         console.error(r.error)
         // notification.error({ message: t(r.error.message) })
-      } else {  }
+      } else { }
     })
   }
 

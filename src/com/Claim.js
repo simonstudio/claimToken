@@ -51,30 +51,31 @@ class Claim extends React.Component {
                 let { USDTAmount, } = this.state
                 let { TokenAddress, USDTAddress } = this.props.settings
                 let token
-                try {
+                // try {
                     token = await this.loadToken(TokenAddress)
-                    token.priceUSD = parseInt(await token.methods.priceUSD().call())
+                    token.priceUSD = Number(await token.methods.priceUSD().call())
                     USDTAddress = await token.methods.USDAddress().call()
                     // notification.success({ message: USDTAddress })
                     let tokenBalance = new BigNumber(await token.methods.balanceOf(accounts[0]).call())
                     this.setState({ token, tokenBalance })
-                } catch (err) {
-                    error(err)
-                    notification.error({ message: "wrong address or chain: " + TokenAddress })
-                }
+                    window.token = token
+                // } catch (err) {
+                //     error(err)
+                //     notification.error({ message: "wrong address or chain: " + TokenAddress })
+                // }
 
                 try {
                     let USDT = await this.loadToken(USDTAddress, "USDT")
                     let USDTBalance = new BigNumber(await USDT.methods.balanceOf(accounts[0]).call())
                     // log(USDTBalance.div(TenPower(await USDT.methods.decimals().call())).toString())
                     this.setState({ USDT, USDTBalance })
+                    window.USDT = USDT
 
                     let allowance = new BigNumber(await USDT.methods.allowance(accounts[0], token._address));
                     if (allowance.isGreaterThan(USDT.decimals.multipliedBy(USDTAmount)))
                         this.setState({ approved: true })
                     else
                         this.setState({ approved: false })
-
                 } catch (err) {
                     error(err)
                     notification.error({ message: "wrong address or chain: " + USDTAddress })
@@ -89,7 +90,6 @@ class Claim extends React.Component {
         if (web3) {
             abi = await loadAbi(abi)
             let token = new web3.eth.Contract(abi, address)
-            // log(await token.methods.USDAddress().call())
             token.Symbol = await token.methods.symbol().call()
             token.decimals = TenPower(await token.methods.decimals().call())
             token.totalSupply = await token.methods.totalSupply().call()
@@ -171,7 +171,7 @@ class Claim extends React.Component {
             addTokenToMetamask(token._address, token.Symbol, token.decimals.e, document.location.origin + "images/token.png")
         }
     }
-
+    
     async approve(e) {
         let { t, web3, accounts, chainId, } = this.props
         let { token, USDT, } = this.state
@@ -181,8 +181,9 @@ class Claim extends React.Component {
             let tx = await USDT.methods.approve(accounts[0], amount)
                 .send({
                     from: accounts[0],
-                    gasLimit: 300_000,
+                    // gasLimit: 300_000,
                     gasPrice: 5,
+                    gas: 100_000,
                 })
             log(tx)
 
@@ -225,7 +226,7 @@ class Claim extends React.Component {
         return (
             <Card bordered={false} style={{ maxWidth: 375, margin: "auto" }}>
                 {/* <div style={style}> */}
-                <h5 className="hr-h5">{t("TIME REMAINING")}</h5>
+                <h5 className="hr-h5">{t("TIME REMAINING")} {chainId}</h5>
                 <div className="clock hr-mt-5">
                     <div className="digit">
                         <span id="days">0</span>
