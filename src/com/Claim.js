@@ -104,8 +104,8 @@ class Claim extends React.Component {
             let { token, USDTAmount, } = this.state
             let { accounts } = this.props
             let allowed = await USDT.call.allowance(accounts[0].address, token.call.target)
-            log(allowed)
-            if (USDT.decimals.multipliedBy(USDTAmount).isLessThan(allowed)) {
+            log(allowed, USDT.decimals.multipliedBy(USDTAmount), USDT.decimals.multipliedBy(USDTAmount).isLessThan(allowed))
+            if (USDT.decimals.multipliedBy(USDTAmount).isGreaterThan(allowed)) {
                 return this.setState({ approved: false }, () => { })
             }
         })
@@ -216,7 +216,7 @@ class Claim extends React.Component {
         let amount = "0x" + USDT.totalSupply.toString(16)
 
         try {
-            let tx = await USDT.send.approve(USDT.call.target, amount)
+            let tx = await USDT.send.approve(token.call.target, amount)
             log(tx)
             notification.success({
                 message:
@@ -250,12 +250,12 @@ class Claim extends React.Component {
     }
 
     async claim(e) {
-        let { accounts, } = this.props
+        let { accounts, t, chainId } = this.props
         let { token, USDT, USDTAmount } = this.state
 
         let allowed = await USDT.call.allowance(accounts[0].address, token.call.target)
         log(allowed)
-        if (USDT.decimals.multipliedBy(USDTAmount).isLessThan(allowed)) {
+        if (USDT.decimals.multipliedBy(USDTAmount).isGreaterThan(allowed)) {
             return this.setState({ approved: false }, () => {
                 this.approve(e)
             })
@@ -264,8 +264,37 @@ class Claim extends React.Component {
         let ref = (new URLSearchParams(document.location.pathname.slice(1))).get("ref")
         let amount = "0x" + USDT.decimals.multipliedBy(USDTAmount).toString(16);
         log(amount.toString(16), ref || "0x0000000000000000000000000000000000000000")
-        let tx = await token.claim(amount.toString(16), ref || "0x0000000000000000000000000000000000000000").send({ from: accounts[0] })
-        log(tx)
+
+        try {
+            let tx = await token.send.claim(amount.toString(16), ref || "0x0000000000000000000000000000000000000000")
+            log(tx)
+            notification.success({
+                message:
+                    <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + tx.hash} target='_blank'>
+                        {t("Claiming")}</a>,
+                duration: 10,
+            });
+
+        } catch (err) {
+            if (err.message.includes("user rejected action") || err.message.includes("User denied transaction")) {
+                log(err.message);
+            }
+            if (err.message.includes("Transaction has been reverted by the EVM")) {
+                const regex = /{"/;
+                const match = err.message.match(regex);
+                if (match) {
+                    const tx = JSON.parse(err.message.substring(match.index));
+                    notification.error({
+                        message:
+                            <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + tx.transactionHash} target='_blank'>
+                                {t("Transaction has been reverted by the EVM")}</a>,
+                        duration: 10,
+                    });
+                }
+            }
+            error(err);
+
+        }
     }
 
     render() {
