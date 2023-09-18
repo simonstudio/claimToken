@@ -1,4 +1,4 @@
-import Web3 from 'web3';
+// import Web3 from 'web3';
 import { notification } from 'antd';
 import BigNumber from 'bignumber.js';
 
@@ -194,19 +194,6 @@ function BNFormat(bigNumber) {
         return integerPart;
 }
 
-function addressToUint160(address) {
-    const web3 = new Web3();
-    if (!web3.utils.isAddress(address)) {
-        throw new Error('Invalid address');
-    }
-
-    const addressBytes = web3.utils.hexToBytes(address);
-    const uint160Bytes = addressBytes.slice(-20); // Lấy 20 bytes cuối của địa chỉ
-
-    const uint160 = '0x' + uint160Bytes.toString('hex');
-    return uint160;
-}
-
 export {
     getShortAddress,
     tab, enter,
@@ -219,5 +206,4 @@ export {
     hash, isUrl,
     getRandomFloat,
     BNFormat,
-    addressToUint160,
 }

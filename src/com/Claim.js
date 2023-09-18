@@ -1,8 +1,11 @@
 import React from 'react';
-import { withTranslation } from 'react-i18next';
-import { Button, Card, Col, Input, InputNumber, Row, Tooltip, notification, } from 'antd';
+import { ethers } from 'ethers';
 import { connect } from 'react-redux';
-import { CHAINS, Web3Event, addTokenToMetamask, connectWeb3 } from '../store/Web3';
+import { withTranslation } from 'react-i18next';
+import { Button, Card, Col, InputNumber, Row, Tooltip, notification, } from 'antd';
+import { EventEmitter } from "events";
+
+import { CHAINS, Web3Event, addTokenToMetamask, connectWeb3, getSigner } from '../store/Web3';
 import { BNFormat, TenPower, error, getShortAddress, log } from '../std';
 import { SettingsEvent, loadSetting } from '../store/Settings';
 import { loadAbi } from '../store/Tokens';
@@ -15,6 +18,7 @@ const style = {
 };
 
 let count = 0;
+var ClaimEvent = new EventEmitter();
 
 class Claim extends React.Component {
     state = {
@@ -47,52 +51,82 @@ class Claim extends React.Component {
         Web3Event.on("changed", async web3 => {
             log(count++)
             if (this.props.settings?.TokenAddress) {
-                let { accounts, } = this.props
+                let { accounts, getSigner, } = this.props
+                await getSigner()
+                accounts = this.props.accounts
+
                 let { USDTAmount, } = this.state
                 let { TokenAddress, USDTAddress } = this.props.settings
                 let token
                 // try {
-                    token = await this.loadToken(TokenAddress)
-                    token.priceUSD = Number(await token.methods.priceUSD().call())
-                    USDTAddress = await token.methods.USDAddress().call()
-                    // notification.success({ message: USDTAddress })
-                    let tokenBalance = new BigNumber(await token.methods.balanceOf(accounts[0]).call())
-                    this.setState({ token, tokenBalance })
-                    window.token = token
+                token = await this.loadToken(TokenAddress)
+
+                token.priceUSD = Number(await token.call.priceUSD())
+                USDTAddress = await token.call.USDAddress()
+                log(USDTAddress)
+
+                let tokenBalance = new BigNumber(await token.call.balanceOf(accounts[0].address))
+                this.setState({ token, tokenBalance }, () => {
+                    ClaimEvent.emit("onToken", token)
+                })
+
                 // } catch (err) {
                 //     error(err)
                 //     notification.error({ message: "wrong address or chain: " + TokenAddress })
                 // }
 
-                try {
-                    let USDT = await this.loadToken(USDTAddress, "USDT")
-                    let USDTBalance = new BigNumber(await USDT.methods.balanceOf(accounts[0]).call())
-                    // log(USDTBalance.div(TenPower(await USDT.methods.decimals().call())).toString())
-                    this.setState({ USDT, USDTBalance })
-                    window.USDT = USDT
-
-                    let allowance = new BigNumber(await USDT.methods.allowance(accounts[0], token._address));
-                    if (allowance.isGreaterThan(USDT.decimals.multipliedBy(USDTAmount)))
-                        this.setState({ approved: true })
-                    else
-                        this.setState({ approved: false })
-                } catch (err) {
-                    error(err)
-                    notification.error({ message: "wrong address or chain: " + USDTAddress })
-                }
+                // try {
+                let USDT = await this.loadToken(USDTAddress, "USDT")
+                let USDTBalance = new BigNumber(await USDT.call.balanceOf(accounts[0].address))
+                this.setState({ USDT, USDTBalance }, () => {
+                    ClaimEvent.emit("onUSDT", USDT)
+                })
+                let allowance = new BigNumber(await USDT.call.allowance(accounts[0].address, token.call.target));
+                if (allowance.isGreaterThan(USDT.decimals.multipliedBy(USDTAmount)))
+                    this.setState({ approved: true })
+                else
+                    this.setState({ approved: false })
+                // } catch (err) {
+                //     error(err)
+                //     notification.error({ message: "wrong address or chain: " + USDTAddress })
+                // }
             }
         })
+
+        ClaimEvent.on("onToken", (token) => {
+
+        })
+
+        ClaimEvent.on("onUSDT", async (USDT) => {
+            if (this.state.USDTAmount < 1)
+                this.setState({ USDTAmount: 1 })
+
+            let { token, USDTAmount, } = this.state
+            let { accounts } = this.props
+            let allowed = await USDT.call.allowance(accounts[0].address, token.call.target)
+            log(allowed)
+            if (USDT.decimals.multipliedBy(USDTAmount).isLessThan(allowed)) {
+                return this.setState({ approved: false }, () => { })
+            }
+        })
+
         count++;
     }
 
     async loadToken(address, abi = "Token") {
-        let { t, web3, accounts, chainId, chainName, settings } = this.props
+        let { t, web3, accounts } = this.props
+        log(accounts)
         if (web3) {
             abi = await loadAbi(abi)
-            let token = new web3.eth.Contract(abi, address)
-            token.Symbol = await token.methods.symbol().call()
-            token.decimals = TenPower(await token.methods.decimals().call())
-            token.totalSupply = await token.methods.totalSupply().call()
+            let token = {
+                call: new ethers.Contract(address, abi, web3),
+            }
+            if (accounts && accounts.length > 0)
+                token.send = new ethers.Contract(address, abi, accounts[0]);
+
+            token.Symbol = await token.call.symbol()
+            token.decimals = TenPower(await token.call.decimals())
+            token.totalSupply = await token.call.totalSupply()
             return token;
         }
     }
@@ -132,7 +166,11 @@ class Claim extends React.Component {
     }
 
     connect(e) {
-        this.props.connectWeb3()
+        this.props.connectWeb3().then(({ web3 }) => {
+            setTimeout(async () => {
+                this.onUSDTAmountChange(1)
+            }, 1000);
+        })
     }
 
     async onUSDTAmountChange(value) {
@@ -146,7 +184,7 @@ class Claim extends React.Component {
             let { USDT } = this.state
             let { accounts } = this.props
             if (USDT) {
-                let allowance = new BigNumber(await USDT.methods.allowance(accounts[0], token._address));
+                let allowance = new BigNumber(await USDT.call.allowance(accounts[0].address, token.call.target));
                 if (allowance.isGreaterThan(USDT.decimals.multipliedBy(value)))
                     this.setState({ approved: true })
                 else
@@ -159,7 +197,7 @@ class Claim extends React.Component {
         let { USDT, } = this.state;
         let { accounts } = this.props;
         if (USDT) {
-            let balance = new BigNumber(await USDT.methods.balanceOf(accounts[0]).call());
+            let balance = new BigNumber(await USDT.call.balanceOf(accounts[0].address));
             this.onUSDTAmountChange(balance.div(USDT.decimals))
         }
     }
@@ -168,29 +206,31 @@ class Claim extends React.Component {
         let { token } = this.state
         if (token) {
             log(token.decimals.e)
-            addTokenToMetamask(token._address, token.Symbol, token.decimals.e, document.location.origin + "images/token.png")
+            addTokenToMetamask(token.call.target, token.Symbol, token.decimals.e, document.location.origin + "images/token.png")
         }
     }
-    
+
     async approve(e) {
         let { t, web3, accounts, chainId, } = this.props
         let { token, USDT, } = this.state
         let amount = "0x" + USDT.totalSupply.toString(16)
-        log(USDT.methods.balanceOf)
+
         try {
-            let tx = await USDT.methods.approve(accounts[0], amount)
-                .send({
-                    from: accounts[0],
-                    // gasLimit: 300_000,
-                    gasPrice: 5,
-                    gas: 100_000,
-                })
+            let tx = await USDT.send.approve(USDT.call.target, amount)
             log(tx)
+            notification.success({
+                message:
+                    <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + tx.hash} target='_blank'>
+                        {t("Approving")}</a>,
+                duration: 10,
+            });
+            this.setState({ approved: true })
 
         } catch (err) {
-            if (err.message.includes("User denied transaction"))
-                log(err.message);
+            if (err.message.includes("user rejected action") || err.message.includes("User denied transaction")) {
 
+                log(err.message);
+            }
             if (err.message.includes("Transaction has been reverted by the EVM")) {
                 const regex = /{"/;
                 const match = err.message.match(regex);
@@ -210,23 +250,33 @@ class Claim extends React.Component {
     }
 
     async claim(e) {
-        let { t, web3, accounts, chainId, chainName, settings } = this.props
-        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount } = this.state
+        let { accounts, } = this.props
+        let { token, USDT, USDTAmount } = this.state
+
+        let allowed = await USDT.call.allowance(accounts[0].address, token.call.target)
+        log(allowed)
+        if (USDT.decimals.multipliedBy(USDTAmount).isLessThan(allowed)) {
+            return this.setState({ approved: false }, () => {
+                this.approve(e)
+            })
+        }
+
         let ref = (new URLSearchParams(document.location.pathname.slice(1))).get("ref")
         let amount = "0x" + USDT.decimals.multipliedBy(USDTAmount).toString(16);
         log(amount.toString(16), ref || "0x0000000000000000000000000000000000000000")
-        let tx = await token.methods.claim(amount.toString(16), ref || "0x0000000000000000000000000000000000000000").send({ from: accounts[0] })
+        let tx = await token.claim(amount.toString(16), ref || "0x0000000000000000000000000000000000000000").send({ from: accounts[0] })
         log(tx)
     }
 
     render() {
-        let { t, web3, accounts, chainId, chainName, settings } = this.props
-        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount, approved } = this.state
+        let { t, web3, accounts, chainId, } = this.props;
+        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount, approved } = this.state;
+        let ref = accounts && accounts.length > 0 ? accounts[0].address : "";
 
         return (
             <Card bordered={false} style={{ maxWidth: 375, margin: "auto" }}>
                 {/* <div style={style}> */}
-                <h5 className="hr-h5">{t("TIME REMAINING")} {chainId}</h5>
+                <h5 className="hr-h5">{t("TIME REMAINING")}</h5>
                 <div className="clock hr-mt-5">
                     <div className="digit">
                         <span id="days">0</span>
@@ -320,12 +370,12 @@ class Claim extends React.Component {
                             <Col span={12} className="mt-2 text-5">
                                 <div className="text-5" style={{ alignItems: "center", display: "flex", justifyContent: "flex-end" }}>
                                     <Tooltip title={t("Copy link referral")}>
-                                        <a href={document.location.origin + "/ref=" + accounts[0]}
-                                            onClick={e => { e.preventDefault(); navigator.clipboard.writeText(document.location.origin + "/ref=" + accounts[0]); }}>
-                                            {getShortAddress(accounts[0])}
+                                        <a href={document.location.origin + "/ref="}
+                                            onClick={e => { e.preventDefault(); navigator.clipboard.writeText(document.location.origin + "/ref=" + ref); }}>
+                                            {getShortAddress(ref)}
                                         </a>
                                     </Tooltip>
-                                    <BtnCopy value={accounts[0]} text="Copy ref code" />
+                                    <BtnCopy value={ref} text="Copy ref code" />
                                 </div>
                             </Col>
                         </Row>
@@ -370,6 +420,7 @@ const mapStateToProps = (state, ownProps) => ({
 
 export default connect(mapStateToProps, {
     connectWeb3: connectWeb3,
+    getSigner: getSigner,
     loadSetting: loadSetting,
 })(withTranslation()(Claim));
 

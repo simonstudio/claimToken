@@ -2,7 +2,7 @@
  * quản lí web3 từ trình duyệt
  */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import Web3 from "web3";
+import { ethers, hexlify } from "ethers";
 import { notification } from 'antd';
 import { log, logwarn, logerror } from "../std"
 import { EventEmitter } from "events";
@@ -14,13 +14,17 @@ const dev = {
     MAINNET: 'MAINNET'
 }
 
+function numberToHex(number) {
+    return "0x" + number.toString(16)
+}
+
 export const CHAINS = {
     1337: {
         id: 1337,
         nativeCurrency: {
             name: 'Ether test', decimals: 18, symbol: 'ETH'
         },
-        chainId: Web3.utils.toHex(1337),
+        chainId: numberToHex(1337),
         icon: "eth.svg",
         rpcUrls: ['HTTP://127.0.0.1:8545'],
         chainName: 'Local',
@@ -32,7 +36,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'Ether test', decimals: 18, symbol: 'ETH'
         },
-        chainId: Web3.utils.toHex(31337),
+        chainId: numberToHex(31337),
         icon: "eth.svg",
         rpcUrls: ['http://127.0.0.1:8545/'],
         chainName: 'Local',
@@ -44,7 +48,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'Ether test', decimals: 18, symbol: 'ETH'
         },
-        chainId: Web3.utils.toHex(5777),
+        chainId: numberToHex(5777),
         icon: "eth.svg",
         rpcUrls: ['HTTP://127.0.0.1:7545'],
         chainName: 'Local',
@@ -56,7 +60,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'Ethereum', decimals: 18, symbol: 'ETH'
         },
-        chainId: Web3.utils.toHex(1),
+        chainId: numberToHex(1),
         icon: "eth.svg",
         rpcUrls: ['wss://mainnet.infura.io/v3/d41e02ee7f344eb6ba4b9239f853de51'],
         chainName: 'Ethereum',
@@ -68,7 +72,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'Ethereum', decimals: 18, symbol: 'ETH'
         },
-        chainId: Web3.utils.toHex(5),
+        chainId: numberToHex(5),
         icon: "eth.svg",
         rpcUrls: ['https://goerli.infura.io/v3/d41e02ee7f344eb6ba4b9239f853de51'],
         chainName: 'Goerli',
@@ -81,7 +85,7 @@ export const CHAINS = {
             name: 'tBNB', decimals: 18, symbol: 'tBNB'
         },
         icon: "bnb.svg",
-        chainId: Web3.utils.toHex(97),
+        chainId: numberToHex(97),
         rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
         chainName: 'Binance Smart Chain Testnet',
         blockExplorerUrls: ['https://testnet.bscscan.com/'],
@@ -93,7 +97,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'BNB', decimals: 18, symbol: 'BNB'
         },
-        chainId: Web3.utils.toHex(56),
+        chainId: numberToHex(56),
         icon: "bnb.svg",
         rpcUrls: ['https://bsc-dataseed1.binance.org'],
         chainName: 'Binance Smart Chain',
@@ -106,7 +110,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'Polygon', decimals: 18, symbol: 'MATIC'
         },
-        chainId: Web3.utils.toHex(137),
+        chainId: numberToHex(137),
         icon: "bnb.svg",
         rpcUrls: ['https://polygonscan.com'],
         chainName: 'Polygon',
@@ -120,7 +124,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'Arbitrum', decimals: 18, symbol: 'ARB'
         },
-        chainId: Web3.utils.toHex(42161),
+        chainId: numberToHex(42161),
         rpcUrls: ['https://arb-mainnet.g.alchemy.com/v2/QSuJnN440-D76zeC9srLgjq1oOahYxjj'],
         chainName: 'Arbitrum',
         blockExplorerUrls: ['https://arbiscan.io/'],
@@ -132,7 +136,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'Arbitrum Test', decimals: 18, symbol: 'ARB'
         },
-        chainId: Web3.utils.toHex(421613),
+        chainId: numberToHex(421613),
         rpcUrls: ['https://arb-goerli.g.alchemy.com/v2/GCDxJ9D1qG3ywdPTz5xTh-5INI6GT-uw'],
         chainName: 'Arbitrum Test',
         blockExplorerUrls: ['https://arbiscan.io/'],
@@ -144,7 +148,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'Tron', decimals: 18, symbol: 'TRX'
         },
-        chainId: Web3.utils.toHex("tron"),
+        chainId: numberToHex("tron"),
         icon: "tron.svg",
         rpcUrls: ['https://api.trongrid.io'],
         chainName: 'Tron',
@@ -157,7 +161,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'MATIC', decimals: 18, symbol: 'MATIC'
         },
-        chainId: Web3.utils.toHex(80001),
+        chainId: numberToHex(80001),
         rpcUrls: ['https://matic-mumbai.chainstacklabs.com'],
         chainName: 'Polygon Testnet',
         blockExplorerUrls: ['https://mumbai.polygonscan.com/'],
@@ -168,7 +172,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'AVAX', decimals: 18, symbol: 'AVAX'
         },
-        chainId: Web3.utils.toHex(43113),
+        chainId: numberToHex(43113),
         rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
         chainName: 'Avalanche Testnet',
         blockExplorerUrls: ['https://testnet.snowtrace.io/'],
@@ -179,7 +183,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'AVAX', decimals: 18, symbol: 'AVAX'
         },
-        chainId: Web3.utils.toHex(43114),
+        chainId: numberToHex(43114),
         rpcUrls: ['https://avalanche.public-rpc.com'],
         chainName: 'Avalanche',
         blockExplorerUrls: ['https://snowtrace.io/'],
@@ -190,7 +194,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'linea goerli', decimals: 18, symbol: 'ETH'
         },
-        chainId: Web3.utils.toHex(59140),
+        chainId: numberToHex(59140),
         rpcUrls: ['https://linea-goerli.infura.io/v3/7b758e41cdea45c1a32f547d039b66ed'],
         chainName: 'linea goerli',
         blockExplorerUrls: ['https://snowtrace.io/'],
@@ -214,54 +218,40 @@ export const CHAINS = {
 
 export const connectWeb3 = createAsyncThunk(
     'connectWeb3',
-    async (args, thunkAPI) => {
+    async (url, thunkAPI) => {
         // Wait for loading completion to avoid race conditions with web3 injection timing.
         // Modern dapp browsers...
         let web3 = null;
-        let accounts = [];
         let chainId = 0;
-        // console.log(args);
+
         try {
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
+            if (url) {
+                web3 = new ethers.JsonRpcProvider(url);
+                log(url)
+
+            } else if (window.ethereum) {
+                web3 = new ethers.BrowserProvider(window.ethereum);
                 log("window.ethereum");
-                // Request account access if needed
-                await window.ethereum.enable();
-                // Accounts now exposed
+
+            } else {
+                web3 = ethers.getDefaultProvider()
+                log("getDefaultProvider");
+
             }
-            else if (window.tronWeb) {
-                return window.tronLink.request({ method: 'tron_requestAccounts' }).then(r => {
-                    if (r.code == 200) {
-                        return { "web3": window.tronWeb, "accounts": [window.tronWeb.defaultAddress.base58], "chainId": "tron" };
-                    } else {
-                        notification.error(r.message)
-                        throw new Error(r.message)
-                    }
-                })
-            }
-            // Legacy dapp browsers...
-            else if (window.web3) {
-                // Use Mist/MetaMask's provider.
-                web3 = window.web3;
-                log("window.web3");
-            }
-            // Fallback to localhost; use dev console port by default...
-            else {
-                const provider = new Web3.providers.HttpProvider(
-                    "http://127.0.0.1:8545"
-                );
-                web3 = new Web3(provider);
-                log("web3 http://127.0.0.1:8545");
-            }
-            accounts = await web3.eth.getAccounts();
-            chainId = await web3.eth.getChainId();
-            chainId = parseInt(chainId);
+            chainId = (await web3.getNetwork()).chainId;
         } catch (error) {
             throw error;
         }
         window.web3 = web3;
         window.thunk = thunkAPI;
-        return { web3, accounts, chainId };
+        return { web3, chainId };
+    }
+)
+
+export const getSigner = createAsyncThunk(
+    'getSigner',
+    async (args, thunkAPI) => {
+        return await thunkAPI.getState().Web3.web3.getSigner()
     }
 )
 
@@ -354,8 +344,7 @@ export const web3Slice = createSlice({
         builder.addCase(connectWeb3.fulfilled, (state, action) => {
             state.web3 = action.payload.web3;
 
-            if (action.payload.accounts.length > 0 && CHAINS[action.payload.chainId]) {
-                state.accounts = action.payload.accounts;
+            if (CHAINS[action.payload.chainId]) {
                 state.chainId = action.payload.chainId;
                 state.chainName = CHAINS[action.payload.chainId].chainName;
             };
@@ -383,6 +372,10 @@ export const web3Slice = createSlice({
                 Web3Event.emit("changed", action.payload.web3)
             }, 100);
         });
+
+        builder.addCase(getSigner.fulfilled, (state, action) => {
+            state.accounts = [action.payload]
+        })
 
         builder.addCase(switchChain.fulfilled, (state, action) => {
             state.chainId = parseInt(action.payload)
