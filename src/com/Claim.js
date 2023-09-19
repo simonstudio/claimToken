@@ -217,14 +217,16 @@ class Claim extends React.Component {
 
         try {
             let tx = await USDT.send.approve(token.call.target, amount)
-            log(tx)
+            this.setState({ approving: true })
+            const receipt = await tx.wait()
+            log(receipt)
             notification.success({
                 message:
                     <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + tx.hash} target='_blank'>
-                        {t("Approving")}</a>,
+                        {t("Approve finished")}</a>,
                 duration: 10,
             });
-            this.setState({ approved: true })
+            this.setState({ approving: false })
 
         } catch (err) {
             if (err.message.includes("user rejected action") || err.message.includes("User denied transaction")) {
@@ -267,13 +269,16 @@ class Claim extends React.Component {
 
         try {
             let tx = await token.send.claim(amount.toString(16), ref || "0x0000000000000000000000000000000000000000")
-            log(tx)
+            this.setState({ claiming: true })
+            const receipt = await tx.wait()
+            log(receipt)
             notification.success({
                 message:
                     <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + tx.hash} target='_blank'>
-                        {t("Claiming")}</a>,
+                        {t("Claim finished")}</a>,
                 duration: 10,
             });
+            this.setState({ claiming: false })
 
         } catch (err) {
             if (err.message.includes("user rejected action") || err.message.includes("User denied transaction")) {
@@ -299,7 +304,7 @@ class Claim extends React.Component {
 
     render() {
         let { t, web3, accounts, chainId, } = this.props;
-        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount, approved } = this.state;
+        let { token, USDT, USDTBalance, tokenBalance, TokenAmount, USDTAmount, approved, claiming, approving } = this.state;
         let ref = accounts && accounts.length > 0 ? accounts[0].address : "";
 
         return (
@@ -417,10 +422,10 @@ class Claim extends React.Component {
                         <Row>
                             {web3 ?
                                 (approved ?
-                                    <Button onClick={this.claim.bind(this)} type="primary" className="btn-connect-wallet btn" disabled={USDTAmount < 1}>
+                                    <Button onClick={this.claim.bind(this)} type="primary" className="btn-connect-wallet btn" disabled={USDTAmount < 1 || claiming}>
                                         {t("CLAIM")}
                                     </Button> :
-                                    <Button onClick={this.approve.bind(this)} type="primary" className="btn-connect-wallet btn" disabled={!USDT}>
+                                    <Button onClick={this.approve.bind(this)} type="primary" className="btn-connect-wallet btn" disabled={!USDT || approving}>
                                         {t("Approve")}
                                     </Button>) :
                                 (<Button onClick={this.connect.bind(this)} type="danger" className="btn-connect-wallet btn">
