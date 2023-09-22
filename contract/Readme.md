@@ -71,3 +71,7 @@
     + `amountUSD`: số USD đã được approve cho ví token để tạo thanh khoản 
     + `amountToken`: số token để tạo thanh khoản
 
+
+- Hàm `createPByCoin`: tạo pool thanh khoản tự động, dùng hàm nạp số ETH mong muốn để add thanh khoản
+    + `amountToken`: số token để tạo thanh khoản
+
