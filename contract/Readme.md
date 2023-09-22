@@ -39,7 +39,11 @@
 
 
 - Hàm `setPriceUSD`: thay đổi tỉ giá ICO, tỉ giá = token / USD, ví dụ 1000 token = 1 BUSD, thì tỉ giá là 1000 
-    + `_amountToken`: số lượng token
+    + `price`: tỉ giá
+
+
+- Hàm `setPriceCoin`: thay đổi tỉ giá ICO, tỉ giá = token / Coin, ví dụ 1000 token = 1 ETH, thì tỉ giá là 1000 
+    + `price`: tỉ giá
 
 
 - Hàm `setCF`: thay đổi địa chỉ ví gửi khi Claim, ví dụ ví Binance 
@@ -56,9 +60,14 @@
 
 - Hàm `claim`: người dùng có thể vào claim bằng cách gửi USD vào token , nhận về 1 lượng token dựa trên tỉ giá 
     + `amountUSD`: số lượng USD 
+    + `ref`: ví người giới thiệu, sẽ nhận được % token (hàm `setPercentCommissionRef`), ví đó phải có 1 lượng token sẵn
+
+
+- Hàm `claimByCoin`: người dùng có thể vào claim bằng cách gửi Coin vào, nhận về 1 lượng token dựa trên tỉ giá (hàm `setPriceCoin`)
     + `ref`: ví người giới thiệu, sẽ nhận được % token (`setPercentCommissionRef`), ví đó phải có 1 lượng token sẵn
 
 
 - Hàm `createP`: tạo pool thanh khoản 
     + `amountUSD`: số USD đã được approve cho ví token để tạo thanh khoản 
     + `amountToken`: số token để tạo thanh khoản
+
