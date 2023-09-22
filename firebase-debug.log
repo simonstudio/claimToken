@@ -1,0 +1,22 @@
+[debug] [2023-09-19T15:53:18.568Z] ----------------------------------------------------------------------
+[debug] [2023-09-19T15:53:18.571Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\l\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting
+[debug] [2023-09-19T15:53:18.571Z] CLI Version:   12.0.0
+[debug] [2023-09-19T15:53:18.571Z] Platform:      win32
+[debug] [2023-09-19T15:53:18.572Z] Node Version:  v18.16.0
+[debug] [2023-09-19T15:53:18.573Z] Time:          Tue Sep 19 2023 22:53:18 GMT+0700 (Indochina Time)
+[debug] [2023-09-19T15:53:18.573Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-09-19T15:53:18.661Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-09-19T15:53:18.661Z] > authorizing via signed-in user (iconwhenvery7489@gmail.com)
+[debug] [2023-09-19T15:53:18.662Z] [iam] checking project jfkolsdjfoidjsvlk for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2023-09-19T15:53:18.664Z] > refreshing access token with scopes: []
+[debug] [2023-09-19T15:53:18.666Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-09-19T15:53:18.666Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-09-19T15:53:18.986Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2023-09-19T15:53:18.987Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-09-19T15:53:19.000Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/jfkolsdjfoidjsvlk:testIamPermissions [none]
+[debug] [2023-09-19T15:53:19.000Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/jfkolsdjfoidjsvlk:testIamPermissions x-goog-quota-user=projects/jfkolsdjfoidjsvlk
+[debug] [2023-09-19T15:53:19.001Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jfkolsdjfoidjsvlk:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2023-09-19T15:53:19.471Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/jfkolsdjfoidjsvlk:testIamPermissions 200
+[debug] [2023-09-19T15:53:19.471Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jfkolsdjfoidjsvlk:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2023-09-19T15:53:19.473Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/jfkolsdjfoidjsvlk [none]
