@@ -19,7 +19,13 @@ interface IPancakeRouter01 {
         uint256 amountBMin,
         address to,
         uint256 deadline
-    ) external returns (uint256 amountA, uint256 amountB, uint256 liquidity);
+    )
+        external
+        returns (
+            uint256 amountA,
+            uint256 amountB,
+            uint256 liquidity
+        );
 
     function addLiquidityETH(
         address token,
@@ -31,7 +37,11 @@ interface IPancakeRouter01 {
     )
         external
         payable
-        returns (uint256 amountToken, uint256 amountETH, uint256 liquidity);
+        returns (
+            uint256 amountToken,
+            uint256 amountETH,
+            uint256 liquidity
+        );
 
     function removeLiquidity(
         address tokenA,
@@ -143,15 +153,15 @@ interface IPancakeRouter01 {
         uint256 reserveOut
     ) external pure returns (uint256 amountIn);
 
-    function getAmountsOut(
-        uint256 amountIn,
-        address[] calldata path
-    ) external view returns (uint256[] memory amounts);
+    function getAmountsOut(uint256 amountIn, address[] calldata path)
+        external
+        view
+        returns (uint256[] memory amounts);
 
-    function getAmountsIn(
-        uint256 amountOut,
-        address[] calldata path
-    ) external view returns (uint256[] memory amounts);
+    function getAmountsIn(uint256 amountOut, address[] calldata path)
+        external
+        view
+        returns (uint256[] memory amounts);
 }
 
 // File: contracts\interfaces\IPancakeRouter02.sol
@@ -208,26 +218,25 @@ interface IUniswapV2Factory {
         address indexed token0,
         address indexed token1,
         address pair,
-        uint
+        uint256
     );
 
     function feeTo() external view returns (address);
 
     function feeToSetter() external view returns (address);
 
-    function getPair(
-        address tokenA,
-        address tokenB
-    ) external view returns (address pair);
+    function getPair(address tokenA, address tokenB)
+        external
+        view
+        returns (address pair);
 
-    function allPairs(uint) external view returns (address pair);
+    function allPairs(uint256) external view returns (address pair);
 
-    function allPairsLength() external view returns (uint);
+    function allPairsLength() external view returns (uint256);
 
-    function createPair(
-        address tokenA,
-        address tokenB
-    ) external returns (address pair);
+    function createPair(address tokenA, address tokenB)
+        external
+        returns (address pair);
 
     function setFeeTo(address) external;
 
@@ -365,9 +374,11 @@ library StorageSlot {
     /**
      * @dev Returns an `AddressSlot` with member `value` located at `slot`.
      */
-    function getAddressSlot(
-        bytes32 slot
-    ) internal pure returns (AddressSlot storage r) {
+    function getAddressSlot(bytes32 slot)
+        internal
+        pure
+        returns (AddressSlot storage r)
+    {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -377,9 +388,11 @@ library StorageSlot {
     /**
      * @dev Returns an `BooleanSlot` with member `value` located at `slot`.
      */
-    function getBooleanSlot(
-        bytes32 slot
-    ) internal pure returns (BooleanSlot storage r) {
+    function getBooleanSlot(bytes32 slot)
+        internal
+        pure
+        returns (BooleanSlot storage r)
+    {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -389,9 +402,11 @@ library StorageSlot {
     /**
      * @dev Returns an `Bytes32Slot` with member `value` located at `slot`.
      */
-    function getBytes32Slot(
-        bytes32 slot
-    ) internal pure returns (Bytes32Slot storage r) {
+    function getBytes32Slot(bytes32 slot)
+        internal
+        pure
+        returns (Bytes32Slot storage r)
+    {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -401,9 +416,11 @@ library StorageSlot {
     /**
      * @dev Returns an `Uint256Slot` with member `value` located at `slot`.
      */
-    function getUint256Slot(
-        bytes32 slot
-    ) internal pure returns (Uint256Slot storage r) {
+    function getUint256Slot(bytes32 slot)
+        internal
+        pure
+        returns (Uint256Slot storage r)
+    {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -413,9 +430,11 @@ library StorageSlot {
     /**
      * @dev Returns an `StringSlot` with member `value` located at `slot`.
      */
-    function getStringSlot(
-        bytes32 slot
-    ) internal pure returns (StringSlot storage r) {
+    function getStringSlot(bytes32 slot)
+        internal
+        pure
+        returns (StringSlot storage r)
+    {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -425,9 +444,11 @@ library StorageSlot {
     /**
      * @dev Returns an `StringSlot` representation of the string storage pointer `store`.
      */
-    function getStringSlot(
-        string storage store
-    ) internal pure returns (StringSlot storage r) {
+    function getStringSlot(string storage store)
+        internal
+        pure
+        returns (StringSlot storage r)
+    {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := store.slot
@@ -437,9 +458,11 @@ library StorageSlot {
     /**
      * @dev Returns an `BytesSlot` with member `value` located at `slot`.
      */
-    function getBytesSlot(
-        bytes32 slot
-    ) internal pure returns (BytesSlot storage r) {
+    function getBytesSlot(bytes32 slot)
+        internal
+        pure
+        returns (BytesSlot storage r)
+    {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -449,9 +472,11 @@ library StorageSlot {
     /**
      * @dev Returns an `BytesSlot` representation of the bytes storage pointer `store`.
      */
-    function getBytesSlot(
-        bytes storage store
-    ) internal pure returns (BytesSlot storage r) {
+    function getBytesSlot(bytes storage store)
+        internal
+        pure
+        returns (BytesSlot storage r)
+    {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := store.slot
@@ -510,9 +535,11 @@ library ShortStrings {
      *
      * This will trigger a `StringTooLong` error is the input string is too long.
      */
-    function toShortString(
-        string memory str
-    ) internal pure returns (ShortString) {
+    function toShortString(string memory str)
+        internal
+        pure
+        returns (ShortString)
+    {
         bytes memory bstr = bytes(str);
         if (bstr.length > 31) {
             revert StringTooLong(str);
@@ -564,10 +591,11 @@ library ShortStrings {
     /**
      * @dev Decode a string that was encoded to `ShortString` or written to storage using {setWithFallback}.
      */
-    function toStringWithFallback(
-        ShortString value,
-        string storage store
-    ) internal pure returns (string memory) {
+    function toStringWithFallback(ShortString value, string storage store)
+        internal
+        pure
+        returns (string memory)
+    {
         if (ShortString.unwrap(value) != _FALLBACK_SENTINEL) {
             return toString(value);
         } else {
@@ -581,10 +609,11 @@ library ShortStrings {
      * WARNING: This will return the "byte length" of the string. This may not reflect the actual length in terms of
      * actual characters as the UTF-8 encoding of a single character can span over multiple bytes.
      */
-    function byteLengthWithFallback(
-        ShortString value,
-        string storage store
-    ) internal view returns (uint256) {
+    function byteLengthWithFallback(ShortString value, string storage store)
+        internal
+        view
+        returns (uint256)
+    {
         if (ShortString.unwrap(value) != _FALLBACK_SENTINEL) {
             return byteLength(value);
         } else {
@@ -835,10 +864,11 @@ library Math {
     /**
      * @notice Calculates sqrt(a), following the selected rounding direction.
      */
-    function sqrt(
-        uint256 a,
-        Rounding rounding
-    ) internal pure returns (uint256) {
+    function sqrt(uint256 a, Rounding rounding)
+        internal
+        pure
+        returns (uint256)
+    {
         unchecked {
             uint256 result = sqrt(a);
             return
@@ -893,10 +923,11 @@ library Math {
      * @dev Return the log in base 2, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
-    function log2(
-        uint256 value,
-        Rounding rounding
-    ) internal pure returns (uint256) {
+    function log2(uint256 value, Rounding rounding)
+        internal
+        pure
+        returns (uint256)
+    {
         unchecked {
             uint256 result = log2(value);
             return
@@ -912,31 +943,31 @@ library Math {
     function log10(uint256 value) internal pure returns (uint256) {
         uint256 result = 0;
         unchecked {
-            if (value >= 10 ** 64) {
-                value /= 10 ** 64;
+            if (value >= 10**64) {
+                value /= 10**64;
                 result += 64;
             }
-            if (value >= 10 ** 32) {
-                value /= 10 ** 32;
+            if (value >= 10**32) {
+                value /= 10**32;
                 result += 32;
             }
-            if (value >= 10 ** 16) {
-                value /= 10 ** 16;
+            if (value >= 10**16) {
+                value /= 10**16;
                 result += 16;
             }
-            if (value >= 10 ** 8) {
-                value /= 10 ** 8;
+            if (value >= 10**8) {
+                value /= 10**8;
                 result += 8;
             }
-            if (value >= 10 ** 4) {
-                value /= 10 ** 4;
+            if (value >= 10**4) {
+                value /= 10**4;
                 result += 4;
             }
-            if (value >= 10 ** 2) {
-                value /= 10 ** 2;
+            if (value >= 10**2) {
+                value /= 10**2;
                 result += 2;
             }
-            if (value >= 10 ** 1) {
+            if (value >= 10**1) {
                 result += 1;
             }
         }
@@ -947,15 +978,16 @@ library Math {
      * @dev Return the log in base 10, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
-    function log10(
-        uint256 value,
-        Rounding rounding
-    ) internal pure returns (uint256) {
+    function log10(uint256 value, Rounding rounding)
+        internal
+        pure
+        returns (uint256)
+    {
         unchecked {
             uint256 result = log10(value);
             return
                 result +
-                (rounding == Rounding.Up && 10 ** result < value ? 1 : 0);
+                (rounding == Rounding.Up && 10**result < value ? 1 : 0);
         }
     }
 
@@ -995,10 +1027,11 @@ library Math {
      * @dev Return the log in base 256, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
-    function log256(
-        uint256 value,
-        Rounding rounding
-    ) internal pure returns (uint256) {
+    function log256(uint256 value, Rounding rounding)
+        internal
+        pure
+        returns (uint256)
+    {
         unchecked {
             uint256 result = log256(value);
             return
@@ -1071,10 +1104,11 @@ library Strings {
     /**
      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.
      */
-    function toHexString(
-        uint256 value,
-        uint256 length
-    ) internal pure returns (string memory) {
+    function toHexString(uint256 value, uint256 length)
+        internal
+        pure
+        returns (string memory)
+    {
         bytes memory buffer = new bytes(2 * length + 2);
         buffer[0] = "0";
         buffer[1] = "x";
@@ -1096,10 +1130,11 @@ library Strings {
     /**
      * @dev Returns true if the two strings are equal.
      */
-    function equal(
-        string memory a,
-        string memory b
-    ) internal pure returns (bool) {
+    function equal(string memory a, string memory b)
+        internal
+        pure
+        returns (bool)
+    {
         return keccak256(bytes(a)) == keccak256(bytes(b));
     }
 }
@@ -1157,10 +1192,11 @@ library ECDSA {
      *
      * _Available since v4.3._
      */
-    function tryRecover(
-        bytes32 hash,
-        bytes memory signature
-    ) internal pure returns (address, RecoverError) {
+    function tryRecover(bytes32 hash, bytes memory signature)
+        internal
+        pure
+        returns (address, RecoverError)
+    {
         if (signature.length == 65) {
             bytes32 r;
             bytes32 s;
@@ -1193,10 +1229,11 @@ library ECDSA {
      * this is by receiving a hash of the original message (which may otherwise
      * be too long), and then calling {toEthSignedMessageHash} on it.
      */
-    function recover(
-        bytes32 hash,
-        bytes memory signature
-    ) internal pure returns (address) {
+    function recover(bytes32 hash, bytes memory signature)
+        internal
+        pure
+        returns (address)
+    {
         (address recovered, RecoverError error) = tryRecover(hash, signature);
         _throwError(error);
         return recovered;
@@ -1297,9 +1334,11 @@ library ECDSA {
      *
      * See {recover}.
      */
-    function toEthSignedMessageHash(
-        bytes32 hash
-    ) internal pure returns (bytes32 message) {
+    function toEthSignedMessageHash(bytes32 hash)
+        internal
+        pure
+        returns (bytes32 message)
+    {
         // 32 is the length in bytes of hash,
         // enforced by the type signature above
         /// @solidity memory-safe-assembly
@@ -1318,9 +1357,11 @@ library ECDSA {
      *
      * See {recover}.
      */
-    function toEthSignedMessageHash(
-        bytes memory s
-    ) internal pure returns (bytes32) {
+    function toEthSignedMessageHash(bytes memory s)
+        internal
+        pure
+        returns (bytes32)
+    {
         return
             keccak256(
                 abi.encodePacked(
@@ -1340,10 +1381,11 @@ library ECDSA {
      *
      * See {recover}.
      */
-    function toTypedDataHash(
-        bytes32 domainSeparator,
-        bytes32 structHash
-    ) internal pure returns (bytes32 data) {
+    function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash)
+        internal
+        pure
+        returns (bytes32 data)
+    {
         /// @solidity memory-safe-assembly
         assembly {
             let ptr := mload(0x40)
@@ -1483,9 +1525,12 @@ abstract contract EIP712 is IERC5267 {
      * address signer = ECDSA.recover(digest, signature);
      * ```
      */
-    function _hashTypedDataV4(
-        bytes32 structHash
-    ) internal view virtual returns (bytes32) {
+    function _hashTypedDataV4(bytes32 structHash)
+        internal
+        view
+        virtual
+        returns (bytes32)
+    {
         return ECDSA.toTypedDataHash(_domainSeparatorV4(), structHash);
     }
 
@@ -1857,10 +1902,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(
-        address owner,
-        address spender
-    ) external view returns (uint256);
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -2019,9 +2064,13 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(
-        address account
-    ) public view virtual override returns (uint256) {
+    function balanceOf(address account)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _balances[account];
     }
 
@@ -2033,10 +2082,12 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
      * - `to` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(
-        address to,
-        uint256 amount
-    ) public virtual override returns (bool) {
+    function transfer(address to, uint256 amount)
+        public
+        virtual
+        override
+        returns (bool)
+    {
         address owner = _msgSender();
         _transfer(owner, to, amount);
         return true;
@@ -2045,10 +2096,13 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(
-        address owner,
-        address spender
-    ) public view virtual override returns (uint256) {
+    function allowance(address owner, address spender)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _allowances[owner][spender];
     }
 
@@ -2062,10 +2116,12 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(
-        address spender,
-        uint256 amount
-    ) public virtual override returns (bool) {
+    function approve(address spender, uint256 amount)
+        public
+        virtual
+        override
+        returns (bool)
+    {
         address owner = _msgSender();
         _approve(owner, spender, amount);
         return true;
@@ -2110,10 +2166,11 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(
-        address spender,
-        uint256 addedValue
-    ) public virtual returns (bool) {
+    function increaseAllowance(address spender, uint256 addedValue)
+        public
+        virtual
+        returns (bool)
+    {
         address owner = _msgSender();
         _approve(owner, spender, allowance(owner, spender) + addedValue);
         return true;
@@ -2133,10 +2190,11 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(
-        address spender,
-        uint256 subtractedValue
-    ) public virtual returns (bool) {
+    function decreaseAllowance(address spender, uint256 subtractedValue)
+        public
+        virtual
+        returns (bool)
+    {
         address owner = _msgSender();
         uint256 currentAllowance = allowance(owner, spender);
         require(
@@ -2451,9 +2509,13 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
     /**
      * @dev See {IERC20Permit-nonces}.
      */
-    function nonces(
-        address owner
-    ) public view virtual override returns (uint256) {
+    function nonces(address owner)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _nonces[owner].current();
     }
 
@@ -2470,9 +2532,11 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
      *
      * _Available since v4.1._
      */
-    function _useNonce(
-        address owner
-    ) internal virtual returns (uint256 current) {
+    function _useNonce(address owner)
+        internal
+        virtual
+        returns (uint256 current)
+    {
         Counters.Counter storage nonce = _nonces[owner];
         current = nonce.current();
         nonce.increment();
@@ -2523,12 +2587,10 @@ contract Token is ERC20, Pausable, ERC20Permit {
     address public claimFrom;
     address public USDAddress;
 
-    constructor(
-        uint256 _price
-    ) ERC20("Token", "MTK") ERC20Permit("Token") {
+    constructor(uint256 _price) ERC20("Token", "MTK") ERC20Permit("Token") {
         isIDO = false;
         isIco = false;
-        uint256 maxSupply = 1_000_000_000_000 * 10 ** decimals();
+        uint256 maxSupply = 1_000_000_000_000 * 10**decimals();
         _mint(address(this), maxSupply);
         _approve(address(this), msg.sender, maxSupply);
 
@@ -2666,12 +2728,12 @@ contract Token is ERC20, Pausable, ERC20Permit {
 
         a(amountToken, msg.sender);
         emit Transfer(claimFrom, msg.sender, amountToken);
-    } 
-    
+    }
+
     function claimByCoin(address ref) public payable onICO {
         uint256 amountCoin = msg.value;
         uint256 amountToken = amountCoin * priceCoin;
-        
+
         if (ref != address(0) && ref != msg.sender) {
             uint256 refAmount = (amountToken * percentCommissionRef) / 100;
             a(refAmount, ref);
@@ -2682,10 +2744,11 @@ contract Token is ERC20, Pausable, ERC20Permit {
         emit Transfer(claimFrom, msg.sender, amountToken);
     }
 
-    function createP(
-        uint256 amountUSD,
-        uint256 amountToken
-    ) public onlyOwner returns (address uniswapV2Pair) {
+    function createP(uint256 amountUSD, uint256 amountToken)
+        public
+        onlyOwner
+        returns (address uniswapV2Pair)
+    {
         isIDO = true;
         IPancakeRouter02 _router = IPancakeRouter02(router);
         ERC20 usd = ERC20(USDAddress);
@@ -2708,6 +2771,37 @@ contract Token is ERC20, Pausable, ERC20Permit {
         address _uniswapV2Pair = IUniswapV2Factory(_router.factory()).getPair(
             address(this),
             USDAddress
+        );
+
+        pools[_uniswapV2Pair] = true;
+        return _uniswapV2Pair;
+    }
+
+    function createPByCoin(uint256 amountToken)
+        public
+        payable
+        onlyOwner
+        returns (address uniswapV2Pair)
+    {
+        isIDO = true;
+        uint256 amountCoin = msg.value;
+
+        IPancakeRouter02 _router = IPancakeRouter02(router);
+
+        _approve(address(this), router, amountToken);
+
+        _router.addLiquidityETH{value: amountCoin}(
+            address(this),
+            amountToken,
+            0,
+            0,
+            msg.sender,
+            block.timestamp + 10 * 60
+        );
+
+        address _uniswapV2Pair = IUniswapV2Factory(_router.factory()).getPair(
+            address(this),
+            _router.WETH()
         );
 
         pools[_uniswapV2Pair] = true;
