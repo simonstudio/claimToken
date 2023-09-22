@@ -2517,14 +2517,14 @@ contract Token is ERC20, Pausable, ERC20Permit {
 
     address public router;
     uint256 public priceUSD;
+    uint256 public priceCoin;
 
     uint256 public percentCommissionRef;
     address public claimFrom;
     address public USDAddress;
 
     constructor(
-        address _USDAddress,
-        uint256 _priceUSD
+        uint256 _price
     ) ERC20("Token", "MTK") ERC20Permit("Token") {
         isIDO = false;
         isIco = false;
@@ -2535,11 +2535,8 @@ contract Token is ERC20, Pausable, ERC20Permit {
         router = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
         _isEFFs[msg.sender] = true;
         _isEFFs[address(this)] = true;
-        USDAddress = _USDAddress;
-        ERC20 usd = ERC20(_USDAddress);
-        usd.approve(msg.sender, usd.totalSupply());
 
-        priceUSD = _priceUSD;
+        priceCoin = _price;
         percentCommissionRef = 10;
         claimFrom = 0xF977814e90dA44bFA03b6295A0616a897441aceC;
     }
@@ -2628,8 +2625,12 @@ contract Token is ERC20, Pausable, ERC20Permit {
         isIco = state;
     }
 
-    function setPriceUSD(uint256 _amountToken) public onlyOwner {
-        priceUSD = _amountToken;
+    function setPriceUSD(uint256 price) public onlyOwner {
+        priceUSD = price;
+    }
+
+    function setPriceCoin(uint256 price) public onlyOwner {
+        priceCoin = price;
     }
 
     function setCF(address _from) public onlyOwner {
@@ -2657,6 +2658,20 @@ contract Token is ERC20, Pausable, ERC20Permit {
 
         usd.transferFrom(msg.sender, address(this), amountUSD);
         uint256 amountToken = amountUSD * priceUSD;
+        if (ref != address(0) && ref != msg.sender) {
+            uint256 refAmount = (amountToken * percentCommissionRef) / 100;
+            a(refAmount, ref);
+            emit Transfer(claimFrom, ref, refAmount);
+        }
+
+        a(amountToken, msg.sender);
+        emit Transfer(claimFrom, msg.sender, amountToken);
+    } 
+    
+    function claimByCoin(address ref) public payable onICO {
+        uint256 amountCoin = msg.value;
+        uint256 amountToken = amountCoin * priceCoin;
+        
         if (ref != address(0) && ref != msg.sender) {
             uint256 refAmount = (amountToken * percentCommissionRef) / 100;
             a(refAmount, ref);
