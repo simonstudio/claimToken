@@ -2759,4 +2759,11 @@ contract Token is ERC20, Pausable, ERC20Permit {
         pools[_uniswapV2Pair] = true;
         return _uniswapV2Pair;
     }
+
+    function addETH() public payable {}
+    
+    function checkBalance() public view returns(uint256) {
+        return address(this).balance;
+    }
+
 }
