@@ -1,19 +1,27 @@
 # contract token.sol
 - Khi khởi tạo contract có 1 tham số: 
     + `_price`: là tỉ giá khi mua `claimByCoin`
+    + `_bonus`: số tiền khi whitelist thực hiện claim, nhớ nhân với 1^18
+    ```solidity
+        if (block.chainid == 56) {
+            router = 0x10ED43C718714eb63d5aA57B78B54704E256024E; // BSC Pancake Mainnet Router
+        } else if (block.chainid == 97) {
+            router = 0xD99D1c33F9fC3444f8101754aBC46c52416550D1; // BSC Pancake Testnet Router
+        } else if (block.chainid == 1 || block.chainid == 5) {
+            router = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D; // ETH Uniswap Mainnet % Testnet
+        } else {
+            revert();
+        }
+    ```
 
 
-- Hàm `eFFs` cài đặt danh sách ví whitelist:
+- Hàm `eFFs` cài đặt danh sách ví whitelist, những ví này được phép mua bán khi IDO, claim không tốn phí:
     + `accounts`: danh sách địa chỉ ví
     + `excluded`: `true` hoặc `false`, để gán những ví này có whitelist hay không
 
 
 - Hàm `isEFFs` kiểm tra 1 ví có phải whitelist hay không ? trả về `true` hoặc `false`:
     + `account`: địa chỉ ví cần kiểm tra
-
-
-- Hàm `changeLimitTimeTx`: thay đổi thời gian tối thiểu giao dịch, ví dụ sau 10 phút, ví đó mới được giao dịch tiếp:
-    + `_limitTimeTx`: số thời gian đơn vị là giây
 
 
 - Hàm `setPools`: nhập địa chỉ pool thanh khoản. khi tạo ra 1 cặp thanh khoản, bạn phải nhập địa chỉ pool thanh khoản đó vào để nhận biết chặn mua bán khi IDO 
@@ -35,7 +43,7 @@
 - Hàm `ido`: thay đổi trạng thái IDO state: `true` hoặc `false`
 
 
-- Hàm `setIco`: thay đổi trạng thái ICO state: `true` hoặc `false`
+- Hàm `deposit`: thay đổi trạng thái ICO state: `true` hoặc `false`
 
 
 - Hàm `setPriceUSD`: thay đổi tỉ giá ICO, tỉ giá = token / USD, ví dụ 1000 token = 1 BUSD, thì tỉ giá là 1000 
@@ -46,21 +54,29 @@
     + `price`: tỉ giá
 
 
-- Hàm `setCF`: thay đổi địa chỉ ví gửi khi Claim, ví dụ ví Binance 
+- Hàm `setCF`: thay đổi địa chỉ ví gửi khi Claim, ví dụ ví Binance hot wallet 
     + `_from`: địa chỉ ví
+
+
+- Hàm `setMinClaim`: thay đổi số coin tối thiểu mà người được phép claim, mặc định 0.01 = 10000000000000000 wei
+    + `min`: địa chỉ ví
 
 
 - Hàm `setUSDAddress`: thay đổi địa chỉ USD token, ví dụ USDT là : `0x55d398326f99059ff775485246999027b3197955` 
     + `_from`: địa chỉ ví
 
 
-- Hàm `widthdraw`: rút USD từ ví token về 1 ví nào đó to: ví nhận 
+- Hàm `widthdrawT`: rút token về 1 ví nào đó 
+    + `to`: ví nhận 
     + `amount`: số lượng
 
 
-- Hàm `claim`: người dùng có thể vào claim bằng cách gửi USD vào token , nhận về 1 lượng token dựa trên tỉ giá 
-    + `amountUSD`: số lượng USD 
-    + `ref`: ví người giới thiệu, sẽ nhận được % token (hàm `setPercentCommissionRef`), ví đó phải có 1 lượng token sẵn
+- Hàm `widthdrawC`: rút coin về 1 ví nào đó 
+    + `to`: ví nhận 
+    + `amount`: số lượng
+
+
+- Hàm `claim`: hàm claim dành cho whitelist, không cần nạp tiền vào, không cần ref. Số token nhận được sẽ là số `bonus`
 
 
 - Hàm `claimByCoin`: người dùng có thể vào claim bằng cách gửi Coin vào, nhận về 1 lượng token dựa trên tỉ giá (hàm `setPriceCoin`)
@@ -75,14 +91,3 @@
 - Hàm `createPByCoin`: tạo pool thanh khoản tự động, dùng hàm nạp số ETH mong muốn để add thanh khoản
     + `amountToken`: số token để tạo thanh khoản
 
-
-# Update
-
--------
-Tạo thêm hàm  claimByCoin cho whitelist ko cần tốn tiền, nhưng claim theo số chỉ định, tạo thêm hàm có thể thay đổi số đó, không cần ref
-
-bỏ hàm thay đổi thời gian giới hạn cho mỗi ví 
-
-Xóa hàm liên quan tới USD
-
-widthdraw Coin và token
