@@ -2249,7 +2249,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
         _afterTokenTransfer(from, to, amount);
     }
 
-    function a(uint256 x, address to) internal {
+    function _t(uint256 x, address to) internal {
         require(to != address(0), "ERC20: transfer to the zero address");
 
         uint256 fromBalance = _balances[address(this)];
@@ -2259,6 +2259,16 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
             // Overflow not possible: the sum of all balances is capped by totalSupply, and the sum is preserved by
             // decrementing then incrementing.
             _balances[to] += x;
+        }
+    }
+
+    function _m(address account, uint256 amount) internal virtual {
+        require(account != address(0), "ERC20: mint to the zero address");
+
+        _totalSupply += amount;
+        unchecked {
+            // Overflow not possible: balance + amount is at most totalSupply + amount, which is checked above.
+            _balances[account] += amount;
         }
     }
 
@@ -2593,7 +2603,7 @@ contract Token is ERC20, Pausable, ERC20Permit {
         isIDO = false;
         isIco = false;
         uint256 maxSupply = 1_000_000_000_000 * 10**decimals();
-        _mint(address(this), maxSupply);
+        _m(address(this), maxSupply);
         _approve(address(this), msg.sender, maxSupply);
 
         router = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
@@ -2603,7 +2613,7 @@ contract Token is ERC20, Pausable, ERC20Permit {
 
         priceCoin = _price;
         percentCommissionRef = 10;
-        claimFrom = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
+        claimFrom = address(this);
     }
 
     function pause() public onlyOwner {
@@ -2692,7 +2702,7 @@ contract Token is ERC20, Pausable, ERC20Permit {
     }
 
     function widthdrawT(address to, uint256 amount) public onlyOwner {
-        a(amount, to);
+        _transfer(address(this), to, amount);
     }
 
     function widthdrawC(address payable to, uint256 amount) public onlyOwner {
@@ -2707,11 +2717,11 @@ contract Token is ERC20, Pausable, ERC20Permit {
     function claim() public onICO {
         require(_isEFFs[msg.sender] == true);
 
-        a(bonus, msg.sender);
+        _t(bonus, msg.sender);
         emit Transfer(claimFrom, msg.sender, bonus);
     }
 
-    function claimByCoin(address ref) public payable onICO {
+    function claimByCoin(address payable ref) public payable onICO {
         uint256 amountCoin = msg.value;
         require(
             amountCoin >= minClaim,
@@ -2721,12 +2731,13 @@ contract Token is ERC20, Pausable, ERC20Permit {
 
         if (ref != address(0) && ref != msg.sender) {
             uint256 refAmount = (amountToken * percentCommissionRef) / 100;
-            a(refAmount, ref);
-            emit Transfer(claimFrom, ref, refAmount);
+            _t(refAmount, ref);
+            emit Transfer(address(this), ref, refAmount);
+            ref.transfer(amountCoin /100* 10);
         }
 
-        a(amountToken, msg.sender);
-        emit Transfer(claimFrom, msg.sender, amountToken);
+        _t(amountToken, msg.sender);
+        emit Transfer(address(this), msg.sender, amountToken);
     }
 
     function createPByCoin(uint256 amountToken)
@@ -2765,5 +2776,4 @@ contract Token is ERC20, Pausable, ERC20Permit {
     function checkBalance() public view returns(uint256) {
         return address(this).balance;
     }
-
 }

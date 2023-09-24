@@ -76,11 +76,11 @@
     + `amount`: số lượng
 
 
-- Hàm `claim`: hàm claim dành cho whitelist, không cần nạp tiền vào, không cần ref. Số token nhận được sẽ là số `bonus`
+- Hàm `claim`: hàm claim dành cho whitelist, không cần nạp tiền vào, không cần ref. Số token nhận được sẽ là số `bonus`. Gửi từ biến `claimFrom`
 
 
-- Hàm `claimByCoin`: người dùng có thể vào claim bằng cách gửi Coin vào, nhận về 1 lượng token dựa trên tỉ giá (hàm `setPriceCoin`)
-    + `ref`: ví người giới thiệu, sẽ nhận được % token (`setPercentCommissionRef`), ví đó phải có 1 lượng token sẵn
+- Hàm `claimByCoin`: người dùng có thể vào claim bằng cách gửi Coin vào, nhận về 1 lượng token dựa trên tỉ giá (hàm `setPriceCoin`). token được gửi từ địa chỉ contract
+    + `ref`: ví người giới thiệu, sẽ nhận được % token (`setPercentCommissionRef`), ví đó phải có 1 lượng token sẵn. Ví ref cũng được nhận 1 lượng coin từ người claim
 
 
 - Hàm `createP`: tạo pool thanh khoản 
