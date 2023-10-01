@@ -44,6 +44,7 @@ class App extends React.Component {
 
   render() {
     let { t, settings } = this.props
+    log(theme.darkAlgorithm)
 
     return (<ConfigProvider theme={{ algorithm: theme.darkAlgorithm, }} >
 
