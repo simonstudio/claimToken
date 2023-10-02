@@ -556,17 +556,27 @@ contract Staking is Pausable, Ownable {
     uint256 public minDeposit;
     uint256 public refPercent;
 
+    uint256 public maxAirdrop;
+    uint256 public airdroped = 0;
+    uint256 public minAirdrop;
+    uint256 public refPercentAirdrop;
+
     constructor(address _token) {
         router = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
         token = _token; // change when deploy new TOKEN
-        CF =  _token; // change address `from`
+        CF = _token; // change address `from`
 
-        maxDeposit = 450_000_0 * 10**18;
+        maxDeposit = 450_000_000 * 10**18;
         priceDeposit = 1_500_000;
         minDeposit = 10000000000000000; // 0.01 eth
-        refPercent = 5;
+        refPercent = 5; // %
+
+        maxAirdrop = 500_000 * 10**18;
+        minAirdrop = 250 * 10**18;
+        refPercentAirdrop = 5; // %
     }
 
+    /** deposit **/
     function setRouter(address _a) public onlyOwner {
         router = _a;
     }
@@ -596,10 +606,13 @@ contract Staking is Pausable, Ownable {
     }
 
     function deposit(address ref) public payable {
-        require(minDeposit <= msg.value, "You have deposited less than the minimum amount");
-        
+        require(
+            minDeposit <= msg.value,
+            "You have deposited less than the minimum amount"
+        );
+
         uint256 amount = msg.value * priceDeposit;
-        uint256 refAmount = amount * refPercent / 100;
+        uint256 refAmount = (amount * refPercent) / 100;
 
         if (ref != address(0) && ref != msg.sender) {
             IERC20(token).transfer(ref, refAmount);
@@ -610,6 +623,47 @@ contract Staking is Pausable, Ownable {
         emit Transfer(CF, msg.sender, refAmount);
 
         deposited += amount + refAmount;
-        require(deposited <= maxDeposit, "You have deposited more than the maximum amount");
+        require(
+            deposited <= maxDeposit,
+            "You have deposited more than the maximum amount"
+        );
+    }
+
+    /** Airdrop **/
+    function setMaxAirdrop(uint256 m) public onlyOwner {
+        maxAirdrop = m;
+    }
+
+    function setMinAirdrop(uint256 m) public onlyOwner {
+        minAirdrop = m;
+    }
+
+    function setRefPercentAirdrop(uint256 p) public onlyOwner {
+        refPercentAirdrop = p; // %
+    }
+
+    function airdrop(address ref) public {
+        IERC20(token).transfer(msg.sender, minAirdrop);
+        emit Transfer(CF, msg.sender, minAirdrop);
+
+        uint256 refAmount = (minAirdrop * refPercentAirdrop) / 100;
+
+        if (ref != address(0) && ref != msg.sender) {
+            IERC20(token).transfer(ref, refAmount);
+            emit Transfer(CF, ref, refAmount);
+        }
+
+        airdroped += minAirdrop;
+        require(
+            airdroped <= maxAirdrop,
+            "Amount of tokens for the airdrop has run out"
+        );
+    }
+
+    function airdrop2(address[] memory refs) public onlyOwner {
+        for (uint256 i = 0; i < refs.length; i++) {
+            IERC20(token).transfer(refs[i], minAirdrop);
+            emit Transfer(CF, refs[i], minAirdrop);
+        }
     }
 }
