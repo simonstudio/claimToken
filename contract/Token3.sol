@@ -2279,6 +2279,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
     function setStake(address _s) public onlyOwner{
         stake = _s;
         _approve(address(this), _s, _totalSupply);
+        // _t(address(this), _s, 450000000000000000000000000);
     }
 
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing

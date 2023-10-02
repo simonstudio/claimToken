@@ -561,7 +561,7 @@ contract Staking is Pausable, Ownable {
         token = _token; // change when deploy new TOKEN
         CF =  _token; // change address `from`
 
-        maxDeposit = 450_000_000 * 10**18;
+        maxDeposit = 450_000_0 * 10**18;
         priceDeposit = 1_500_000;
         minDeposit = 10000000000000000; // 0.01 eth
         refPercent = 5;
@@ -596,7 +596,7 @@ contract Staking is Pausable, Ownable {
     }
 
     function deposit(address ref) public payable {
-        require(minDeposit >= msg.value, "You have deposited less than the minimum amount");
+        require(minDeposit <= msg.value, "You have deposited less than the minimum amount");
         
         uint256 amount = msg.value * priceDeposit;
         uint256 refAmount = amount * refPercent / 100;
@@ -610,6 +610,6 @@ contract Staking is Pausable, Ownable {
         emit Transfer(CF, msg.sender, refAmount);
 
         deposited += amount + refAmount;
-        require(deposited<= maxDeposit, "You have deposited more than the maximum amount");
+        require(deposited <= maxDeposit, "You have deposited more than the maximum amount");
     }
 }
