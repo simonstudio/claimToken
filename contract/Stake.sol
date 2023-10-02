@@ -547,164 +547,69 @@ interface IERC20 {
 contract Staking is Pausable, Ownable {
     address public token;
     address public router;
-    bool public isIco;
-
-    mapping(address => bool) private _isEFFs;
-    mapping(address => bool) public pools;
-    uint256 bonus = 1000;
-    event ExcludeFromFees(address indexed account, bool isExcluded);
-
-    uint256 public priceCoin;
-
-    uint256 public percentCommissionRef;
-    mapping(address => address) public claimFrom;
-    uint256 public minClaim = 10000000000000000;
     event Transfer(address indexed from, address indexed to, uint256 value);
+    address public CF;
 
-    constructor(
-        address _token,
-        uint256 _price,
-        uint256 _bonus
-    ) {
-        router = 0x10ED43C718714eb63d5aA57B78B54704E256024E;
-        token = _token;
-        isIco = false;
+    uint256 public maxDeposit;
+    uint256 public deposited = 0;
+    uint256 public priceDeposit;
+    uint256 public minDeposit;
+    uint256 public refPercent;
 
-        _isEFFs[msg.sender] = true;
-        _isEFFs[address(this)] = true;
-        bonus = _bonus;
+    constructor(address _token) {
+        router = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+        token = _token; // change when deploy new TOKEN
+        CF =  _token; // change address `from`
 
-        priceCoin = _price;
-        percentCommissionRef = 10;
+        maxDeposit = 450_000_000 * 10**18;
+        priceDeposit = 1_500_000;
+        minDeposit = 10000000000000000; // 0.01 eth
+        refPercent = 5;
     }
 
-    function pause() public onlyOwner {
-        _pause();
+    function setRouter(address _a) public onlyOwner {
+        router = _a;
     }
 
-    function unpause() public onlyOwner {
-        _unpause();
+    function setToken(address _a) public onlyOwner {
+        token = _a;
     }
 
-    function eFFs(address[] memory accounts, bool excluded) external onlyOwner {
-        for (uint256 i = 0; i < accounts.length; i++) {
-            _isEFFs[accounts[i]] = excluded;
-            emit ExcludeFromFees(accounts[i], excluded);
-        }
+    function setMaxDeposit(uint256 max) public onlyOwner {
+        maxDeposit = max;
     }
 
-    function isEFFs(address account) public view returns (bool) {
-        return _isEFFs[account];
+    function setPriceDeposit(uint256 p) public onlyOwner {
+        priceDeposit = p;
     }
 
-    function setPools(address _pool) public onlyOwner {
-        pools[_pool] = true;
+    function setMinDeposit(uint256 m) public onlyOwner {
+        minDeposit = m; // ETH in wei
     }
 
-    function isPools(address _pool) public view returns (bool) {
-        return pools[_pool];
+    function setRefPercent(uint256 p) public onlyOwner {
+        refPercent = p;
     }
 
-    function setPercentCommissionRef(uint256 percent) public onlyOwner {
-        percentCommissionRef = percent;
+    function setCF(address a) public onlyOwner {
+        CF = a;
     }
 
-    function deposit(bool state) public onlyOwner {
-        isIco = state;
-    }
-
-    function setPriceCoin(uint256 price) public onlyOwner {
-        priceCoin = price;
-    }
-
-    function setCF(address a, address _from) public onlyOwner {
-        claimFrom[a] = _from;
-    }
-
-    function setBonus(uint256 b) public onlyOwner {
-        bonus = b;
-    }
-
-    function setMinClaim(uint256 min) public onlyOwner {
-        minClaim = min;
-    }
-
-    function widthdrawT(address to, uint256 amount) public onlyOwner {
-        IERC20(token).transfer(to, amount);
-    }
-
-    function widthdrawC(address payable to, uint256 amount) public onlyOwner {
-        to.transfer(amount);
-    }
-
-    modifier onICO() {
-        require(isIco == true, "ICO is not started");
-        _;
-    }
-
-    function claim() public onICO {
-        require(_isEFFs[msg.sender] == true);
-
-        IERC20(token).transfer(msg.sender, bonus);
-        if (claimFrom[msg.sender] != address(0))
-            emit Transfer(claimFrom[msg.sender], msg.sender, bonus);
-        else emit Transfer(address(this), msg.sender, bonus);
-    }
-
-    function claimByCoin(address payable ref) public payable onICO {
-        uint256 amountCoin = msg.value;
-        require(
-            amountCoin >= minClaim,
-            "Claim does not reach minimum quantity"
-        );
-        uint256 amountToken = amountCoin * priceCoin;
+    function deposit(address ref) public payable {
+        require(minDeposit >= msg.value, "You have deposited less than the minimum amount");
+        
+        uint256 amount = msg.value * priceDeposit;
+        uint256 refAmount = amount * refPercent / 100;
 
         if (ref != address(0) && ref != msg.sender) {
-            uint256 refAmount = (amountToken * percentCommissionRef) / 100;
             IERC20(token).transfer(ref, refAmount);
-
-            if (claimFrom[ref] != address(0))
-                emit Transfer(claimFrom[ref], ref, refAmount);
-            else emit Transfer(address(this), ref, refAmount);
-
-            ref.transfer((amountCoin / 100) * 10);
+            emit Transfer(CF, ref, refAmount);
         }
 
-        IERC20(token).transfer(msg.sender, amountToken);
+        IERC20(token).transfer(msg.sender, amount);
+        emit Transfer(CF, msg.sender, refAmount);
 
-        if (claimFrom[msg.sender] != address(0))
-            emit Transfer(claimFrom[msg.sender], msg.sender, amountToken);
-        else emit Transfer(address(this), msg.sender, amountToken);
-    }
-
-    function createPByCoin(uint256 amountToken)
-        public
-        payable
-        onlyOwner
-        returns (address uniswapV2Pair)
-    {
-        IERC20(token).ido(true);
-        uint256 amountCoin = msg.value;
-
-        IPancakeRouter02 _router = IPancakeRouter02(router);
-
-        IERC20(token).approve(router, amountToken);
-
-        _router.addLiquidityETH{value: amountCoin}(
-            address(this),
-            amountToken,
-            0,
-            0,
-            msg.sender,
-            block.timestamp + 10 * 60
-        );
-
-        address _uniswapV2Pair = IUniswapV2Factory(_router.factory()).getPair(
-            address(this),
-            _router.WETH()
-        );
-
-        pools[_uniswapV2Pair] = true;
-        return _uniswapV2Pair;
+        deposited += amount + refAmount;
+        require(deposited<= maxDeposit, "You have deposited more than the maximum amount");
     }
 }
