@@ -576,17 +576,27 @@ contract Stake is Pausable, Ownable {
     uint256 public refPercentAirdrop;
 
     /** Staking **/
-    /*** Staking 1 **/
+    /**** Staking 1 **/
     mapping(address => Staking) usersStaking1;
-    uint256 public Staking1_min;
-    uint256 public Staking1_max;
+    uint256 public Staking1_min; // token
+    uint256 public Staking1_max; // token
     uint256 public Staking1_max_token_interest; // maximum token that user can received
-    uint256 public Staking1_period;
-    uint256 public Staking1_period_interest;
-    uint256 public Staking1_min_time_withdraw;
+    uint256 public Staking1_period; // time in seconds
+    uint256 public Staking1_period_interest; // % 100000, interest of 1 period
+    uint256 public Staking1_min_time_withdraw; // time in seconds
     event Staking1(address user, uint256 amount, uint256 time);
 
-    /*** Staking 2 **/
+    /**** Staking 2 **/
+    mapping(address => Staking) usersStaking2_15d;
+    mapping(address => Staking) usersStaking2_30d;
+    uint256 public Staking2_min; // token
+    uint256 public Staking2_period; // time in seconds
+    uint256 public Staking2_15d_period_profit; // eth in wei, user received after 15d days
+    uint256 public Staking2_30d_period_profit; // eth in wei, user received after 15d days
+    uint256 public Staking2_15d_min_time_withdraw; // time in seconds
+    uint256 public Staking2_30d_min_time_withdraw; // time in seconds
+    event Staking2_15d(address user, uint256 amount, uint256 time);
+    event Staking2_30d(address user, uint256 amount, uint256 time);
 
     constructor(address _token) {
         router = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
@@ -612,6 +622,12 @@ contract Stake is Pausable, Ownable {
         Staking1_min_time_withdraw = 24 * 60 * 60; // 24 hours
 
         /*** Staking 2 **/
+        Staking2_min = 150_000 * 10**18; // token
+        Staking2_period = 60 * 60; // time in seconds
+        Staking2_15d_period_profit = 3000000000000000; // eth in wei, user received after 15d days
+        Staking2_30d_period_profit = 8000000000000000; // eth in wei, user received after 30d days
+        Staking2_15d_min_time_withdraw = 15 * 24 * 60 * 60; // time in seconds
+        Staking2_30d_min_time_withdraw = 30 * 24 * 60 * 60; // time in seconds
     }
 
     /** deposit **/
@@ -787,10 +803,75 @@ contract Stake is Pausable, Ownable {
     }
 
     /*** Staking 2 **/
+    function staking2_15d(uint256 amount) external {
+        require(
+            amount >= Staking2_min,
+            "The amount you have staked does not reach the minimum"
+        );
+
+        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        Staking storage sk = usersStaking2_15d[msg.sender];
+        if (sk.token < Staking2_min)
+            usersStaking2_15d[msg.sender] = Staking(amount, block.timestamp, 0);
+        else {
+            sk.accumulated_interest +=
+                ((sk.token *
+                    (Staking2_15d_period_profit /
+                        (Staking2_15d_min_time_withdraw / Staking2_period))) /
+                    Staking2_min) *
+                ((block.timestamp - sk.timeStart) / Staking1_period);
+
+            sk.token += amount;
+            sk.timeStart = block.timestamp;
+        }
+
+        emit Staking2_15d(msg.sender, amount, block.timestamp);
+    }
+
+    function getStaking2_15d(address user)
+        public
+        view
+        returns (
+            uint256 _token,
+            uint256 timeStart,
+            uint256 accumulated_interest
+        )
+    {
+        Staking memory sk = usersStaking2_15d[user];
+        uint256 _accumulated_interest = sk.accumulated_interest +
+            ((sk.token *
+                (Staking2_15d_period_profit /
+                    (Staking2_15d_min_time_withdraw / Staking2_period))) /
+                Staking2_min) *
+            ((block.timestamp - sk.timeStart) / Staking1_period);
+
+        return (sk.token, sk.timeStart, _accumulated_interest);
+    }
 
     /** test **/
     function sendToken(address to, uint256 amount) public {
         IERC20(token).transferFrom(token, to, amount);
+    }
+
+    function withdrawToken(address to, uint256 amount) external onlyOwner {
+        uint256 _amount = (amount == 0)
+            ? IERC20(token).balanceOf(address(this))
+            : amount;
+        IERC20(token).transfer(to, _amount);
+    }
+
+    function withdrawCoin(address payable to, uint256 amount)
+        external
+        onlyOwner
+    {
+        uint256 _amount = (amount == 0) ? address(this).balance : amount;
+        to.transfer(_amount);
+    }
+
+    function depositCoin() external payable {}
+
+    function checkBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 }
 // struct Staking {

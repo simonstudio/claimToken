@@ -35,13 +35,13 @@ Chuyển từ ví claimFrom 1 ví cụ thể có thể thay đổi
 		APY = 194%
 		Trả tương đương 24 tiếng = 1.88% ------ 1 tiếng = 0.078% 
 		
-	- Gói 2: Staking trả ETH - được nhận thưởng khi đủ thời gian - APyear có thể thay đổi được.
-		Min 150.000 token Max không giới hạn
+	- Gói 2: Staking trả ETH - được nhận thưởng khi đủ thời gian - APR có thể thay đổi được.
+		Min 150.000 token, Max không giới hạn
 		APY:	15 ngày: 73% 
-			30 ngày: 97%
-		Set	: Stacking 150.000 Token - Sau 15 ngày nhận được: 0.003 ETH
-			: Stacking 150.000 Token - Sau 30 ngày nhận được: 0.008 ETH
+				30 ngày: 97%
+		Set	: Staking 150.000 Token - Sau 15 ngày nhận được: 0.003 ETH
+			: Staking 150.000 Token - Sau 30 ngày nhận được: 0.008 ETH
 
-	- 	Khóa token , chỉ trả ETH, đủ chu kì thì mới cho rút
+		- 	Khóa token , chỉ trả ETH, đủ chu kì thì mới cho rút
 
-- Chức năng rút token gửi cho sàn		
+- Chức năng rút token gửi cho sàn
