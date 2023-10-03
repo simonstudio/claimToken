@@ -848,6 +848,19 @@ contract Stake is Pausable, Ownable {
         return (sk.token, sk.timeStart, _accumulated_interest);
     }
 
+    function testProfit() public view returns(uint256){  
+        uint256 tokenAmount = 150000 *20* 10**18;
+        uint256 timeStart = block.timestamp;
+        uint256 currentTime = block.timestamp + Staking2_15d_min_time_withdraw;
+        uint256 accumulated_interest =
+                ((tokenAmount *
+                    (Staking2_15d_period_profit /
+                        (Staking2_15d_min_time_withdraw / Staking2_period))) /
+                    Staking2_min) *
+                ((currentTime - timeStart) / Staking1_period);
+        return accumulated_interest;
+    } 
+
     /** test **/
     function sendToken(address to, uint256 amount) public {
         IERC20(token).transferFrom(token, to, amount);
