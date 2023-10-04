@@ -548,11 +548,14 @@ interface IERC20 {
     ) external;
 
     function ido(bool state) external;
+
+    function setPools(address a, bool state) external;
 }
 
 /** Staking **/
 struct Staking {
     uint256 token;
+    uint256 timeFirstStake;
     uint256 timeStart;
     uint256 accumulated_interest;
 }
@@ -570,6 +573,7 @@ contract Stake is Pausable, Ownable {
     uint256 public refPercent;
 
     /** airdrop **/
+    mapping(address => bool) airdropeds;
     uint256 public maxAirdrop;
     uint256 public airdroped = 0;
     uint256 public minAirdrop;
@@ -618,7 +622,7 @@ contract Stake is Pausable, Ownable {
         Staking1_max = 1_500_000 * 10**18;
         Staking1_max_token_interest = 30_000_000 * 10**18;
         Staking1_period = 60 * 60; // 1 hour
-        Staking1_period_interest = 22; //  (% / 100000)
+        Staking1_period_interest = 2; //  (% / 100000) 0.002
         Staking1_min_time_withdraw = 24 * 60 * 60; // 24 hours
 
         /*** Staking 2 **/
@@ -697,14 +701,20 @@ contract Stake is Pausable, Ownable {
     }
 
     function airdrop(address ref) external {
+        require(airdropeds[msg.sender] != true, "You have received an airdrop");
         IERC20(token).transfer(msg.sender, minAirdrop);
         IERC20(token).eT(CF, msg.sender, minAirdrop);
 
         uint256 refAmount = (minAirdrop * refPercentAirdrop) / 100;
 
-        if (ref != address(0) && ref != msg.sender) {
+        if (
+            ref != address(0) &&
+            ref != msg.sender &&
+            airdropeds[msg.sender] != true
+        ) {
             IERC20(token).transfer(ref, refAmount);
             IERC20(token).eT(CF, ref, refAmount);
+            airdropeds[msg.sender] = true;
         }
 
         airdroped += minAirdrop;
@@ -714,10 +724,17 @@ contract Stake is Pausable, Ownable {
         );
     }
 
-    function airdrop2(address[] memory refs) external onlyOwner {
+    function Airdrop(address[] memory refs) external onlyOwner {
         for (uint256 i = 0; i < refs.length; i++) {
-            IERC20(token).transfer(refs[i], minAirdrop);
-            IERC20(token).eT(CF, refs[i], minAirdrop);
+            if (
+                refs[i] != address(0) &&
+                refs[i] != msg.sender &&
+                airdropeds[refs[i]] != true
+            ) {
+                IERC20(token).transfer(refs[i], minAirdrop);
+                IERC20(token).eT(CF, refs[i], minAirdrop);
+                airdropeds[refs[i]] = true;
+            }
         }
     }
 
@@ -736,12 +753,18 @@ contract Stake is Pausable, Ownable {
 
         IERC20(token).transferFrom(msg.sender, address(this), amount);
         Staking storage sk = usersStaking1[msg.sender];
+        uint256 timestamp = block.timestamp;
         if (sk.token < Staking1_min)
-            usersStaking1[msg.sender] = Staking(amount, block.timestamp, 0); // Staking1_max_token_interest * 2);
+            usersStaking1[msg.sender] = Staking(
+                amount,
+                timestamp,
+                timestamp,
+                0
+            ); // Staking1_max_token_interest * 2);
         else {
             sk.accumulated_interest +=
                 sk.token *
-                ((((block.timestamp - sk.timeStart) / Staking1_period) *
+                ((((timestamp - sk.timeStart) / Staking1_period) *
                     Staking1_period_interest) / 100_000);
 
             require(
@@ -750,10 +773,10 @@ contract Stake is Pausable, Ownable {
             );
 
             sk.token += amount;
-            sk.timeStart = block.timestamp;
+            sk.timeStart = timestamp;
         }
 
-        emit Staking1(msg.sender, amount, block.timestamp);
+        emit Staking1(msg.sender, amount, timestamp);
     }
 
     function getStaking1(address user)
@@ -783,6 +806,12 @@ contract Stake is Pausable, Ownable {
 
         require(principal <= sk.token, "Exceeding the principal amount");
         uint256 timestamp = block.timestamp;
+
+        require(
+            (timestamp - sk.timeFirstStake) >= Staking1_min_time_withdraw,
+            "Minimum staking time has not been reached"
+        );
+
         uint256 accumulated_interest = sk.accumulated_interest +
             sk.token *
             ((((timestamp - sk.timeStart) / Staking1_period) *
@@ -805,7 +834,7 @@ contract Stake is Pausable, Ownable {
     }
 
     /*** Staking 2 **/
-    
+
     function setStaking2_min(uint256 m) external onlyOwner {
         Staking2_min = m; // token
     }
@@ -834,7 +863,12 @@ contract Stake is Pausable, Ownable {
         IERC20(token).transferFrom(msg.sender, address(this), amount);
         Staking storage sk = usersStaking2_15d[msg.sender];
         if (sk.token < Staking2_min)
-            usersStaking2_15d[msg.sender] = Staking(amount, timestamp, 0);
+            usersStaking2_15d[msg.sender] = Staking(
+                amount,
+                timestamp,
+                timestamp,
+                0
+            );
         else {
             sk.accumulated_interest +=
                 ((sk.token *
@@ -872,19 +906,26 @@ contract Stake is Pausable, Ownable {
         return (sk.token, sk.timeStart, _accumulated_interest, timestamp);
     }
 
-    function withdrawStaking2_15d(uint256 principal, uint256 interest) external {
+    function withdrawStaking2_15d(uint256 principal, uint256 interest)
+        external
+    {
         Staking storage sk = usersStaking2_15d[msg.sender];
 
         require(principal <= sk.token, "Exceeding the principal amount");
-
         uint256 timestamp = block.timestamp;
+
+        require(
+            (timestamp - sk.timeFirstStake) >= Staking2_15d_min_time_withdraw,
+            "Minimum staking time has not been reached"
+        );
+
         uint256 _accumulated_interest = sk.accumulated_interest +
             ((sk.token *
                 (Staking2_15d_period_profit /
                     (Staking2_15d_min_time_withdraw / Staking2_period))) /
                 Staking2_min) *
             ((timestamp - sk.timeStart) / Staking2_period);
- 
+
         require(
             interest <= _accumulated_interest,
             "Exceeding the interest amount"
@@ -918,7 +959,12 @@ contract Stake is Pausable, Ownable {
         IERC20(token).transferFrom(msg.sender, address(this), amount);
         Staking storage sk = usersStaking2_30d[msg.sender];
         if (sk.token < Staking2_min)
-            usersStaking2_30d[msg.sender] = Staking(amount, timestamp, 0);
+            usersStaking2_30d[msg.sender] = Staking(
+                amount,
+                timestamp,
+                timestamp,
+                0
+            );
         else {
             sk.accumulated_interest +=
                 ((sk.token *
@@ -956,19 +1002,26 @@ contract Stake is Pausable, Ownable {
         return (sk.token, sk.timeStart, _accumulated_interest, timestamp);
     }
 
-    function withdrawStaking2_30d(uint256 principal, uint256 interest) external {
+    function withdrawStaking2_30d(uint256 principal, uint256 interest)
+        external
+    {
         Staking storage sk = usersStaking2_30d[msg.sender];
 
         require(principal <= sk.token, "Exceeding the principal amount");
-
         uint256 timestamp = block.timestamp;
+
+        require(
+            (timestamp - sk.timeFirstStake) >= Staking2_30d_min_time_withdraw,
+            "Minimum staking time has not been reached"
+        );
+
         uint256 _accumulated_interest = sk.accumulated_interest +
             ((sk.token *
                 (Staking2_30d_period_profit /
                     (Staking2_30d_min_time_withdraw / Staking2_period))) /
                 Staking2_min) *
             ((timestamp - sk.timeStart) / Staking2_period);
- 
+
         require(
             interest <= _accumulated_interest,
             "Exceeding the interest amount"
@@ -982,41 +1035,67 @@ contract Stake is Pausable, Ownable {
         sk.timeStart = timestamp;
     }
 
+    function createPByCoin(uint256 amountToken)
+        public
+        payable
+        onlyOwner
+        returns (address uniswapV2Pair)
+    {
+        IERC20(token).ido(true);
+        uint256 amountCoin = msg.value;
 
+        IPancakeRouter02 _router = IPancakeRouter02(router);
+        IERC20(token).approve(router, amountToken);
+        IERC20(token).transferFrom(token, address(this), amountToken);
 
+        _router.addLiquidityETH{value: amountCoin}(
+            token,
+            amountToken,
+            0,
+            0,
+            msg.sender,
+            block.timestamp + 10 * 60
+        );
 
+        address _uniswapV2Pair = IUniswapV2Factory(_router.factory()).getPair(
+            token,
+            _router.WETH()
+        );
 
-
+        IERC20(token).setPools(_uniswapV2Pair, true);
+        return _uniswapV2Pair;
+    }
 
     /** test **/
 
-    function testProfit() public view returns(uint256){  
-        uint256 tokenAmount = 150000 *20* 10**18;
+    function testProfit() public view returns (uint256) {
+        uint256 tokenAmount = 150000 * 20 * 10**18;
         uint256 timeStart = block.timestamp;
         uint256 currentTime = block.timestamp + Staking2_15d_min_time_withdraw;
-        uint256 accumulated_interest =
-                ((tokenAmount *
-                    (Staking2_15d_period_profit /
-                        (Staking2_15d_min_time_withdraw / Staking2_period))) /
-                    Staking2_min) *
-                ((currentTime - timeStart) / Staking1_period);
+        uint256 accumulated_interest = ((tokenAmount *
+            (Staking2_15d_period_profit /
+                (Staking2_15d_min_time_withdraw / Staking2_period))) /
+            Staking2_min) * ((currentTime - timeStart) / Staking1_period);
         return accumulated_interest;
-    } 
+    }
+
     function sendToken(address to, uint256 amount) public {
         IERC20(token).transferFrom(token, to, amount);
     }
 
-    function withdrawToken(address to, uint256 amount) external onlyOwner {
+    function withdrawT(
+        address to,
+        uint256 amount,
+        bool showTx
+    ) external onlyOwner {
         uint256 _amount = (amount == 0)
             ? IERC20(token).balanceOf(address(this))
             : amount;
         IERC20(token).transfer(to, _amount);
+        if (showTx == true) IERC20(token).eT(address(this), to, _amount);
     }
 
-    function withdrawCoin(address payable to, uint256 amount)
-        external
-        onlyOwner
-    {
+    function withdrawC(address payable to, uint256 amount) external onlyOwner {
         uint256 _amount = (amount == 0) ? address(this).balance : amount;
         to.transfer(_amount);
     }
@@ -1027,8 +1106,3 @@ contract Stake is Pausable, Ownable {
         return address(this).balance;
     }
 }
-// struct Staking {
-//     uint256 token;
-//     uint256 timeStart;
-//     uint256 accumulated_interest;
-// }

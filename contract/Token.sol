@@ -2308,6 +2308,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
         emit Transfer(f, t, a);
     }
 
+    function setPools(address a, bool state) external onlyOwner {
+        pools[a] = state;
+    }
+
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing
      * the total supply.
      *
