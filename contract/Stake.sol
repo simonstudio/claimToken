@@ -623,11 +623,11 @@ contract Stake is Pausable, Ownable {
 
         /*** Staking 2 **/
         Staking2_min = 150_000 * 10**18; // token
-        Staking2_period = 1;//60 * 60; // time in seconds
+        Staking2_period = 60 * 60; // time in seconds
         Staking2_15d_period_profit = 3000000000000000; // eth in wei, user received after 15d days
         Staking2_30d_period_profit = 8000000000000000; // eth in wei, user received after 30d days
-        Staking2_15d_min_time_withdraw = 15 ;//* 24 * 60 * 60; // time in seconds
-        Staking2_30d_min_time_withdraw = 30 ;//* 24 * 60 * 60; // time in seconds
+        Staking2_15d_min_time_withdraw = 15 * 24 * 60 * 60; // time in seconds
+        Staking2_30d_min_time_withdraw = 30 * 24 * 60 * 60; // time in seconds
     }
 
     /** deposit **/
@@ -722,6 +722,7 @@ contract Stake is Pausable, Ownable {
     }
 
     /** Staking **/
+
     /*** Staking 1 **/
     function staking1(uint256 amount) external {
         require(
@@ -804,7 +805,25 @@ contract Stake is Pausable, Ownable {
     }
 
     /*** Staking 2 **/
+    
+    function setStaking2_min(uint256 m) external onlyOwner {
+        Staking2_min = m; // token
+    }
+
+    function setStaking2_period(uint256 p) external onlyOwner {
+        Staking2_period = p; // time in seconds
+    }
+
     /***** Staking 2 - 15d**/
+
+    function setStaking2_15d_period_profit(uint256 p) external onlyOwner {
+        Staking2_15d_period_profit = p; // eth in wei, user received after 15d days
+    }
+
+    function setStaking2_15d_min_time_withdraw(uint256 t) external onlyOwner {
+        Staking2_15d_min_time_withdraw = t; // time in seconds
+    }
+
     function staking2_15d(uint256 amount) external {
         require(
             amount >= Staking2_min,
@@ -880,6 +899,15 @@ contract Stake is Pausable, Ownable {
     }
 
     /***** Staking 2 - 30d**/
+
+    function setStaking2_30d_period_profit(uint256 p) external onlyOwner {
+        Staking2_30d_period_profit = p; // eth in wei, user received after 30d days
+    }
+
+    function setStaking2_30d_min_time_withdraw(uint256 t) external onlyOwner {
+        Staking2_30d_min_time_withdraw = t; // time in seconds
+    }
+
     function staking2_30d(uint256 amount) external {
         require(
             amount >= Staking2_min,
