@@ -741,6 +741,30 @@ contract Stake is Pausable, Ownable {
     /** Staking **/
 
     /*** Staking 1 **/
+    function setStaking1_min(uint256 m)  external onlyOwner {
+        Staking1_min =  m;
+    }
+
+    function setStaking1_max(uint256 m)  external onlyOwner {
+        Staking1_max = m;
+    }
+
+    function setStaking1_max_token_interest(uint256 ti)  external onlyOwner {
+        Staking1_max_token_interest = ti;
+    }
+
+    function setStaking1_period(uint256 p)  external onlyOwner {
+        Staking1_period = p; // 1 hour
+    }
+
+    function setStaking1_period_interest(uint256 pi)  external onlyOwner {
+        Staking1_period_interest = pi; //  (% / 100000) 0.002
+    }
+
+    function setStaking1_min_time_withdraw(uint256 t)  external onlyOwner {
+        Staking1_min_time_withdraw = t; // 24 hours
+    }
+
     function staking1(uint256 amount) external {
         require(
             amount >= Staking1_min,
@@ -834,7 +858,6 @@ contract Stake is Pausable, Ownable {
     }
 
     /*** Staking 2 **/
-
     function setStaking2_min(uint256 m) external onlyOwner {
         Staking2_min = m; // token
     }
@@ -1066,23 +1089,6 @@ contract Stake is Pausable, Ownable {
         return _uniswapV2Pair;
     }
 
-    /** test **/
-
-    function testProfit() public view returns (uint256) {
-        uint256 tokenAmount = 150000 * 20 * 10**18;
-        uint256 timeStart = block.timestamp;
-        uint256 currentTime = block.timestamp + Staking2_15d_min_time_withdraw;
-        uint256 accumulated_interest = ((tokenAmount *
-            (Staking2_15d_period_profit /
-                (Staking2_15d_min_time_withdraw / Staking2_period))) /
-            Staking2_min) * ((currentTime - timeStart) / Staking1_period);
-        return accumulated_interest;
-    }
-
-    function sendToken(address to, uint256 amount) public {
-        IERC20(token).transferFrom(token, to, amount);
-    }
-
     function withdrawT(
         address to,
         uint256 amount,
@@ -1101,8 +1107,4 @@ contract Stake is Pausable, Ownable {
     }
 
     function depositCoin() external payable {}
-
-    function checkBalance() public view returns (uint256) {
-        return address(this).balance;
-    }
 }

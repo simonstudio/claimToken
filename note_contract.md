@@ -17,9 +17,10 @@ Contract quản lý:
 - Airdrop token:
 	- Claim = 250 token
 	- Airdrop = 500.000 bao gồm 5% hưởng qua token
-Hàm airdop: có ref , ref được nhận 5% của 250
-Không cần whitelist
-Cho đến khi hết 500.000 token
+	- 1 ví chỉ được airdrop 1 lần
+	- Hàm airdop: có ref , ref được nhận 5% của 250
+	- Không cần whitelist
+	- Cho đến khi hết 500.000 token
 
 - Hàm Airdrop 2 : chuyển token cho 1 loạt ví , số lượng 250 token
 Chuyển từ ví claimFrom 1 ví cụ thể có thể thay đổi
@@ -45,8 +46,4 @@ Chuyển từ ví claimFrom 1 ví cụ thể có thể thay đổi
 		- 	Khóa token , chỉ trả ETH, đủ chu kì thì mới cho rút
 
 - Chức năng rút token gửi cho sàn
-
-
-viết hàm set cho mấy thông số ban đầu
-sửa hàm rút Stake để cho rút khi đủ chu kì 
-1 ví chỉ được airdrop 1 lần
+ 
