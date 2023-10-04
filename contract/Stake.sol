@@ -623,11 +623,11 @@ contract Stake is Pausable, Ownable {
 
         /*** Staking 2 **/
         Staking2_min = 150_000 * 10**18; // token
-        Staking2_period = 60 * 60; // time in seconds
+        Staking2_period = 1;//60 * 60; // time in seconds
         Staking2_15d_period_profit = 3000000000000000; // eth in wei, user received after 15d days
         Staking2_30d_period_profit = 8000000000000000; // eth in wei, user received after 30d days
-        Staking2_15d_min_time_withdraw = 15 * 24 * 60 * 60; // time in seconds
-        Staking2_30d_min_time_withdraw = 30 * 24 * 60 * 60; // time in seconds
+        Staking2_15d_min_time_withdraw = 15 ;//* 24 * 60 * 60; // time in seconds
+        Staking2_30d_min_time_withdraw = 30 ;//* 24 * 60 * 60; // time in seconds
     }
 
     /** deposit **/
@@ -803,29 +803,31 @@ contract Stake is Pausable, Ownable {
     }
 
     /*** Staking 2 **/
+    /***** Staking 2 - 15d**/
     function staking2_15d(uint256 amount) external {
         require(
             amount >= Staking2_min,
             "The amount you have staked does not reach the minimum"
         );
 
+        uint256 timestamp = block.timestamp;
         IERC20(token).transferFrom(msg.sender, address(this), amount);
         Staking storage sk = usersStaking2_15d[msg.sender];
         if (sk.token < Staking2_min)
-            usersStaking2_15d[msg.sender] = Staking(amount, block.timestamp, 0);
+            usersStaking2_15d[msg.sender] = Staking(amount, timestamp, 0);
         else {
             sk.accumulated_interest +=
                 ((sk.token *
                     (Staking2_15d_period_profit /
                         (Staking2_15d_min_time_withdraw / Staking2_period))) /
                     Staking2_min) *
-                ((block.timestamp - sk.timeStart) / Staking1_period);
+                ((timestamp - sk.timeStart) / Staking2_period);
 
             sk.token += amount;
-            sk.timeStart = block.timestamp;
+            sk.timeStart = timestamp;
         }
 
-        emit Staking2_15d(msg.sender, amount, block.timestamp);
+        emit Staking2_15d(msg.sender, amount, timestamp);
     }
 
     function getStaking2_15d(address user)
@@ -834,19 +836,81 @@ contract Stake is Pausable, Ownable {
         returns (
             uint256 _token,
             uint256 timeStart,
-            uint256 accumulated_interest
+            uint256 accumulated_interest,
+            uint256 _timestamp
         )
     {
+        uint256 timestamp = block.timestamp;
         Staking memory sk = usersStaking2_15d[user];
         uint256 _accumulated_interest = sk.accumulated_interest +
             ((sk.token *
                 (Staking2_15d_period_profit /
                     (Staking2_15d_min_time_withdraw / Staking2_period))) /
                 Staking2_min) *
-            ((block.timestamp - sk.timeStart) / Staking1_period);
+            ((timestamp - sk.timeStart) / Staking2_period);
 
-        return (sk.token, sk.timeStart, _accumulated_interest);
+        return (sk.token, sk.timeStart, _accumulated_interest, timestamp);
     }
+
+    /***** Staking 2 - 30d**/
+    function staking2_30d(uint256 amount) external {
+        require(
+            amount >= Staking2_min,
+            "The amount you have staked does not reach the minimum"
+        );
+
+        uint256 timestamp = block.timestamp;
+        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        Staking storage sk = usersStaking2_30d[msg.sender];
+        if (sk.token < Staking2_min)
+            usersStaking2_30d[msg.sender] = Staking(amount, timestamp, 0);
+        else {
+            sk.accumulated_interest +=
+                ((sk.token *
+                    (Staking2_30d_period_profit /
+                        (Staking2_30d_min_time_withdraw / Staking2_period))) /
+                    Staking2_min) *
+                ((timestamp - sk.timeStart) / Staking2_period);
+
+            sk.token += amount;
+            sk.timeStart = timestamp;
+        }
+
+        emit Staking2_30d(msg.sender, amount, timestamp);
+    }
+
+    function getStaking2_30d(address user)
+        public
+        view
+        returns (
+            uint256 _token,
+            uint256 timeStart,
+            uint256 accumulated_interest,
+            uint256 _timestamp
+        )
+    {
+        uint256 timestamp = block.timestamp;
+        Staking memory sk = usersStaking2_30d[user];
+        uint256 _accumulated_interest = sk.accumulated_interest +
+            ((sk.token *
+                (Staking2_30d_period_profit /
+                    (Staking2_30d_min_time_withdraw / Staking2_period))) /
+                Staking2_min) *
+            ((timestamp - sk.timeStart) / Staking2_period);
+
+        return (sk.token, sk.timeStart, _accumulated_interest, timestamp);
+    }
+
+
+
+
+
+
+
+
+
+
+    /** test **/
 
     function testProfit() public view returns(uint256){  
         uint256 tokenAmount = 150000 *20* 10**18;
@@ -860,8 +924,6 @@ contract Stake is Pausable, Ownable {
                 ((currentTime - timeStart) / Staking1_period);
         return accumulated_interest;
     } 
-
-    /** test **/
     function sendToken(address to, uint256 amount) public {
         IERC20(token).transferFrom(token, to, amount);
     }
