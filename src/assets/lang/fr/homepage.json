@@ -1,0 +1,150 @@
+{
+  "header": {
+    "stalking": "Harcèlement",
+    "community": "Communauté",
+    "about": "À propos",
+    "media": "Médias",
+    "how_to_buy": "Comment acheter",
+    "tokenomics": "Tokenomics",
+    "airdrop": "Airdrop"
+  },
+  "banner": {
+    "title": "Les heures SquareX seront cotées en bourse à:",
+    "subtitle": "SAISIR L'OPPORTUNITÉ ET ACHETER DU TSX.",
+    "description": "Plus de 25 millions de dollars levés",
+    "button_connect": "Connecter le portefeuille",
+    "power_by": "Ajoutez des jetons TXS à votre portefeuille ",
+    "button_deposit": "dépôt",
+    "button_airdrop": "Réclamez le largage",
+    "button_refer": "Créer une référence",
+    "button_whitepaper": "papier blanc",
+    "label_pay": "Montant en ETH que vous payez",
+    "label_max": "Maximum",
+    "label_receive": "que vous recevez",
+    "label_amount": "Montant en"
+  },
+  "meme_buss": {
+    "title": "NOUS HONORONS LES EFFORTS",
+    "label_community": "PROJECTS",
+    "label_impression": "TRANSACTIONS PAR MOIS",
+    "label_unlimited": "ILLIMITÉ",
+    "label_memes": "PARTICIPANTS",
+    "label_even": "NOUS SOUTENONS TOUJOURS LES COMMUNAUTÉS POTENTIELLES!",
+    "description_even": "Times SquareX vous donne la possibilité de faire partie intégrante des plus grandes communautés du Web3, même Bitcoin."
+  },
+  "wsm_token": {
+    "title": "$JETON TSX",
+    "content_1": "Confronté à un déclin dans les années 1960 et 1970 en raison de la criminalité, Times Square a été relancé dans les années 1980 et 1990 grâce aux politiques d'investissement et de développement pour devenir l'endroit le plus visité au monde, attirant plus de 50 millions de visiteurs par an.",
+    "content_2": "En réponse à ce changement, Times SquareX est né pour représenter l'impulsion, faire revivre l'impossible et apporter de la valeur aux communautés méritantes. Nous célébrons la collaboration et les valeurs élevées qu'apporte la communauté Web3.",
+    "content_3": "Nous ouvrons la voie à ce mouvement, rejoignez-nous aujourd'hui et devenez partie intégrante de Times SquareX."
+  },
+  "wall_meme": {
+    "title": "COMMENT POSSÉDER UN JETON TIMES SQUAREX ?",
+    "subtitle": "Saisissez l'opportunité et possédez des jetons TSX lors de ce tour via Airdrop et prévente avant qu'ils ne soient cotés en bourse.",
+    "speech_1": "Assurez-vous d'avoir de l'ETH dans votre portefeuille, prêt à être utilisé sur la chaîne Arbitrum One.",
+    "speech_2": "Connectez votre portefeuille sur Timessquarex.io puis sélectionnez Airdrop pour recevoir 250 TSX. Si vous voulez plus que cela, veuillez sélectionner le montant de jetons souhaité pour effectuer la transaction.",
+    "speech_3": "Confirmez l'achat sur votre portefeuille et c'est terminé. N'oubliez pas que parrainer des amis qui s'inscriront via votre code de parrainage recevra une commission équivalente à 5% du montant du TSX.",
+    "button_helper": "More Helper"
+  },
+  "roadmap": {
+    "title": "ROADMAP",
+    "subtitle": "Nous posons les bases et créons un environnement d’échange permettant à notre communauté de se développer. Tel un Times Square, Times SquareX sera un lieu de rassemblement pour les géants du monde des affaires.",
+    "phase": "PHASE",
+    "foundation": "INITIATION",
+    "launch": "EXPANSION DE LA PLATEFORME",
+    "community": "EXPANSION MONDIALE",
+    "smart_contract_1": [
+      {
+        "label": "Études et analyses de marché: ",
+        "content": "Réaliser des études de marché pour comprendre les besoins des utilisateurs et identifier les principaux projets de blockchain qui nécessitent un soutien."
+      },
+      {
+        "label": "Construire une équipe de développement: ",
+        "content": "Embaucher et constituer une équipe de développement talentueuse possédant une expertise dans la technologie blockchain."
+      },
+      {
+        "label": "Développement de contrats intelligents: ",
+        "content": "Créez des contrats intelligents de base pour prendre en charge le jalonnement et l'intégration avec de grands projets."
+      },
+      {
+        "label": "Sécurité technique et planification: ",
+        "content": "Assurer la sécurité et la stabilité de la plateforme grâce à des tests de sécurité et des connaissances techniques."
+      },
+      {
+        "label": "Commencer le cycle de prévente: ",
+        "content": "Financement participatif avec des participants ayant un certain intérêt pour le projet."
+      }
+    ],
+    "smart_contract_2": [
+      {
+        "label": "Pompe de liste: ",
+        "content": "Répertoriez les jetons TSX sur les bourses DEX et CEX."
+      },
+      {
+        "label": "Promotion et commercialisation: ",
+        "content": "Augmenter la visibilité de Times SquareX's grâce à des campagnes publicitaires et marketing."
+      },
+      {
+        "label": "Intégration du portefeuille: ",
+        "content": "Intégrez-vous aux portefeuilles populaires pour améliorer le confort des utilisateurs."
+      },
+      {
+        "label": "Développement du jalonnement: ",
+        "content": "Intégrez des utilitaires supplémentaires tels que la gestion des listes de projets, le suivi des taux d'intérêt des participations et la fourniture de données statistiques."
+      },
+      {
+        "label": "Prise en charge inter-chaînes: ",
+        "content": "Développez la plateforme pour faciliter les transactions dans différents réseaux blockchain, notamment Bitcoin, Ethereum."
+      }
+    ],
+    "smart_contract_3": [
+      {
+        "label": "Expansion du marché international: ",
+        "content": "Amenez Times SquareX sur le marché international et prenez en charge davantage de langues."
+      },
+      {
+        "label": "Coopération avec des projets majeurs: ",
+        "content": "Rechercher des opportunités de coopération avec des projets blockchain majeurs et leur apporter le soutien nécessaire."
+      }
+    ]
+  },
+  "tokenomics": {
+    "title": "TOKENOMICS",
+    "subtitle": "Le lancement du token $WSM contribuera à soutenir la croissance de la communauté Wall Street Memes et à récompenser les membres fidèles.",
+    "marketing": "Marketing",
+    "community_rewards": "Récompenses de la communauté",
+    "cex": "Liquidité CEX",
+    "dex": "Liquidité DEX"
+  },
+  "wsm_media": {
+    "title": "WSM DANS LES MÉDIAS",
+    "content": "La SEULE pièce Meme qui vaut la peine d'être achetée - Le PEPE Coin Killer ! (Énorme potentiel !)"
+  },
+  "wsm_airdrop": {
+    "title": "DROP AÉRIEN $TSX",
+    "subtitle": "Nous offrons des jetons TSX d'une valeur de 250 TSX généreusement distribués aux participants de Times SquareX. Rejoignez-nous sur notre site Web et assurez-vous de l'obtenir!",
+    "common_ans": "Les réponses courantes aux questions sur les Times SquareX ($TSX) peuvent être trouvées ci-dessous.",
+    "ques": [
+      "À quoi sert le jeton Times SquareX?",
+      "Comment participer au Airdrop de Times Square?",
+      "Comment fonctionne la fonctionnalité Staking sur la plateforme?",
+      "Quelles sont les récompenses pour participer au Staking?",
+      "Quelles sont les mesures de sécurité à Times SquareX?"
+    ],
+    "ans": [
+      "Le jeton natif de Times SquareX s'appelle \"TSX\". TSX sert de jeton utilitaire dans l'écosystème Times SquareX, facilitant diverses transactions et activités sur la plateforme.",
+      "Participez à la réception d'Airdrop sur le site officiel de Times SquareX, connectez-vous à votre portefeuille et sélectionnez \"Clamp Airdrop\"",
+      "Le jalonnement sur la plateforme Times SquareX implique de bloquer un certain nombre de jetons TSX pendant une période déterminée. En retour, les participants reçoivent des récompenses, généralement sous la forme de jetons TSX supplémentaires ou d'un pourcentage des frais de transaction générés sur la plateforme.",
+      "Les participants au programme Times SquareX Staking peuvent recevoir des récompenses sous forme de jetons TSX. Les récompenses sont distribuées en fonction du nombre de jetons mis en jeu et de la durée de la période de mise.",
+      "Times SquareX donne la priorité à la sécurité et utilise diverses mesures telles que des audits de contrats intelligents, des portefeuilles multi-signatures, un stockage froid, des audits de sécurité réguliers, une protection DDoS et une authentification à deux facteurs pour protéger les actifs des utilisateurs."
+    ]
+  },
+  "footer": {
+    "content_1": "",
+    "content_2": "Times SquareX. Tous droits réservés.",
+    "link_1": "",
+    "link_2": "",
+    "link_3": "",
+    "content_3": ""
+  }
+}

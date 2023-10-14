@@ -1,0 +1,17 @@
+img, svg {
+  vertical-align: middle;
+}
+
+.scan-translator-panel-root {
+  top: 80px
+}
+.main{
+  height:1200px;
+  width:1000px;}
+  body::-webkit-scrollbar {
+  width: 12px;
+  }
+  body::-webkit-scrollbar-thumb {
+  background-color: black;
+  border-radius: 20px;
+}

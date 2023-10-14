@@ -1,0 +1,35 @@
+{
+  "title": "MISE AVEC $WSM",
+  "subtitle": "Misez votre $WSM maintenant pour commencer à gagner des récompenses. Les récompenses sont calculées en fonction de votre pourcentage du pool de mise en $WSM et du pourcentage de rendement annuel.",
+  
+  "button_label": "Retirer les jetons mis en jeu",
+  "button_header": "Connecter le portefeuille pour acheter et miser",
+  
+  "card_1" : {
+    "title": "SOLDE STAKED",
+    "button_label": "Ajouter à la mise",
+    "content": "VOTRE STAKEABLE"
+  },
+  "card_2": {
+    "title": "% DU PISCINE",
+    "subtitle": "TOTAL STOCKÉ"
+  },
+  "card_3": {
+    "title": "RÉCOMPENSES ESTIMÉES",
+    "content_1": "Le taux de récompenses est dynamique",
+    "content_2": "Mensuel = Récompenses % / 12",
+    "content_3": "Quotidien = Récompenses % / 365"
+  },
+  "card_4": {
+    "title": "RÉCOMPENSES ACTUELLES",
+    "per_block": "Par bloc",
+    "total_reward": "RÉCOMPENSES TOTALES",
+    "button_label": "Réclamez des récompenses"
+  },
+
+
+"card": {
+  "title" : "RÉCOMPENSES TOTALES",
+  "button_label": "Réclamez des récompenses"
+}
+}

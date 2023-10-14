@@ -1,0 +1,35 @@
+{
+  "title": "PASANG DENGAN $WSM",
+  "subtitle": "Stake $WSM Anda sekarang untuk mulai mendapatkan hadiah. Hadiah dihitung berdasarkan persentase dari kumpulan taruhan $WSM Anda dan persentase pengembalian tahunan.",
+  
+
+  "button_label": "Tarik Token yang Dipertaruhkan",
+  "button_header": "Hubungkan Dompet untuk Membeli & Mempertaruhkan",
+
+  "card_1" : {
+    "title": "SALDO YANG DIPERTARUHKAN",
+    "button_label": "Tambahkan Ke Taruhan",
+    "content": "STAKEABLE ANDA"
+  },
+  "card_2": {
+    "title": "% DARI KOLAM RENANG",
+    "subtitle": "JUMLAH DIPERTARUHKAN"
+  },
+  "card_3": {
+    "title": "PERKIRAAN HADIAH",
+    "content_1": "Tingkat imbalan bersifat dinamis",
+    "content_2": "Bulanan = Hadiah % / 12",
+    "content_3": "Harian = Hadiah % / 365"
+  },
+  "card_4": {
+    "title": "HADIAH SAAT INI",
+    "per_block": "Per Blok",
+    "total_reward": "JUMLAH HADIAH",
+    "button_label": "Klaim Hadiah"
+  },
+
+  "card_5": {
+    "title" : "JUMLAH HADIAH",
+    "button_label": "Klaim Hadiah"
+  }
+}

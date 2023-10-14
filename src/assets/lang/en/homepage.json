@@ -1,0 +1,151 @@
+{
+  "header": {
+    "stalking": "Stalking",
+    "community": "Community",
+    "about": "About",
+    "media": "Media",
+    "how_to_buy": "How to buy",
+    "tokenomics": "Tokenomics",
+    "airdrop": "Airdrop",
+    "connect_wallet": "Connect Wallet"
+  },
+  "banner": {
+    "title": "Times SquareX will be listed on the exchange at:",
+    "subtitle": "TAKE THE OPPORTUNITY AND BUY TSX.",
+    "description": "Over $25m Raised",
+    "button_connect": "Connect Wallet",
+    "power_by": "Add TXS tokens to your wallet ",
+    "button_deposit": "deposit",
+    "button_airdrop": "Claim airdrop",
+    "button_refer": "Create refer",
+    "button_whitepaper": "whitepaper",
+    "label_pay": "Amount in ETH you pay",
+    "label_max": "Max",
+    "label_receive": "you receive",
+    "label_amount": "Amount in"
+  },
+  "meme_buss": {
+    "title": "WE HONOR EFFORTS!",
+    "label_community": "PROJECTS",
+    "label_impression": "TRANSACTIONS PER MONTH",
+    "label_unlimited": "UNLIMITED",
+    "label_memes": "PARTICIPANTS",
+    "label_even": "WE ALWAYS SUPPORT POTENTIAL COMMUNITIES!",
+    "description_even": "Times SquareX gives you the opportunity to become an integral part of the largest communities at Web3, even Bitcoin."
+  },
+  "wsm_token": {
+    "title": "$TSX TOKEN",
+    "content_1": "Facing decline in the 1960s and 1970s due to crime, Times Square was revived in the 1980s and 1990s thanks to investment and development policies to become the most visited places in the world, attracting over 50 million visitors annually.",
+    "content_2": "Responding to this change, Times SquareX was born to represent the push, revive the impossible and bring value to deserving communities. We celebrate the collaboration and high values that the Web3 community brings.",
+    "content_3": "We are paving the way for this movement, join us today and become an integral part of Times SquareX."
+  },
+  "wall_meme": {
+    "title": "HOW TO OWN TIMES SQUAREX TOKEN?",
+    "subtitle": "Seize the opportunity and own TSX tokens in this round through Airdrop and Presale before it is listed on exchanges.",
+    "speech_1": "Make sure you have ETH in your wallet ready to use on the Arbitrum One chain.",
+    "speech_2": "Connect your wallet at Timessquarex.io then select Airdrop to receive 250 TSX if you want more than that, please select the desired amount of tokens to make the transaction.",
+    "speech_3": "Confirm purchase at your wallet and done. Don't forget that referring friends to join via your referral code will receive a commission equivalent to 5% of the TSX amount.",
+    "button_helper": "More Helper"
+  },
+  "roadmap": {
+    "title": "ROADMAP",
+    "subtitle": "We lay the foundation and create an exchange environment for our community to develop. Like a Times Square, Times SquareX will be a gathering place for giants in the business world.",
+    "phase": "PHASE",
+    "foundation": "INITIATION",
+    "launch": "PLATFORM EXPANSION",
+    "community": "GLOBAL EXPANSION",
+    "smart_contract_1": [
+      {
+        "label": "Market research and analysis: ",
+        "content": "Conduct market research to understand user needs and identify major blockchain projects that need support."
+      },
+      {
+        "label": "Build a development team: ",
+        "content": "Hire and assemble a talented development team with expertise in blockchain technology."
+      },
+      {
+        "label": "Smart contract development: ",
+        "content": "Create basic smart contracts to support staking and integration with large projects."
+      },
+      {
+        "label": "Technical security and planning: ",
+        "content": "Ensure platform security and stability through security testing and technical knowledge."
+      },
+      {
+        "label": "Start Presale Round: ",
+        "content": "Crowdfunding with participants who have a certain interest in the project"
+      }
+    ],
+    "smart_contract_2": [
+      {
+        "label": "Listing Pump: ",
+        "content": "List TSX tokens on DEX and CEX exchanges."
+      },
+      {
+        "label": "Promotion and Marketing: ",
+        "content": "Increase Times SquareX's visibility through advertising and marketing campaigns."
+      },
+      {
+        "label": "Wallet Integration: ",
+        "content": "Integrate with popular wallets to enhance user convenience."
+      },
+      {
+        "label": "Staking development: ",
+        "content": "Integrate additional utilities such as managing project lists, tracking stake interest rates, and providing statistical data."
+      },
+      {
+        "label": "Cross-chain support: ",
+        "content": "Expand the platform to facilitate transactions in different blockchain networks, including Bitcoin, Ethereum."
+      }
+    ],
+    "smart_contract_3": [
+      {
+        "label": "International market expansion: ",
+        "content": "Bring Times SquareX to the international market and support more languages."
+      },
+      {
+        "label": "Cooperation with Major projects: ",
+        "content": "Look for opportunities to cooperate with major blockchain projects and provide them with the necessary support."
+      }
+    ]
+  },
+  "tokenomics": {
+    "title": "TOKENOMICS",
+    "subtitle": "The launch of the $WSM token will help sustain the growth of the Wall Street Memes community and reward loyal members.",
+    "marketing": "Marketing",
+    "community_rewards": "Community Rewards",
+    "cex": "CEX Liquidity",
+    "dex": "DEX Liquidity"
+  },
+  "wsm_media": {
+    "title": "WSM IN THE MEDIA",
+    "content": "The ONLY Meme Coin Worth Buying - The PEPE Coin Killer! (Huge Potential!)"
+  },
+  "wsm_airdrop": {
+    "title": "$TSX AIRDROP",
+    "subtitle": "We are giving away TSX tokens to the value of 250 TSX generously distributed to participants at Times SquareX. Join us at our website and make sure you get it!",
+    "common_ans": "Common answers to questions about Times SquareX ($TSX) can be found below.",
+    "ques": [
+      "What Times SquareX token serve?",
+      "How to participate in Times Square Airdrop?",
+      "How does the Staking feature work on the platform?",
+      "What are the rewards for participate in Staking?",
+      "What are the security measures at Times SquareX?"
+    ],
+    "ans": [
+      "Times SquareX's native token is called \"TSX\" TSX serves as a utility token in the Times SquareX ecosystem, facilitating various transactions and activities on the platform.",
+      "Participate in receiving Airdrop at Times SquareX official website, connect to your wallet and select \"Clamp Airdrop\"",
+      "Staking on the Times SquareX platform involves locking up a certain amount of TSX tokens for a specified period. In return, participants receive rewards, typically in the form of additional TSX tokens or a percentage of the transaction fees generated on the platform.",
+      "Participants in the Times SquareX Staking program can receive rewards in the form of TSX tokens. Rewards are distributed based on the number of tokens staked and the length of the staking period.",
+      "Times SquareX prioritizes security and employs various measures such as smart contract audits, multi-signature wallets, cold storage, regular security audits, DDoS protection, and two-factor authentication to protect users' assets."
+    ]
+  },
+  "footer": {
+    "content_1": "",
+    "content_2": "Times SquareX. All Rights Reserved.",
+    "link_1": "",
+    "link_2": "",
+    "link_3": "",
+    "content_3": ""
+  }
+}

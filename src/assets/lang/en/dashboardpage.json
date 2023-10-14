@@ -1,0 +1,35 @@
+{
+  "title": "STAKE WITH $WSM",
+  "subtitle": "Stake your $WSM now to start earning rewards. Rewards are calculated based on your percentage of the $WSM staking pool and the annual returns percentage.",
+  
+  "button_label": "Withdraw Staked Tokens",
+  "button_header": "Connect Wallet to Buy & Stake",
+  
+  
+  "card_1" : {
+    "title": "STAKED BALANCE",
+    "button_label": "Add To Stake",
+    "content": "YOUR STAKEABLE"
+  },
+  "card_2": {
+    "title": "% OF POOL",
+    "subtitle": "TOTAL STAKED"
+  },
+  "card_3": {
+    "title": "ESTIMATED REWARDS",
+    "content_1": "Rewards rate is dynamic",
+    "content_2": "Monthly = Rewards % / 12",
+    "content_3": "Daily = Rewards % / 365" 
+  },
+  "card_4": {
+    "title": "CURRENT REWARDS",
+    "per_block": "Per Block",
+    "total_reward": "TOTAL REWARDS",
+    "button_label": "Claim Rewards"
+  },
+
+  "card_5": {
+    "title" : "TOTAL REWARDS",
+    "button_label": "Claim Rewards"
+  }
+}
