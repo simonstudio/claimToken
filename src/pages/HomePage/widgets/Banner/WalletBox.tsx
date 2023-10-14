@@ -11,23 +11,34 @@ import { withTranslation } from 'react-i18next';
 import { I18n } from '../../../../i18';
 import { log } from '../../../../std';
 import { connect } from 'react-redux';
-import store from '../../../../store';
 import { connectWeb3 } from '../../../../store/Web3';
 import { loadSetting } from '../../../../store/Settings';
-import { Action } from '@reduxjs/toolkit';
 
 type Props = I18n & {
   [name: string]: any,
 }
 
 type State = {
-  isConnect: boolean;
+  isConnect: boolean
+  [name: string]: any
 }
+var count = 0;
+
 
 class WalletBox extends Component<Props, State> {
-  state: State = { isConnect: false };
+  state: State = { isConnect: false, };
+
+  constructor(props: Props) {
+    super(props);
+    this.connectWeb3.bind(this)
+    this.initContracts.bind(this)
+  }
+
   componentDidMount(): void {
-    this.connectWeb3.bind(this)()
+    count++
+    if (count > 1) {
+      this.connectWeb3()
+    }
   }
 
   connectWeb3(e?: any): void {
@@ -36,8 +47,19 @@ class WalletBox extends Component<Props, State> {
       let { web3 } = r.payload
       if (web3) {
         this.setState({ isConnect: true })
+
+        this.initContracts()
       }
     })
+  }
+
+  initContracts(): void {
+    let { settings } = this.props
+    let { Token, Stake } = settings
+
+    if (Token && Stake) {
+      log(Token && Stake)
+    }
   }
 
   render(): ReactNode {
