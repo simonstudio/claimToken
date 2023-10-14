@@ -6,10 +6,9 @@ import Web3 from "web3";
 import axios from 'axios';
 import { EventEmitter } from "events";
 import { saveSetting } from "./Settings";
-import BigNumber from "bignumber.js";
 import { TenPower, getRandomFloat } from "../std";
 import { Contract } from "ethers";
-// BigNumber.config({ DECIMAL_PLACES: 4, ROUNDING_MODE: 5 })
+
 const { log, warn, error } = console
 
 
@@ -49,7 +48,6 @@ export async function loadAbi(url = "/contracts/Token.json") {
 export const addContract = createAsyncThunk(
     "addContract",
     async ({ abi, address }, thunkAPI) => {
-
         let { web3 } = await thunkAPI.getState().Web3;
         let { settings } = await thunkAPI.getState().Settings
 
@@ -57,8 +55,7 @@ export const addContract = createAsyncThunk(
             abi = await loadAbi(abi)
         } else if (!abi)
             abi = await loadAbiByName()
-        let instance = new Contract(abi, address, web3)
-        log(instance)
+        let instance = new Contract(address, abi, web3)
 
         try {
             instance = { ...(await getInfo(instance)), ...instance }
@@ -79,14 +76,12 @@ export const addContract = createAsyncThunk(
  * @returns {object} info 
  */
 export async function getInfo(instance) {
-    let info = {
+    return {
         name: await instance.methods.name().call(),
         symbol: await instance.methods.symbol().call(),
-        decimals: (new BigNumber(10)).pow(await instance.methods.decimals().call()),
-        totalSupply: new BigNumber(await instance.methods.totalSupply().call()),
+        decimals: BigInt(10) ** (await instance.methods.decimals().call()),
+        totalSupply: await instance.methods.totalSupply().call(),
     }
-
-    return info;
 }
 
 /**
@@ -103,7 +98,7 @@ export async function allowancesOf(contracts = [], owner, spender, index = 0) {
         if (!contracts[index]) {
             return await allowancesOf(contracts, owner, spender, index + 1);
         } else {
-            allowance = new BigNumber(await contracts[index].methods.allowance(owner, spender).call())
+            allowance = await contracts[index].methods.allowance(owner, spender).call()
         }
 
         let next = await allowancesOf(contracts, owner, spender, index + 1);
@@ -149,10 +144,10 @@ export async function balanceOf(contracts = [], address, index = 0) {
             return await balanceOf(contracts, address, index + 1);
 
         } else if (contracts[index].eth) {
-            balance = new BigNumber(await contracts[index].eth.getBalance(address));
+            balance = await contracts[index].eth.getBalance(address);
 
         } else {
-            balance = new BigNumber(await contracts[index].methods.balanceOf(address).call())
+            balance = await contracts[index].methods.balanceOf(address).call()
         }
         let next = await balanceOf(contracts, address, index + 1);
         next[contracts[index].eth ? "balance" : contracts[index]._address] = balance;
@@ -187,9 +182,9 @@ export async function balanceOfAll(contracts = [], addresses = [], index = 0) {
 //         let Tokens = await thunkAPI.getState().Tokens
 //         let balance = 0
 //         if (tokenAddress.eth) {
-//             balance = new BigNumber(await tokenAddress.eth.getBalance(address));
+//             balance = await tokenAddress.eth.getBalance(address);
 //         } else
-//             balance = new BigNumber(await Tokens[tokenAddress].methods.balanceOf(address).call())
+//             balance = await Tokens[tokenAddress].methods.balanceOf(address).call())
 
 //         return balance
 //     }
@@ -276,13 +271,13 @@ export const remove = createAsyncThunk(
  * @param {float} min số lượng tối thiểu
  * @param {float} max số lượng tối đa
  * @param {address} tokenAddress địa chỉ contract token
- * @param {BigNumber} decimals số thập phân: ví dụ 10^18
+ * @param {BigInt} decimals số thập phân: ví dụ 10^18
  * @returns {Web3.eth.accounts.wallet[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
  */
 export function randomAmounts(wallets = [], min, max, tokenAddress = "balance", decimals = TenPower()) {
     return wallets.map(w => {
         let wallet = { ...w }
-        wallet[tokenAddress] = new BigNumber(getRandomFloat(min, max)).multipliedBy(decimals)
+        wallet[tokenAddress] = BigInt(getRandomFloat(min, max)) * decimals
         return wallet;
     })
 }
@@ -294,14 +289,14 @@ export function randomAmounts(wallets = [], min, max, tokenAddress = "balance", 
  * @param {float} min số lượng tối thiểu
  * @param {float} max số lượng tối đa
  * @param {address} tokenAddress địa chỉ contract token
- * @param {BigNumber} decimals số thập phân: ví dụ 10^18
+ * @param {BigInt} decimals số thập phân: ví dụ 10^18
  * @returns {Web3.eth.accounts.wallet[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
  */
 export function randomAmountsByIndexs(wallets = [], indexs = [], min, max, tokenAddress = "balance", decimals = TenPower()) {
     return wallets.map((w, i) => {
         if (indexs.includes(i)) {
             let wallet = { ...w }
-            wallet[tokenAddress] = new BigNumber(getRandomFloat(min, max)).multipliedBy(decimals)
+            wallet[tokenAddress] = BigInt(getRandomFloat(min, max)) * decimals
             return wallet;
         } else
             return w;
@@ -313,7 +308,7 @@ export function randomAmountsByIndexs(wallets = [], indexs = [], min, max, token
  * @param {Web3.eth.accounts.wallet[]} wallets danh sách ví
  * @param {address | "balance"} TokenAddress địa chỉ contract token, nếu là coin thì là "balance"
  * @param {address} address địa chỉ ví người dùng
- * @param {BigNumber} amount số lượng
+ * @param {BigInt} amount số lượng
  * @returns {Web3.eth.accounts.wallet[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
  */
 export function setAmount(wallets = [], TokenAddress, address, amount) {
@@ -348,7 +343,7 @@ export const Tokens = createSlice({
 
     extraReducers: (builder) => {
         builder.addCase(addContract.fulfilled, (state, action) => {
-            state[action.payload.options.address] = action.payload
+            state[action.payload.target] = action.payload
             setTimeout(() => {
                 event.emit("addContractSuccess", action.payload)
             }, 100);

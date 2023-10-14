@@ -40,17 +40,17 @@ class WalletBox extends Component<Props, State> {
   componentDidMount(): void {
     count++
     if (count > 1) {
+      console.clear()
       let { settings } = this.props;
       SettingsEvent.on("loaded", ({ after }) => {
         this.connectWeb3()
-        log(after)
       })
     }
   }
 
   connectWeb3(e?: any): void {
-    let { connectWeb3 } = this.props;
-    console.clear()
+    let { connectWeb3, settings } = this.props;
+
     connectWeb3().then((r: { payload: { web3: any, chainId: BigInt } }) => {
       let { web3 } = r.payload
       if (web3) {
@@ -63,6 +63,7 @@ class WalletBox extends Component<Props, State> {
 
   initContracts(): void {
     let { t, web3, settings } = this.props
+
     let { Token, Stake } = settings
 
     if (!web3)
@@ -78,12 +79,12 @@ class WalletBox extends Component<Props, State> {
         }
       })
 
-      // addContract(Stake).then((r: ReduxDispatchRespone) => {
-      //   log(r)
-      //   if (r.error)
-      //     message.error(r.error);
-
-      // })
+      addContract(Stake).then((r: ReduxDispatchRespone) => {
+        if (r.error) {
+          error(Token, r.error.message)
+          notification.error({ message: "", description: r.error.message });
+        }
+      })
     } else {
       notification.error({ message: "", description: t("Settings was not loaded") })
     }
@@ -91,14 +92,27 @@ class WalletBox extends Component<Props, State> {
 
   render(): ReactNode {
 
-    const { t } = this.props;
+    const { t, tokens, settings } = this.props;
+    let endDateTime = settings.endDateTime || (new Date(moment().add(23, 'day').valueOf()));
+    
+    let Token = {
+      symbol: "Token",
+      decimals: BigInt(1e18),
+      name: "Token"
+    }
+    let Stake
+
+    if (tokens[settings?.Token?.address] && tokens[settings?.Stake?.address]) {
+      Token = tokens[settings?.Token?.address];
+      Stake = tokens[settings?.Stake?.address];
+    }
 
     return (<>
       <Box className='wallet-box'>
         <Box className='wallet-box-header' color={'white'}>
           <Text textAlign={'center'} fontSize={'18px'}>{t?.('banner.title')}</Text>
           <Countdown
-            date={new Date(moment().add(23, 'day').valueOf())}
+            date={endDateTime}
             renderer={({ days, hours, minutes, seconds, completed }) => {
               if (completed) {
                 // Render a completed state
@@ -141,9 +155,9 @@ class WalletBox extends Component<Props, State> {
                     endAdornment={<InputAdornment position="end"><img height={'24px'} src={ETHICon} /> </InputAdornment>} placeholder='0' />
                 </Box>
                 <Box>
-                  <Text fontSize={'12px'}>{t?.('banner.label_amount')} <span style={{ fontWeight: 600 }}>WSM</span> {t?.('banner.label_receive')}</Text>
+                  <Text fontSize={'12px'}>{t?.('banner.label_amount')} <span style={{ fontWeight: 600 }}>{Token.symbol}</span> {t?.('banner.label_receive')}</Text>
                   <InputOutlinedStyled
-                    endAdornment={<InputAdornment position="end"><img height={'24px'} src={'https://wallstmemes.com/assets/images/svg-icons/wall-street.svg'} /> </InputAdornment>} placeholder='0' />
+                    endAdornment={<InputAdornment position="end"><img height={'24px'} src={'images/wall-street.svg'} /> </InputAdornment>} placeholder='0' />
                 </Box>
               </Box>
               <ButtonPrimary fullWidth={true}>{t?.('banner.button_deposit')}</ButtonPrimary>
@@ -168,7 +182,8 @@ const mapStateToProps = (state: any, ownProps: any) => ({
   accounts: state.Web3.accounts,
   chainId: state.Web3.chainId,
   chainName: state.Web3.chainName,
-  settings: state.Settings.settings,
+  settings: state.Settings,
+  tokens: state.Tokens
 });
 
 export default connect(mapStateToProps, {

@@ -43,7 +43,7 @@ class Tokenomics extends Component<I18n> {
         <Text variant='h2' textAlign={'center'}>{t?.('tokenomics.title')}</Text>
         <Grid className='token-content' container spacing={2}>
             <Grid item xs={8}>
-              <ImageFluid className='teko-image-sm' style={{display: 'none'}} src='https://wallstmemes.com/assets/images/svg-icons/tekenomics-sm.svg' />
+              <ImageFluid className='teko-image-sm' style={{display: 'none'}} src='images/tekenomics-sm.svg' />
               <ImageFluid className='teko-image-lg' src={TokenomicsImage}/>
             </Grid>
             <Grid className='token-content-description' sx={{

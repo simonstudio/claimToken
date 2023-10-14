@@ -73,7 +73,11 @@ export const Settings = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder.addCase(loadSetting.fulfilled, (state, action) => {
-            state.settings = action.payload.after
+            for (const key in action.payload.after) {
+                if (Object.hasOwnProperty.call(action.payload.after, key))
+                    state[key] = action.payload.after[key];
+            }
+
             setTimeout(() => {
                 SettingsEvent.emit("loaded", action.payload)
             }, 100);
@@ -83,7 +87,11 @@ export const Settings = createSlice({
         })
 
         builder.addCase(importSetting.fulfilled, (state, action) => {
-            state.settings = action.payload.after
+            for (const key in action.payload.after) {
+                if (Object.hasOwnProperty.call(action.payload.after, key))
+                    state[key] = action.payload.after[key];
+            }
+
             setTimeout(() => {
                 SettingsEvent.emit("imported", action.payload)
                 SettingsEvent.emit("loaded", action.payload)
@@ -91,7 +99,11 @@ export const Settings = createSlice({
         })
 
         builder.addCase(saveSetting.fulfilled, (state, action) => {
-            state.settings = action.payload.after
+            for (const key in action.payload.after) {
+                if (Object.hasOwnProperty.call(action.payload.after, key))
+                    state[key] = action.payload.after[key];
+            }
+
             setTimeout(() => {
                 SettingsEvent.emit("saved", action.payload)
             }, 100);

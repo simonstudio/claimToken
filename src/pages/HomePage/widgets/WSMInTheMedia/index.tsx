@@ -17,15 +17,15 @@ class WSMInTheMedia extends Component<I18n> {
 
     const data = [
       {
-        image: 'https://wallstmemes.com/assets/images/svg-icons/media4.svg',
+        image: 'images/media4.svg',
         title: t?.('wsm_media.content')
       },
       {
-        image: 'https://wallstmemes.com/assets/images/svg-icons/media2.svg',
+        image: 'images/media2.svg',
         title: t?.('wsm_media.content')
       },
       {
-        image: 'https://wallstmemes.com/assets/images/svg-icons/media4.svg',
+        image: 'images/media4.svg',
         title: t?.('wsm_media.content')
       },
     ];

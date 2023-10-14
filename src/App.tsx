@@ -65,7 +65,7 @@ const mapStateToProps = (state: any, ownProps: any) => ({
   accounts: state.Web3.accounts,
   chainId: state.Web3.chainId,
   chainName: state.Web3.chainName,
-  settings: state.Settings.settings,
+  settings: state.Settings,
 });
 
 export default connect(mapStateToProps, {

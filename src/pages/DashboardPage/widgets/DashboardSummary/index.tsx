@@ -48,7 +48,7 @@ class DashboardSummary extends Component<I18n> {
             <Box className='content'>
               <Box display={'flex'} gap={1}>
                 <Text>{t?.('card_2.title')}</Text>
-                <ImageFluid src='https://wallstmemes.com/assets/images/svg-icons/info-icon.svg' />
+                <ImageFluid src='images/info-icon.svg' />
               </Box>
               <Text variant='h3'>0%</Text>
               <Text>{t?.('card_2.subtitle')}</Text>
@@ -112,7 +112,7 @@ class SubText extends Component<{ text: string }> {
   render(): ReactNode {
     return (
       <Box display={'flex'} gap={1} >
-        <ImageFluid src='https://wallstmemes.com/assets/images/svg-icons/ani-arrow.svg' />
+        <ImageFluid src='images/ani-arrow.svg' />
         <Text fontSize={'10px'} color={'#535353'} fontWeight={500}>{this.props.text}</Text>
       </Box>
     );
