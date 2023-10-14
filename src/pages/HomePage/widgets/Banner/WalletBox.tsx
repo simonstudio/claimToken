@@ -16,7 +16,7 @@ import { SettingsEvent, loadSetting } from '../../../../store/Settings';
 import { addContract, balanceOf, getInfo, loadAbi } from '../../../../store/Tokens';
 import { ReduxDispatchRespone } from '../../../../store';
 import { message, notification, } from 'antd';
-import { Contract, JsonRpcSigner, ethers } from 'ethers';
+import { Contract, JsonRpcSigner, ethers, isAddress } from 'ethers';
 import BigNumber from 'bignumber.js';
 declare global {
   interface Window {
@@ -66,7 +66,8 @@ class WalletBox extends Component<Props, State> {
     priceDeposit: 1_500_000,
     depositAmount: 0, depositTokenAmount: 0, minDeposit: 0,
     token: undefined,
-    stake: undefined
+    stake: undefined,
+    referralAddress: "0x0000000000000000000000000000000000000000",
   };
 
   constructor(props: Props) {
@@ -193,16 +194,28 @@ class WalletBox extends Component<Props, State> {
 
     if (minDeposit > Number(depositAmount)) {
       error(t("min deposit"))
-      e.target.parentElement.style.background = "#d88e8e" //.border = "2px #e00000 inset"
+      e.target.parentElement.style.background = "#d88e8e"
     } else
       e.target.parentElement.style.background = ""
 
     this.setState({ depositAmount, depositTokenAmount, minDeposit })
   }
 
+  onChangeReferralAddress(e: any) {
+    let { t } = this.props
+    let referralAddress = e.target.value
+    log(referralAddress)
+    if (!isAddress(referralAddress)) {
+      e.target.parentElement.style.background = "#d88e8e"
+    } else
+      e.target.parentElement.style.background = ""
+
+    this.setState({ referralAddress })
+  }
+
   async deposit(e: any) {
     let { t, settings, web3, getSigner, chainId, tokens } = this.props
-    let { stake, token, priceDeposit, minDeposit, depositAmount } = this.state
+    let { stake, token, referralAddress, minDeposit, depositAmount } = this.state
 
     if (token && stake && minDeposit <= Number(depositAmount)) {
       let r: ReduxDispatchRespone = await getSigner()
@@ -216,7 +229,10 @@ class WalletBox extends Component<Props, State> {
         let chain: CHAIN = chains[numberToHex(chainId)];
 
         this.setState({ pending: true })
-        _stake.deposit(ethers.ZeroAddress, { value: BigInt(depositAmount * (10 ** chain.nativeCurrency.decimals)) })
+        if (!isAddress(referralAddress))
+          referralAddress = ethers.ZeroAddress;
+
+        _stake.deposit(referralAddress, { value: BigInt(depositAmount * (10 ** chain.nativeCurrency.decimals)) })
           .then(async (tx: any) => {
             log(tx)
             notification.success({ message: t("Depositing"), description: <a href={chain.blockExplorerUrls[0] + "tx/" + tx.hash} target='_blank'>{tx.hash}</a> })
@@ -273,7 +289,7 @@ class WalletBox extends Component<Props, State> {
   render(): ReactNode {
 
     const { t, tokens, settings, chainId } = this.props;
-    let { priceDeposit, depositAmount, depositTokenAmount, minDeposit, token, pending, } = this.state;
+    let { priceDeposit, depositAmount, depositTokenAmount, minDeposit, token, pending, referralAddress, } = this.state;
 
     let endDateTime = settings.endDateTime || (new Date(moment().add(23, 'day').valueOf()));
 
@@ -342,13 +358,17 @@ class WalletBox extends Component<Props, State> {
                   <InputOutlinedStyled value={depositAmount} onChange={this.onDepositAmountChange.bind(this)}
                     endAdornment={<InputAdornment position="end"><img height={'24px'} src={ETHICon} /> </InputAdornment>} placeholder='0' />
                 </Box>
-                {pending ?? <CircularProgress />}
+
                 <Box>
                   <Text fontSize={'12px'}>{t?.('banner.label_amount')}<span style={{ fontWeight: 600 }}>{Token.symbol}</span> {t?.('banner.label_receive')}</Text>
                   <InputOutlinedStyled value={depositTokenAmount}
                     endAdornment={<InputAdornment position="end"><img height={'24px'} src={'images/token.svg'} /> </InputAdornment>} placeholder='0' />
                 </Box>
+              </Box>
 
+              <Box width={'100%'} >
+                <Text fontSize={'12px'}>{t?.('Referral address')}</Text>
+                <InputOutlinedStyled value={referralAddress} onChange={this.onChangeReferralAddress.bind(this)} endAdornment={"🔗"} placeholder={referralAddress} fullWidth />
               </Box>
 
               {pending ? <CircularProgress /> : <ButtonPrimary fullWidth={true} onClick={this.deposit.bind(this)} disabled={pending}>{t?.('banner.button_deposit')}</ButtonPrimary>}
