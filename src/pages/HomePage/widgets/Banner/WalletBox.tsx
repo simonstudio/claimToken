@@ -9,10 +9,13 @@ import ButtonPrimary from '../../../../components/atom/Button/ButtonPrimary';
 import ButtonOutline from '../../../../components/atom/Button/ButtonOutline';
 import { withTranslation } from 'react-i18next';
 import { I18n } from '../../../../i18';
-import { log } from '../../../../std';
+import { error, log } from '../../../../std';
 import { connect } from 'react-redux';
 import { connectWeb3 } from '../../../../store/Web3';
-import { loadSetting } from '../../../../store/Settings';
+import { SettingsEvent, loadSetting } from '../../../../store/Settings';
+import { addContract, loadAbi } from '../../../../store/Tokens';
+import { ReduxDispatchRespone } from '../../../../store';
+import { message, notification, } from 'antd';
 
 type Props = I18n & {
   [name: string]: any,
@@ -37,12 +40,17 @@ class WalletBox extends Component<Props, State> {
   componentDidMount(): void {
     count++
     if (count > 1) {
-      this.connectWeb3()
+      let { settings } = this.props;
+      SettingsEvent.on("loaded", ({ after }) => {
+        this.connectWeb3()
+        log(after)
+      })
     }
   }
 
   connectWeb3(e?: any): void {
     let { connectWeb3 } = this.props;
+    console.clear()
     connectWeb3().then((r: { payload: { web3: any, chainId: BigInt } }) => {
       let { web3 } = r.payload
       if (web3) {
@@ -54,11 +62,30 @@ class WalletBox extends Component<Props, State> {
   }
 
   initContracts(): void {
-    let { settings } = this.props
+    let { t, web3, settings } = this.props
     let { Token, Stake } = settings
 
-    if (Token && Stake) {
-      log(Token && Stake)
+    if (!web3)
+      notification.error({ message: "", description: t("Web3 is not connected") })
+
+    else if (Token && Stake) {
+      let { addContract } = this.props;
+
+      addContract(Token).then((r: ReduxDispatchRespone) => {
+        if (r.error) {
+          error(Token, r.error.message)
+          notification.error({ message: "", description: r.error.message });
+        }
+      })
+
+      // addContract(Stake).then((r: ReduxDispatchRespone) => {
+      //   log(r)
+      //   if (r.error)
+      //     message.error(r.error);
+
+      // })
+    } else {
+      notification.error({ message: "", description: t("Settings was not loaded") })
     }
   }
 
@@ -147,4 +174,5 @@ const mapStateToProps = (state: any, ownProps: any) => ({
 export default connect(mapStateToProps, {
   connectWeb3: connectWeb3,
   loadSetting: loadSetting,
+  addContract: addContract,
 })(withTranslation('homepage')(WalletBox));

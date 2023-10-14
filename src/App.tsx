@@ -9,6 +9,8 @@ import { loadSetting } from './store/Settings';
 import { connectWeb3 } from './store/Web3';
 import { connect } from 'react-redux';
 import { log } from './std';
+import { ReduxDispatchRespone } from './store';
+import { notification } from 'antd';
 
 type Props = {
   [name: string]: any,
@@ -17,12 +19,6 @@ type State = {
   [name: string]: any,
 }
 
-type ReduxDispatchRespone = {
-  meta: any,
-  payload: any,
-  type: string,
-  error?: any
-}
 
 let count = 0
 class App extends Component<Props> {
@@ -32,8 +28,12 @@ class App extends Component<Props> {
   componentDidMount(): void {
     count++
     if (count > 1) {
+      notification.config({
+        placement: 'bottomLeft',
+      });
+
       this.props.loadSetting().then((r: ReduxDispatchRespone) => {
-        log(r.payload)
+        // log(r.payload)
       });
     }
   }

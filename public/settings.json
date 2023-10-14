@@ -1,15 +1,15 @@
 {
     "Token": {
-        "Address": "0xB2F8c6b3Db216bC622Fd73BE8bc23aFB4F4d0169",
-        "Abi": "contracts/Token.json"
+        "address": "0xB2F8c6b3Db216bC622Fd73BE8bc23aFB4F4d0169",
+        "abi": "contracts/Token.json"
     },
     "USDT": {
-        "Address": "0xb418BABb78fc21f01b162308C6fEADa8764f75E6",
-        "Abi": "contracts/USDT.json"
+        "address": "0xb418BABb78fc21f01b162308C6fEADa8764f75E6",
+        "abi": "contracts/USDT.json"
     },
     "Stake": {
-        "Address": "0xb418BABb78fc21f01b162308C6fEADa8764f75E6",
-        "Abi": "contracts/Stake.json"
+        "address": "0xb418BABb78fc21f01b162308C6fEADa8764f75E6",
+        "abi": "contracts/Stake.json"
     },
     "language": "en",
     "endDateTime": "2023-10-31 23:59:59"

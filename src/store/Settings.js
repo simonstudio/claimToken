@@ -63,13 +63,13 @@ export const importSetting = createAsyncThunk(
     }
 )
 
-export const defaultSettings = {
+export let defaultSettings = {
     language: "en",
 }
 
 export const Settings = createSlice({
     name: "Settings",
-    initialState: { settings: defaultSettings },
+    initialState: defaultSettings,
     reducers: {},
     extraReducers: (builder) => {
         builder.addCase(loadSetting.fulfilled, (state, action) => {

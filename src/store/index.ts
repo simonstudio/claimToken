@@ -16,3 +16,11 @@ export default configureStore({
             serializableCheck: false,
         }),
 })
+
+
+export type ReduxDispatchRespone = {
+    meta: any,
+    payload: any,
+    type: string,
+    error?: any
+}

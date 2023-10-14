@@ -8,6 +8,7 @@ import { EventEmitter } from "events";
 import { saveSetting } from "./Settings";
 import BigNumber from "bignumber.js";
 import { TenPower, getRandomFloat } from "../std";
+import { Contract } from "ethers";
 // BigNumber.config({ DECIMAL_PLACES: 4, ROUNDING_MODE: 5 })
 const { log, warn, error } = console
 
@@ -23,11 +24,20 @@ export let event = new EventEmitter()
  * @param {string} name 
  * @returns {object} json object
  */
-export async function loadAbi(name = "Token") {
+export async function loadAbiByName(name = "Token") {
     return axios.get("/contracts/" + name + ".json")
         .then(r => r.data)
 }
 
+/**
+ * load abi of contract by url to json
+ * @param {string} url link to abi
+ * @returns {object | any} abi
+ */
+export async function loadAbi(url = "/contracts/Token.json") {
+    return axios.get(url)
+        .then(r => r.data)
+}
 
 /**
  * thêm 1 contract vào store
@@ -39,20 +49,24 @@ export async function loadAbi(name = "Token") {
 export const addContract = createAsyncThunk(
     "addContract",
     async ({ abi, address }, thunkAPI) => {
-        let { web3 } = await thunkAPI.getState().MyWeb3;
-        let { setting } = await thunkAPI.getState().Settings
+
+        let { web3 } = await thunkAPI.getState().Web3;
+        let { settings } = await thunkAPI.getState().Settings
 
         if (typeof abi == "string") {
             abi = await loadAbi(abi)
         } else if (!abi)
-            abi = await loadAbi()
+            abi = await loadAbiByName()
+        let instance = new Contract(abi, address, web3)
+        log(instance)
 
-        let instance = new web3.eth.Contract(abi, address)
-        instance = { ...(await getInfo(instance)), ...instance }
+        try {
+            instance = { ...(await getInfo(instance)), ...instance }
+        } catch (err) { }
 
-        let tokens = JSON.parse(JSON.stringify(setting.tokens))
+        // let tokens = JSON.parse(JSON.stringify(settings.tokens))
 
-        await thunkAPI.dispatch(saveSetting({ key: "tokens", value: Array.from(new Set([...tokens, address])) }))
+        // await thunkAPI.dispatch(saveSetting({ key: "tokens", value: Array.from(new Set([...tokens, address])) }))
 
         return instance
     }
