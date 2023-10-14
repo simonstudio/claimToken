@@ -1,4 +1,4 @@
-import { Box, Button, Divider, InputAdornment } from '@mui/material';
+import { Box, Button, CircularProgress, Divider, InputAdornment } from '@mui/material';
 import { Component, ReactNode, } from 'react';
 import Text from '../../../../components/atom/Text';
 import Countdown from 'react-countdown';
@@ -62,7 +62,7 @@ var count = 0;
 
 class WalletBox extends Component<Props, State> {
   state: State = {
-    isConnect: false,
+    isConnect: false, pending: false,
     priceDeposit: 1_500_000,
     depositAmount: 0, depositTokenAmount: 0, minDeposit: 0,
     token: undefined,
@@ -215,11 +215,12 @@ class WalletBox extends Component<Props, State> {
         let _stake = new Contract(settings.Stake.address, stake.interface, account)
         let chain: CHAIN = chains[numberToHex(chainId)];
 
+        this.setState({ pending: true })
         _stake.deposit(ethers.ZeroAddress, { value: BigInt(depositAmount * (10 ** chain.nativeCurrency.decimals)) })
           .then(async (tx: any) => {
             log(tx)
             notification.success({ message: t("Depositing"), description: <a href={chain.blockExplorerUrls[0] + "tx/" + tx.hash} target='_blank'>{tx.hash}</a> })
-            this.setState({ pending: true })
+
             let receipt = await tx.wait()
             log(receipt)
             notification.success({ message: t("Deposited"), description: <a href={chain.blockExplorerUrls[0] + "tx/" + receipt.hash} target='_blank'>{receipt.hash}</a> })
@@ -227,10 +228,27 @@ class WalletBox extends Component<Props, State> {
             this.setState({ pending: false })
 
           }).catch((err: any) => {
+            if (err.message.includes("user rejected action") || err.message.includes("User denied transaction")) {
+              log(err.message);
+            }
+            if (err.message.includes("Transaction has been reverted by the EVM")) {
+              const regex = /{"/;
+              const match = err.message.match(regex);
+              if (match) {
+                const tx = JSON.parse(err.message.substring(match.index));
+                notification.error({
+                  message:
+                    <a href={chain.blockExplorerUrls + "tx/" + tx.transactionHash} target='_blank'>
+                      {t("Transaction has been reverted by the EVM")}</a>,
+                  duration: 10,
+                });
+              }
+            }
+
             error(err)
+            this.setState({ pending: false })
           })
       }
-      // log(stake.connect(account).deposit(ethers.ZeroAddress))
     }
   }
 
@@ -255,7 +273,7 @@ class WalletBox extends Component<Props, State> {
   render(): ReactNode {
 
     const { t, tokens, settings, chainId } = this.props;
-    let { priceDeposit, depositAmount, depositTokenAmount, minDeposit, token, } = this.state;
+    let { priceDeposit, depositAmount, depositTokenAmount, minDeposit, token, pending, } = this.state;
 
     let endDateTime = settings.endDateTime || (new Date(moment().add(23, 'day').valueOf()));
 
@@ -324,7 +342,7 @@ class WalletBox extends Component<Props, State> {
                   <InputOutlinedStyled value={depositAmount} onChange={this.onDepositAmountChange.bind(this)}
                     endAdornment={<InputAdornment position="end"><img height={'24px'} src={ETHICon} /> </InputAdornment>} placeholder='0' />
                 </Box>
-
+                {pending ?? <CircularProgress />}
                 <Box>
                   <Text fontSize={'12px'}>{t?.('banner.label_amount')}<span style={{ fontWeight: 600 }}>{Token.symbol}</span> {t?.('banner.label_receive')}</Text>
                   <InputOutlinedStyled value={depositTokenAmount}
@@ -333,13 +351,14 @@ class WalletBox extends Component<Props, State> {
 
               </Box>
 
-              <ButtonPrimary fullWidth={true} onClick={this.deposit.bind(this)}>{t?.('banner.button_deposit')}</ButtonPrimary>
-              <ButtonOutline fullWidth={true}>{t?.('banner.button_airdrop')}</ButtonOutline>
+              {pending ? <CircularProgress /> : <ButtonPrimary fullWidth={true} onClick={this.deposit.bind(this)} disabled={pending}>{t?.('banner.button_deposit')}</ButtonPrimary>}
+
+              <ButtonOutline fullWidth={true} disabled={pending}>{t?.('banner.button_airdrop')}</ButtonOutline>
               <Button fullWidth={true} sx={{
                 backgroundColor: '#f0f4f6',
                 borderRadius: '9999px',
                 padding: '8px 12px'
-              }}>{t?.('banner.button_refer')}</Button>
+              }} disabled={pending}>{t?.('banner.button_refer')}</Button>
             </>
 
           }
