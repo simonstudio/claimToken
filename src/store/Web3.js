@@ -4,7 +4,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { ethers, } from "ethers";
 import { notification } from 'antd';
-import { log, logwarn, logerror } from "../std"
+import { log, logwarn, logerror, numberToHex } from "../std"
 import { EventEmitter } from "events";
 
 export var Web3Event = new EventEmitter();
@@ -14,9 +14,6 @@ const dev = {
     MAINNET: 'MAINNET'
 }
 
-function numberToHex(number) {
-    return "0x" + number.toString(16)
-}
 
 export const CHAINS = {
     1337: {
@@ -148,7 +145,7 @@ export const CHAINS = {
         nativeCurrency: {
             name: 'Tron', decimals: 18, symbol: 'TRX'
         },
-        chainId: numberToHex("tron"),
+        chainId: "tron",
         icon: "tron.svg",
         rpcUrls: ['https://api.trongrid.io'],
         chainName: 'Tron',

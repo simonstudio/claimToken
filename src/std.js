@@ -10,6 +10,10 @@ const error = console.error
 const tab = "	";
 const enter = "\n";
 
+export function numberToHex(number) {
+    return "0x" + number.toString(16)
+}
+
 function encryptString(content = "", password = "Secret Passphrase") {
     return CryptoJS.AES.encrypt(content, password).toString();
 }

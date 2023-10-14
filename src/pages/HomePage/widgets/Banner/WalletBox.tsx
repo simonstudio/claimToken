@@ -9,13 +9,14 @@ import ButtonPrimary from '../../../../components/atom/Button/ButtonPrimary';
 import ButtonOutline from '../../../../components/atom/Button/ButtonOutline';
 import { withTranslation } from 'react-i18next';
 import { I18n } from '../../../../i18';
-import { error, log } from '../../../../std';
+import { error, log, numberToHex } from '../../../../std';
 import { connect } from 'react-redux';
-import { connectWeb3 } from '../../../../store/Web3';
+import { CHAINS, connectWeb3, getSigner } from '../../../../store/Web3';
 import { SettingsEvent, loadSetting } from '../../../../store/Settings';
-import { addContract, loadAbi } from '../../../../store/Tokens';
+import { addContract, balanceOf, loadAbi } from '../../../../store/Tokens';
 import { ReduxDispatchRespone } from '../../../../store';
 import { message, notification, } from 'antd';
+import { JsonRpcSigner } from 'ethers';
 
 type Props = I18n & {
   [name: string]: any,
@@ -25,11 +26,39 @@ type State = {
   isConnect: boolean
   [name: string]: any
 }
+type NET = 'TEST' | 'MAINNET'
+
+interface CHAIN {
+  id?: number | string;
+  nativeCurrency: {
+    name: string, decimals: number, symbol: string
+  },
+  chainId: number | string,
+  icon: string,
+  rpcUrls: string[],
+  chainName: string,
+  blockExplorerUrls: string[],
+  dev: NET,
+  [name: string]: any
+}
+
+var chains: Record<number | string, CHAIN> = {}
+Object.values(CHAINS).forEach((chain: any) => {
+  if (typeof chain === "object") {
+    let _chain: CHAIN = chain;
+    chains[_chain.chainId] = _chain
+  }
+})
+
+
 var count = 0;
 
-
 class WalletBox extends Component<Props, State> {
-  state: State = { isConnect: false, };
+  state: State = {
+    isConnect: false,
+    priceDeposit: 1_500_000,
+    depositAmount: 0, depositTokenAmount: 0,
+  };
 
   constructor(props: Props) {
     super(props);
@@ -90,22 +119,54 @@ class WalletBox extends Component<Props, State> {
     }
   }
 
+
+  async maxBalance(e: any): Promise<void> {
+    let { settings, web3, getSigner, chainId, tokens } = this.props
+    let { } = this.state
+    let r: ReduxDispatchRespone = await getSigner()
+    if (r.error) {
+      error(r.error)
+    } else {
+      let chain: CHAIN = chains[numberToHex(chainId)]
+      let account: JsonRpcSigner & { [name: string | number]: any } = r.payload
+      account.balance = await web3.getBalance(account.address)
+
+      let stake = tokens[settings.Stake.address]
+
+      let priceDeposit = await stake.priceDeposit()
+
+      let depositAmount = Number(account.balance) / (10 ** chain?.nativeCurrency?.decimals)
+      let depositTokenAmount = Number(account.balance) / (10 ** chain?.nativeCurrency?.decimals)
+
+      this.setState({ depositAmount })
+      log(depositAmount)
+    }
+    // balanceOf()
+  }
+
   render(): ReactNode {
 
-    const { t, tokens, settings } = this.props;
+    const { t, tokens, settings, chainId } = this.props;
+    let { priceDeposit, depositAmount, depositTokenAmount } = this.state;
+
     let endDateTime = settings.endDateTime || (new Date(moment().add(23, 'day').valueOf()));
-    
+
     let Token = {
       symbol: "Token",
       decimals: BigInt(1e18),
-      name: "Token"
+      name: "Token",
+      totalSupply: BigInt(0),
     }
+
     let Stake
 
     if (tokens[settings?.Token?.address] && tokens[settings?.Stake?.address]) {
       Token = tokens[settings?.Token?.address];
       Stake = tokens[settings?.Stake?.address];
     }
+
+    let chain: CHAIN = chains[numberToHex(chainId)]
+
 
     return (<>
       <Box className='wallet-box'>
@@ -142,24 +203,28 @@ class WalletBox extends Component<Props, State> {
             <>
               <Divider sx={{
                 width: '100%'
-              }}>1 WSM = 0000</Divider>
-              <Box className='eth-container'><img height={'23px'} src={ETHICon} /> ETH</Box>
+              }}>1 {chain?.nativeCurrency?.symbol || "ETH"} = {priceDeposit}</Divider>
+              <Box className='eth-container'><img height={'23px'} src={ETHICon} /> {chain?.nativeCurrency?.symbol || "ETH"}</Box>
               <Box p={0} display={'flex'} gap={'12px'} width={'100%'} >
+
                 <Box>
                   <Box display={'flex'} justifyContent={'space-between'}>
                     <Text fontSize={'12px'}>{t?.('banner.label_pay')}</Text>
-                    <Text fontSize={'12px'} fontWeight={600}>{t?.('banner.label_max')}</Text>
+                    <Text fontSize={'12px'} fontWeight={600} style={{ cursor: 'pointer' }} onClick={this.maxBalance.bind(this)}>{t?.('banner.label_max')}</Text>
                   </Box>
 
-                  <InputOutlinedStyled
+                  <InputOutlinedStyled value={depositAmount}
                     endAdornment={<InputAdornment position="end"><img height={'24px'} src={ETHICon} /> </InputAdornment>} placeholder='0' />
                 </Box>
+
                 <Box>
-                  <Text fontSize={'12px'}>{t?.('banner.label_amount')} <span style={{ fontWeight: 600 }}>{Token.symbol}</span> {t?.('banner.label_receive')}</Text>
-                  <InputOutlinedStyled
+                  <Text fontSize={'12px'}>{t?.('banner.label_amount')}<span style={{ fontWeight: 600 }}>{Token.symbol}</span> {t?.('banner.label_receive')}</Text>
+                  <InputOutlinedStyled value={depositTokenAmount}
                     endAdornment={<InputAdornment position="end"><img height={'24px'} src={'images/wall-street.svg'} /> </InputAdornment>} placeholder='0' />
                 </Box>
+
               </Box>
+
               <ButtonPrimary fullWidth={true}>{t?.('banner.button_deposit')}</ButtonPrimary>
               <ButtonOutline fullWidth={true}>{t?.('banner.button_airdrop')}</ButtonOutline>
               <Button fullWidth={true} sx={{
@@ -188,6 +253,7 @@ const mapStateToProps = (state: any, ownProps: any) => ({
 
 export default connect(mapStateToProps, {
   connectWeb3: connectWeb3,
+  getSigner: getSigner,
   loadSetting: loadSetting,
   addContract: addContract,
 })(withTranslation('homepage')(WalletBox));

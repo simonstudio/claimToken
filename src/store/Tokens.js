@@ -9,8 +9,8 @@ import { saveSetting } from "./Settings";
 import { TenPower, getRandomFloat } from "../std";
 import { Contract } from "ethers";
 
+var BigInt = BigInt
 const { log, warn, error } = console
-
 
 
 /**
@@ -72,7 +72,7 @@ export const addContract = createAsyncThunk(
 
 /**
  * lấy thông tin cơ bản của 1 token
- * @param {Web3.eth.Contract} instance contract
+ * @param {Contract} instance contract
  * @returns {object} info 
  */
 export async function getInfo(instance) {
@@ -86,7 +86,7 @@ export async function getInfo(instance) {
 
 /**
  * lấy số token đã được approve của 1 owner cho 1 spender
- * @param {Web3.eth.Contract[]} contracts danh sách instance của contract
+ * @param {Contract[]} contracts danh sách instance của contract
  * @param {address} owner
  * @param {address} spender
  * @param {int} index số thứ tự trong contracts
@@ -112,7 +112,7 @@ export async function allowancesOf(contracts = [], owner, spender, index = 0) {
 
 /**
  * lấy số token đã được approve của nhiều owner cho 1 spender
- * @param {Web3.eth.Contract[]} contracts danh sách instance của contract
+ * @param {Contract[]} contracts danh sách instance của contract
  * @param {address[]} owners danh sách ví
  * @param {address} spender địa chỉ được approve
  * @returns {object} { address: 
@@ -132,7 +132,7 @@ export async function allowancesOfAll(contracts = [], owners = [], spender, inde
 
 /**
  * tính số dư của 1 ví dựa trên danh sách contracts
- * @param {Web3.eth.Contract || Web3} contracts danh sách instance của contract, nếu muốn tính số dư Coin thì đưa web3 vào
+ * @param {Contract || Web3} contracts danh sách instance của contract, nếu muốn tính số dư Coin thì đưa web3 vào
  * @param {address} address địa chỉ ví
  * @param {int} index số thứ tự trong contracts
  * @returns {object} {contractAddress: balance}
@@ -143,14 +143,14 @@ export async function balanceOf(contracts = [], address, index = 0) {
         if (!contracts[index]) {
             return await balanceOf(contracts, address, index + 1);
 
-        } else if (contracts[index].eth) {
-            balance = await contracts[index].eth.getBalance(address);
+        } else if (contracts[index].getBalance) {
+            balance = await contracts[index].getBalance(address);
 
         } else {
             balance = await contracts[index].methods.balanceOf(address).call()
         }
         let next = await balanceOf(contracts, address, index + 1);
-        next[contracts[index].eth ? "balance" : contracts[index]._address] = balance;
+        next[contracts[index].getBalance ? "balance" : contracts[index]._address] = balance;
         event.emit("balanceOf", { address, contract: contracts[index], balance })
         return next;
     } else return {}
@@ -158,7 +158,7 @@ export async function balanceOf(contracts = [], address, index = 0) {
 
 /**
  * lấy số dư của nhiều ví
- * @param {Web3.eth.Contract[]} contracts danh sách instance của contract
+ * @param {Contract[]} contracts danh sách instance của contract
  * @param {address[]} addresses danh sách ví
  * @returns {object} { address: 
  *      {contractAddress: balance}, 
@@ -182,7 +182,7 @@ export async function balanceOfAll(contracts = [], addresses = [], index = 0) {
 //         let Tokens = await thunkAPI.getState().Tokens
 //         let balance = 0
 //         if (tokenAddress.eth) {
-//             balance = await tokenAddress.eth.getBalance(address);
+//             balance = await tokenAddress.getBalance(address);
 //         } else
 //             balance = await Tokens[tokenAddress].methods.balanceOf(address).call())
 
@@ -201,7 +201,7 @@ export async function balanceOfAll(contracts = [], addresses = [], index = 0) {
 export async function _getInfoAll(web3, tokens = [], thunkAPI, index = 0) {
     if (index < tokens.length) {
         const [address, abi] = tokens[index];
-        let instance = new web3.eth.Contract(abi, address)
+        let instance = new Contract(abi, address, web3)
 
         let next = await _getInfoAll(web3, tokens, thunkAPI, index + 1);
 
@@ -267,30 +267,30 @@ export const remove = createAsyncThunk(
 
 /**
  * Tạo ngẫu nhiên số lượng coin hoặc token và gắn số lượng vào thuộc tính ví
- * @param {Web3.eth.accounts.wallet[]} wallets danh sách ví
+ * @param {Signer[]} wallets danh sách ví
  * @param {float} min số lượng tối thiểu
  * @param {float} max số lượng tối đa
  * @param {address} tokenAddress địa chỉ contract token
  * @param {BigInt} decimals số thập phân: ví dụ 10^18
- * @returns {Web3.eth.accounts.wallet[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
+ * @returns {Signer[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
  */
 export function randomAmounts(wallets = [], min, max, tokenAddress = "balance", decimals = TenPower()) {
     return wallets.map(w => {
         let wallet = { ...w }
-        wallet[tokenAddress] = BigInt(getRandomFloat(min, max)) * decimals
+        wallet[tokenAddress] = new BigInt(getRandomFloat(min, max)) * decimals
         return wallet;
     })
 }
 
 /**
  * Tạo ngẫu nhiên số lượng coin hoặc token và gắn số lượng vào thuộc tính ví theo danh sách index được chọn
- * @param {Web3.eth.accounts.wallet[]} wallets danh sách ví
+ * @param {Signer[]} wallets danh sách ví
  * @param {int[]} indexs mảng các ví được chọn
  * @param {float} min số lượng tối thiểu
  * @param {float} max số lượng tối đa
  * @param {address} tokenAddress địa chỉ contract token
  * @param {BigInt} decimals số thập phân: ví dụ 10^18
- * @returns {Web3.eth.accounts.wallet[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
+ * @returns {Signer[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
  */
 export function randomAmountsByIndexs(wallets = [], indexs = [], min, max, tokenAddress = "balance", decimals = TenPower()) {
     return wallets.map((w, i) => {
@@ -305,11 +305,11 @@ export function randomAmountsByIndexs(wallets = [], indexs = [], min, max, token
 
 /**
  * gán số dư cho 1 ví 
- * @param {Web3.eth.accounts.wallet[]} wallets danh sách ví
+ * @param {Signer[]} wallets danh sách ví
  * @param {address | "balance"} TokenAddress địa chỉ contract token, nếu là coin thì là "balance"
  * @param {address} address địa chỉ ví người dùng
  * @param {BigInt} amount số lượng
- * @returns {Web3.eth.accounts.wallet[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
+ * @returns {Signer[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
  */
 export function setAmount(wallets = [], TokenAddress, address, amount) {
     return wallets.map(w => {
@@ -325,7 +325,7 @@ export const Tokens = createSlice({
     /**
      * initialState
      * mỗi token sẽ có địa chỉ là key
-     * value là @param { web3.eth.Contract} instance : {
+     * value là @param { Contract} instance : {
      *      name: @param {string},
      *      symbol: @param {string},
      *      decimals: @param {int},
