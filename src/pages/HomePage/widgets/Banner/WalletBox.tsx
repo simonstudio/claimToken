@@ -133,10 +133,14 @@ class WalletBox extends Component<Props, State> {
     const { token, stake } = this.state;
     if (!stake || !token)
       return;
-    log(token, stake)
 
-    stake.priceDeposit().then((priceDeposit: BigInt | any) => this.setState({ priceDeposit: Number(priceDeposit) }))
-    stake.minDeposit().then((minDeposit: BigInt | any) => this.setState({ minDeposit: Number(minDeposit / token.info.decimals) }))
+    stake.priceDeposit().then((priceDeposit: BigInt | any) => {
+      this.setState({ priceDeposit: Number(priceDeposit) })
+    })
+
+    stake.minDeposit().then((minDeposit: BigInt | any) => {
+      this.setState({ minDeposit: Number(minDeposit) / token.info.decimals })
+    })
   }
 
 
@@ -172,9 +176,8 @@ class WalletBox extends Component<Props, State> {
     let { stake, token, priceDeposit, minDeposit } = this.state
 
     if (minDeposit <= 0) {
-      let min = await stake.minDeposit()
-      minDeposit = Number(min / token.info.decimals);
-      log(min, minDeposit)
+      minDeposit = Number(await stake.minDeposit()) / token.info.decimals;
+      log(minDeposit)
     }
     let depositTokenAmount = Number(depositAmount * priceDeposit);
 
@@ -248,7 +251,7 @@ class WalletBox extends Component<Props, State> {
               <Box className='eth-container'><img height={'23px'} src={ETHICon} /> {chain?.nativeCurrency?.symbol || "ETH"}</Box>
               <Box p={0} display={'flex'} gap={'12px'} width={'100%'} >
 
-                <Box>minDeposit {minDeposit}
+                <Box>
                   <Box display={'flex'} justifyContent={'space-between'}>
                     <Text fontSize={'12px'}>{t?.('banner.label_pay')}</Text>
                     <Text fontSize={'12px'} fontWeight={600} style={{ cursor: 'pointer' }} onClick={this.maxBalance.bind(this)}>{t?.('banner.label_max')}</Text>

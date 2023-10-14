@@ -75,7 +75,7 @@ export async function getInfo(instance) {
     let info = {
         name: await instance.name(),
         symbol: await instance.symbol(),
-        decimals: BigInt(10) ** (await instance.decimals()),
+        decimals: 10 ** Number(await instance.decimals()),
         totalSupply: await instance.totalSupply(),
     }
     return info;
