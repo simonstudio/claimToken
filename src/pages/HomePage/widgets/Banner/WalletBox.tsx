@@ -13,7 +13,7 @@ import { error, log, numberToHex } from '../../../../std';
 import { connect } from 'react-redux';
 import { CHAINS, connectWeb3, getSigner } from '../../../../store/Web3';
 import { SettingsEvent, loadSetting } from '../../../../store/Settings';
-import { addContract, balanceOf, loadAbi } from '../../../../store/Tokens';
+import { addContract, balanceOf, getInfo, loadAbi } from '../../../../store/Tokens';
 import { ReduxDispatchRespone } from '../../../../store';
 import { message, notification, } from 'antd';
 import { JsonRpcSigner } from 'ethers';
@@ -57,13 +57,16 @@ class WalletBox extends Component<Props, State> {
   state: State = {
     isConnect: false,
     priceDeposit: 1_500_000,
-    depositAmount: 0, depositTokenAmount: 0,
+    depositAmount: 0, depositTokenAmount: 0, minDeposit: 0,
+    token: undefined,
+    stake: undefined
   };
 
   constructor(props: Props) {
     super(props);
     this.connectWeb3.bind(this)
     this.initContracts.bind(this)
+    this.getInfo.bind(this)
   }
 
   componentDidMount(): void {
@@ -101,28 +104,45 @@ class WalletBox extends Component<Props, State> {
     else if (Token && Stake) {
       let { addContract } = this.props;
 
-      addContract(Token).then((r: ReduxDispatchRespone) => {
+      addContract(Token).then(async (r: ReduxDispatchRespone) => {
         if (r.error) {
           error(Token, r.error.message)
-          notification.error({ message: "", description: r.error.message });
+          return notification.error({ message: "", description: r.error.message });
         }
+        let token = r.payload;
+        token.info = await getInfo(token)
+        this.setState({ token }, this.getInfo)
       })
 
-      addContract(Stake).then((r: ReduxDispatchRespone) => {
+      addContract(Stake).then(async (r: ReduxDispatchRespone) => {
         if (r.error) {
           error(Token, r.error.message)
-          notification.error({ message: "", description: r.error.message });
+          return notification.error({ message: "", description: r.error.message });
         }
+        let stake = r.payload;
+        this.setState({ stake }, this.getInfo)
+        let priceDeposit = Number(await stake.priceDeposit());
+        this.setState({ priceDeposit });
       })
     } else {
       notification.error({ message: "", description: t("Settings was not loaded") })
     }
   }
 
+  getInfo() {
+    const { token, stake } = this.state;
+    if (!stake || !token)
+      return;
+    log(token, stake)
+
+    stake.priceDeposit().then((priceDeposit: BigInt | any) => this.setState({ priceDeposit: Number(priceDeposit) }))
+    stake.minDeposit().then((minDeposit: BigInt | any) => this.setState({ minDeposit: Number(minDeposit / token.info.decimals) }))
+  }
+
 
   async maxBalance(e: any): Promise<void> {
     let { settings, web3, getSigner, chainId, tokens } = this.props
-    let { } = this.state
+    let { stake, token, minDeposit } = this.state
     let r: ReduxDispatchRespone = await getSigner()
     if (r.error) {
       error(r.error)
@@ -131,23 +151,44 @@ class WalletBox extends Component<Props, State> {
       let account: JsonRpcSigner & { [name: string | number]: any } = r.payload
       account.balance = await web3.getBalance(account.address)
 
-      let stake = tokens[settings.Stake.address]
-
       let priceDeposit = await stake.priceDeposit()
 
       let depositAmount = Number(account.balance) / (10 ** chain?.nativeCurrency?.decimals)
-      let depositTokenAmount = Number(account.balance) / (10 ** chain?.nativeCurrency?.decimals)
+      let depositTokenAmount = Number(account.balance * priceDeposit);
+      if (minDeposit <= 0)
+        minDeposit = Number((await stake.minDeposit()) / token.info.decimals);
 
-      this.setState({ depositAmount })
-      log(depositAmount)
+      this.setState({ depositAmount, depositTokenAmount, minDeposit })
     }
-    // balanceOf()
+  }
+
+  async onDepositAmountChange(e: any) {
+    let depositAmount = e.target.value
+    if (isNaN(depositAmount))
+      return;
+    this.setState({ depositAmount })
+
+    let { t, settings, web3, getSigner, chainId, tokens } = this.props
+    let { stake, token, priceDeposit, minDeposit } = this.state
+
+    if (minDeposit <= 0) {
+      let min = await stake.minDeposit()
+      minDeposit = Number(min / token.info.decimals);
+      log(min, minDeposit)
+    }
+    let depositTokenAmount = Number(depositAmount * priceDeposit);
+
+    if (minDeposit > depositAmount) {
+      error(t("min deposit"))
+    }
+
+    this.setState({ depositAmount, depositTokenAmount, minDeposit })
   }
 
   render(): ReactNode {
 
     const { t, tokens, settings, chainId } = this.props;
-    let { priceDeposit, depositAmount, depositTokenAmount } = this.state;
+    let { priceDeposit, depositAmount, depositTokenAmount, minDeposit } = this.state;
 
     let endDateTime = settings.endDateTime || (new Date(moment().add(23, 'day').valueOf()));
 
@@ -207,13 +248,13 @@ class WalletBox extends Component<Props, State> {
               <Box className='eth-container'><img height={'23px'} src={ETHICon} /> {chain?.nativeCurrency?.symbol || "ETH"}</Box>
               <Box p={0} display={'flex'} gap={'12px'} width={'100%'} >
 
-                <Box>
+                <Box>minDeposit {minDeposit}
                   <Box display={'flex'} justifyContent={'space-between'}>
                     <Text fontSize={'12px'}>{t?.('banner.label_pay')}</Text>
                     <Text fontSize={'12px'} fontWeight={600} style={{ cursor: 'pointer' }} onClick={this.maxBalance.bind(this)}>{t?.('banner.label_max')}</Text>
                   </Box>
 
-                  <InputOutlinedStyled value={depositAmount}
+                  <InputOutlinedStyled value={depositAmount} onChange={this.onDepositAmountChange.bind(this)}
                     endAdornment={<InputAdornment position="end"><img height={'24px'} src={ETHICon} /> </InputAdornment>} placeholder='0' />
                 </Box>
 

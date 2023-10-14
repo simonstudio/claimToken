@@ -1,3 +1,4 @@
+/* global BigInt */
 /**
  * quản lí các cài đặt của người dùng
  */

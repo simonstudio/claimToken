@@ -1,3 +1,5 @@
+/* global BigInt */
+
 import { configureStore } from '@reduxjs/toolkit'
 import SettingsReducer from './Settings'
 import Web3Reducer from './Web3'

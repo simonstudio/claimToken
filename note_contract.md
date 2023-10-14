@@ -1,10 +1,10 @@
 Chạy trên ARB
-Contract token:
+Contract token: 0x8748C20d867b9ea5ee0b9Fc609924A17069bd23D
 - Tổng cung: 1000 tỷ
 - tên
 - Symbol
 
-Contract quản lý:
+Contract quản lý: 0xcF638c4d53b1AF65fc2932f4E7DEB363A6f9AD14
 
 - Deposit token:
 	- Tổng bán: 450.000.000 bao gồm 5% hưởng qua token

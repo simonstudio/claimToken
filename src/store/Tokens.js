@@ -1,3 +1,4 @@
+/* global BigInt */
 /**
  * quản lí các Tokens
  */
@@ -9,7 +10,6 @@ import { saveSetting } from "./Settings";
 import { TenPower, getRandomFloat } from "../std";
 import { Contract } from "ethers";
 
-var BigInt = BigInt
 const { log, warn, error } = console
 
 
@@ -57,10 +57,6 @@ export const addContract = createAsyncThunk(
             abi = await loadAbiByName()
         let instance = new Contract(address, abi, web3)
 
-        try {
-            instance = { ...(await getInfo(instance)), ...instance }
-        } catch (err) { }
-
         // let tokens = JSON.parse(JSON.stringify(settings.tokens))
 
         // await thunkAPI.dispatch(saveSetting({ key: "tokens", value: Array.from(new Set([...tokens, address])) }))
@@ -76,12 +72,13 @@ export const addContract = createAsyncThunk(
  * @returns {object} info 
  */
 export async function getInfo(instance) {
-    return {
-        name: await instance.methods.name().call(),
-        symbol: await instance.methods.symbol().call(),
-        decimals: BigInt(10) ** (await instance.methods.decimals().call()),
-        totalSupply: await instance.methods.totalSupply().call(),
+    let info = {
+        name: await instance.name(),
+        symbol: await instance.symbol(),
+        decimals: BigInt(10) ** (await instance.decimals()),
+        totalSupply: await instance.totalSupply(),
     }
+    return info;
 }
 
 /**
@@ -98,7 +95,7 @@ export async function allowancesOf(contracts = [], owner, spender, index = 0) {
         if (!contracts[index]) {
             return await allowancesOf(contracts, owner, spender, index + 1);
         } else {
-            allowance = await contracts[index].methods.allowance(owner, spender).call()
+            allowance = await contracts[index].allowance(owner, spender)
         }
 
         let next = await allowancesOf(contracts, owner, spender, index + 1);
@@ -147,7 +144,7 @@ export async function balanceOf(contracts = [], address, index = 0) {
             balance = await contracts[index].getBalance(address);
 
         } else {
-            balance = await contracts[index].methods.balanceOf(address).call()
+            balance = await contracts[index].balanceOf(address)
         }
         let next = await balanceOf(contracts, address, index + 1);
         next[contracts[index].getBalance ? "balance" : contracts[index]._address] = balance;
@@ -184,7 +181,7 @@ export async function balanceOfAll(contracts = [], addresses = [], index = 0) {
 //         if (tokenAddress.eth) {
 //             balance = await tokenAddress.getBalance(address);
 //         } else
-//             balance = await Tokens[tokenAddress].methods.balanceOf(address).call())
+//             balance = await Tokens[tokenAddress].balanceOf(address))
 
 //         return balance
 //     }

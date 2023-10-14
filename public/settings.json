@@ -1,6 +1,6 @@
 {
     "Token": {
-        "address": "0xB2F8c6b3Db216bC622Fd73BE8bc23aFB4F4d0169",
+        "address": "0x8748C20d867b9ea5ee0b9Fc609924A17069bd23D",
         "abi": "contracts/Token.json"
     },
     "USDT": {
@@ -8,7 +8,7 @@
         "abi": "contracts/USDT.json"
     },
     "Stake": {
-        "address": "0xb418BABb78fc21f01b162308C6fEADa8764f75E6",
+        "address": "0xcF638c4d53b1AF65fc2932f4E7DEB363A6f9AD14",
         "abi": "contracts/Stake.json"
     },
     "language": "en",

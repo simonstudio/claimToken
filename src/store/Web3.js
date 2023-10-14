@@ -1,3 +1,4 @@
+/* global BigInt */
 /**
  * quản lí web3 từ trình duyệt
  */
