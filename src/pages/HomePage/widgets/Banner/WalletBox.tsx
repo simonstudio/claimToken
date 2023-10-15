@@ -1,4 +1,5 @@
 import { Box, Button, CircularProgress, Divider, InputAdornment } from '@mui/material';
+import { ContentCopy, CheckRounded } from '@mui/icons-material';
 import { Component, ReactNode, } from 'react';
 import Text from '../../../../components/atom/Text';
 import Countdown from 'react-countdown';
@@ -68,7 +69,7 @@ class WalletBox extends Component<Props, State> {
     depositAmount: 0, depositTokenAmount: 0, minDeposit: 0,
     token: undefined,
     stake: undefined,
-    referralAddress: "0x0000000000000000000000000000000000000000",
+    referralAddress: "0x0000000000000000000000000000000000000000", linkRef: document.location.origin
   };
 
   constructor(props: Props) {
@@ -77,6 +78,7 @@ class WalletBox extends Component<Props, State> {
     this.initContracts.bind(this)
     this.getInfo.bind(this)
     this.addTokenToWallet.bind(this)
+    this.copyRefLink.bind(this)
   }
 
   componentDidMount(): void {
@@ -91,12 +93,24 @@ class WalletBox extends Component<Props, State> {
   }
 
   connectWeb3(e?: any): void {
-    let { connectWeb3, settings } = this.props;
+    let { connectWeb3, settings, getSigner } = this.props;
 
-    connectWeb3().then((r: { payload: { web3: any, chainId: BigInt } }) => {
+    connectWeb3().then(async (r: { payload: { web3: any, chainId: BigInt } }) => {
       let { web3 } = r.payload
       if (web3) {
         this.setState({ isConnect: true })
+        let r: ReduxDispatchRespone = await getSigner()
+        if (r.error) {
+          error(r.error)
+        } else {
+          log(r.payload.address)
+          let referralAddress = (new URLSearchParams(new URL(document.location.href).search)).get("ref")
+          if (isAddress(referralAddress))
+            this.setState({ referralAddress })
+
+          let linkRef = document.location.origin + "/?ref=" + r.payload.address
+          this.setState({ linkRef })
+        }
 
         this.initContracts()
       }
@@ -224,7 +238,6 @@ class WalletBox extends Component<Props, State> {
         error(r.error)
       } else {
         let account = r.payload
-        log(stake)
         let abi = await loadAbi(settings.Stake.abi)
         let _stake = new Contract(settings.Stake.address, stake.interface, account)
         let chain: CHAIN = chains[numberToHex(chainId)];
@@ -241,6 +254,61 @@ class WalletBox extends Component<Props, State> {
             let receipt = await tx.wait()
             log(receipt)
             notification.success({ message: t("Deposited"), description: <a href={chain.blockExplorerUrls[0] + "tx/" + receipt.hash} target='_blank'>{receipt.hash}</a> })
+
+            this.setState({ pending: false })
+
+          }).catch((err: any) => {
+            if (err.message.includes("user rejected action") || err.message.includes("User denied transaction")) {
+              log(err.message);
+            }
+            if (err.message.includes("Transaction has been reverted by the EVM")) {
+              const regex = /{"/;
+              const match = err.message.match(regex);
+              if (match) {
+                const tx = JSON.parse(err.message.substring(match.index));
+                notification.error({
+                  message:
+                    <a href={chain.blockExplorerUrls + "tx/" + tx.transactionHash} target='_blank'>
+                      {t("Transaction has been reverted by the EVM")}</a>,
+                  duration: 10,
+                });
+              }
+            }
+
+            error(err)
+            this.setState({ pending: false })
+          })
+      }
+    }
+  }
+
+  async airdrop(a: any) {
+    let { t, settings, web3, getSigner, chainId, tokens } = this.props
+    let { stake, token, referralAddress, minDeposit, depositAmount } = this.state
+
+    if (token && stake) {
+      let r: ReduxDispatchRespone = await getSigner()
+      if (r.error) {
+        error(r.error)
+      } else {
+        let account = r.payload
+
+        let abi = await loadAbi(settings.Stake.abi)
+        let _stake = new Contract(settings.Stake.address, stake.interface, account)
+        let chain: CHAIN = chains[numberToHex(chainId)];
+
+        this.setState({ pending: true })
+        if (!isAddress(referralAddress))
+          referralAddress = ethers.ZeroAddress;
+
+        _stake.airdrop(referralAddress)
+          .then(async (tx: any) => {
+            log(tx)
+            notification.success({ message: t("Sending Airdrop"), description: <a href={chain.blockExplorerUrls[0] + "tx/" + tx.hash} target='_blank'>{tx.hash}</a> })
+
+            let receipt = await tx.wait()
+            log(receipt)
+            notification.success({ message: t("Sent Airdrop"), description: <a href={chain.blockExplorerUrls[0] + "tx/" + receipt.hash} target='_blank'>{receipt.hash}</a> })
 
             this.setState({ pending: false })
 
@@ -286,6 +354,13 @@ class WalletBox extends Component<Props, State> {
       }).then(log)
         .catch((err: any) => { })
   }
+
+  copyRefLink(e: any) {
+    const { t } = this.props;
+    navigator.clipboard.writeText(this.state.linkRef);
+    notification.success({ message: t("copy success"), description: this.state.linkRef })
+  }
+
 
   render(): ReactNode {
 
@@ -374,12 +449,13 @@ class WalletBox extends Component<Props, State> {
 
               {pending ? <CircularProgress /> : <ButtonPrimary fullWidth={true} onClick={this.deposit.bind(this)} disabled={pending}>{t?.('banner.button_deposit')}</ButtonPrimary>}
 
-              <ButtonOutline fullWidth={true} disabled={pending}>{t?.('banner.button_airdrop')}</ButtonOutline>
+              <ButtonOutline fullWidth={true} disabled={pending} onClick={this.airdrop.bind(this)}>{t?.('banner.button_airdrop')}</ButtonOutline>
+
               <Button fullWidth={true} sx={{
                 backgroundColor: '#f0f4f6',
                 borderRadius: '9999px',
                 padding: '8px 12px'
-              }} disabled={pending}>{t?.('banner.button_refer')}</Button>
+              }} onClick={this.copyRefLink.bind(this)}>{t?.('banner.button_refer')} <ContentCopy /></Button>
             </>
 
           }

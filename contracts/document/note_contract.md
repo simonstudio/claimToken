@@ -49,7 +49,7 @@ Chuyển từ ví claimFrom 1 ví cụ thể có thể thay đổi
 - Chức năng rút token gửi cho sàn
  
 
-# các hàm
+# Các hàm
 ## deposit
 - `deposit(address ref)` người dùng nạp coin và vào nhận token, số lượng dựa trên `priceDeposit`
 	+ `ref` địa chỉ ví giới thiệu, nhận theo `refPercent`, là % số người dùng nhận 
