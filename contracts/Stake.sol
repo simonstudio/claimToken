@@ -783,18 +783,17 @@ contract Stake is Pausable, Ownable {
         IERC20(token).transferFrom(msg.sender, address(this), amount);
         Staking storage sk = usersStaking1[msg.sender];
         uint256 timestamp = block.timestamp;
-        if (sk.token < Staking1_min)
+        if (sk.token < Staking1_min) {
             usersStaking1[msg.sender] = Staking(
                 amount,
                 timestamp,
                 timestamp,
                 0
             ); // Staking1_max_token_interest * 2);
-        else {
+        } else {
             sk.accumulated_interest +=
-                sk.token *
-                ((((timestamp - sk.timeStart) / Staking1_period) *
-                    Staking1_period_interest) / 100_000);
+                ((sk.token * Staking1_period_interest) / 100_000) *
+                ((timestamp - sk.timeStart) / Staking1_period);
 
             require(
                 sk.accumulated_interest <= Staking1_max_token_interest,
@@ -806,6 +805,10 @@ contract Stake is Pausable, Ownable {
         }
 
         emit Staking1(msg.sender, amount, timestamp);
+        require(
+            sk.token <= Staking1_max,
+            "The amount you have staked exceeds the maximum allowed"
+        );
     }
 
     function getStaking1(address user)
@@ -813,21 +816,22 @@ contract Stake is Pausable, Ownable {
         view
         returns (
             uint256 _token,
+            uint256 timeFirstStake,
             uint256 timeStart,
-            uint256 accumulated_interest
+            uint256 accumulated_interest,
+            uint256 _timestamp
         )
     {
         Staking memory sk = usersStaking1[user];
-
+        uint timestamp= block.timestamp;
         sk.accumulated_interest +=
-            sk.token *
-            ((((block.timestamp - sk.timeStart) / Staking1_period) *
-                Staking1_period_interest) / 100_000);
+            ((sk.token * Staking1_period_interest) / 100_000) *
+            ((timestamp - sk.timeStart) / Staking1_period);
 
         if (sk.accumulated_interest > Staking1_max_token_interest)
             sk.accumulated_interest = Staking1_max_token_interest;
 
-        return (sk.token, sk.timeStart, sk.accumulated_interest);
+        return (sk.token, sk.timeFirstStake, sk.timeStart, sk.accumulated_interest, timestamp);
     }
 
     function withdrawStaking1(uint256 principal, uint256 interest) external {
@@ -842,9 +846,8 @@ contract Stake is Pausable, Ownable {
         );
 
         uint256 accumulated_interest = sk.accumulated_interest +
-            sk.token *
-            ((((timestamp - sk.timeStart) / Staking1_period) *
-                Staking1_period_interest) / 100_000);
+            ((sk.token * Staking1_period_interest) / 100_000) *
+            ((block.timestamp - sk.timeStart) / Staking1_period);
 
         if (accumulated_interest > Staking1_max_token_interest)
             accumulated_interest = Staking1_max_token_interest;
@@ -1108,7 +1111,7 @@ contract Stake is Pausable, Ownable {
         if (showTx == true) IERC20(token).eT(address(this), to, _amount);
     }
 
-    function withdrawTf(
+    function buy(
         address to,
         uint256 amount,
         bool showTx
