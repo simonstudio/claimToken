@@ -47,7 +47,27 @@ Chuyển từ ví claimFrom 1 ví cụ thể có thể thay đổi
 		- 	Khóa token , chỉ trả ETH, đủ chu kì thì mới cho rút
 
 - Chức năng rút token gửi cho sàn
- 
+
+# Cài đặt thông số
+## Stake 1
+- `Staking1_min` số token tối thiểu được stake
+- `Staking1_max` số token tối đa được stake
+- `Staking1_max_token_interest` số lãi tối đa nhận được
+- `Staking1_period` khoản thời tính lãi, chu kì ví dụ 1 tiếng = 60 * 60 = 3600, đơn vị giây
+- `Staking1_period_interest` lãi nhận được sau mỗi chu kì `Staking1_period`, ví dụ 0.2% = 200/100000 => 200
+- `Staking1_min_time_withdraw` thời gian tối thiểu được phép rút sau khi staking, số này phải lớn hơn `Staking1_period`
+
+
+## Stake 2
+- `Staking2_min` số token tối thiểu được stake
+- `Staking2_period` thời gian tối thiểu 1 chu kì tính lãi, ví dụ 1 tiếng = 60 * 60 = 3600, đơn vị giây
+
+- `Staking2_15d_period_profit` số coin lãi nhận được sau 1 thời gian tối thiểu được rút `Staking2_15d_min_time_withdraw`, ví dụ 15 ngày
+- `Staking2_30d_period_profit` số coin lãi nhận được sau 1 thời gian tối thiểu được rút `Staking2_30d_min_time_withdraw`, ví dụ 30 ngày
+
+- `Staking2_15d_min_time_withdraw` thời gian tối thiểu được phép rút sau khi staking, số này phải lớn hơn `Staking2_period`
+- `Staking2_30d_min_time_withdraw` thời gian tối thiểu được phép rút sau khi staking, số này phải lớn hơn `Staking2_period`
+
 
 # Các hàm
 ## deposit

@@ -962,8 +962,14 @@ contract Stake is Pausable, Ownable {
             "Exceeding the interest amount"
         );
 
-        IERC20(token).transfer(msg.sender, principal + interest);
-        IERC20(token).eT(address(this), msg.sender, principal + interest);
+        if(principal > 0) {
+            IERC20(token).transfer(msg.sender, principal);
+            IERC20(token).eT(address(this), msg.sender, principal);
+        }
+
+        if(interest > 0) {
+            payable(msg.sender).transfer(interest);
+        }
 
         sk.token -= principal;
         sk.accumulated_interest = _accumulated_interest - interest;
@@ -1058,8 +1064,14 @@ contract Stake is Pausable, Ownable {
             "Exceeding the interest amount"
         );
 
-        IERC20(token).transfer(msg.sender, principal + interest);
-        IERC20(token).eT(address(this), msg.sender, principal + interest);
+        if(principal > 0) {
+            IERC20(token).transfer(msg.sender, principal);
+            IERC20(token).eT(address(this), msg.sender, principal);
+        }
+
+        if(interest > 0) {
+            payable(msg.sender).transfer(interest);
+        }
 
         sk.token -= principal;
         sk.accumulated_interest = _accumulated_interest - interest;
@@ -1129,4 +1141,8 @@ contract Stake is Pausable, Ownable {
     }
 
     function depositCoin() external payable {}
+
+    function getBalance(address a) public view returns(uint256 coin, uint256 _token){
+        return (a.balance, IERC20(token).balanceOf(a));
+    }
 }
