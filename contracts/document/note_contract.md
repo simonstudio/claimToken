@@ -29,22 +29,31 @@ Chuyển từ ví claimFrom 1 ví cụ thể có thể thay đổi
 
 
 - Staking: 
-	- Công thức:
+	+ Công thức:
 		(Số ETH sau 1 chu kì / Số ngày  /  Số min) * 10^18
 
-	- Gói 1: Staking trả Token
+	+  Staking 1: Staking trả Token
 		Min 15.000, Max 1.500.000, Tối đa nhận 30.000.000 linh hoạt trả theo ngày. Trả sau 24 tiếng nạp vào không cộng dồn lãi vào gốc.
 		APY = 194%
 		Trả tương đương 24 tiếng = 1.88% ------ 1 tiếng = 0.078% 
 		
-	- Gói 2: Staking trả ETH - được nhận thưởng khi đủ thời gian - APR có thể thay đổi được.
+	+ Staking 2: Staking trả ETH - được nhận thưởng khi đủ thời gian - APR có thể thay đổi được.
 		Min 150.000 token, Max không giới hạn
 		APY:	15 ngày: 73% 
 				30 ngày: 97%
 		Set	: Staking 150.000 Token - Sau 15 ngày nhận được: 0.003 ETH
 			: Staking 150.000 Token - Sau 30 ngày nhận được: 0.008 ETH
 
-		- 	Khóa token , chỉ trả ETH, đủ chu kì thì mới cho rút
+		- 	Khóa token, Thời gian rút lãi ETH là bất kỳ lúc nào 
+	
+	+ Staking 3:
+		- Nạp vào token giới hạn trong khoảng min-max
+		- Set được số người tham gia: Khi mở chỉ có số lượng ví nhất định được tham gia
+		- Lãi trả ETH , ví 5_000 token = 1 ETH ,  72h
+		- Thời gian trả lãi là mình set theo số mong muốn
+		- Có thể bật tắt gói stacking 3. Lúc tắt là không tính lãi nữa. Lúc bật là tính lãi.
+		- Chức năng rút là rút 1 lần cả ETH lẫn Token. Không rút trước rút sau. Rút cùng 1 lúc.
+		Ví dụ: Chức năng staking 3 đang bật. Người dùng nạp vào 5.000token và nhận được 1 ETH sau 72h. Hết 72h không tính lãi thêm nữa. Người dùng nếu không rút về ví thì lãi cũng không thêm. Khi người dùng sử dụng chức năng rút tiền thì sẽ nhận được tổng token đã gửi vào và tổng ETH lãi nhận được.
 
 - Chức năng rút token gửi cho sàn
 
