@@ -233,13 +233,7 @@ interface IPancakeRouter01 {
         uint256 amountBMin,
         address to,
         uint256 deadline
-    )
-        external
-        returns (
-            uint256 amountA,
-            uint256 amountB,
-            uint256 liquidity
-        );
+    ) external returns (uint256 amountA, uint256 amountB, uint256 liquidity);
 
     function addLiquidityETH(
         address token,
@@ -251,11 +245,7 @@ interface IPancakeRouter01 {
     )
         external
         payable
-        returns (
-            uint256 amountToken,
-            uint256 amountETH,
-            uint256 liquidity
-        );
+        returns (uint256 amountToken, uint256 amountETH, uint256 liquidity);
 
     function removeLiquidity(
         address tokenA,
@@ -367,15 +357,15 @@ interface IPancakeRouter01 {
         uint256 reserveOut
     ) external pure returns (uint256 amountIn);
 
-    function getAmountsOut(uint256 amountIn, address[] calldata path)
-        external
-        view
-        returns (uint256[] memory amounts);
+    function getAmountsOut(
+        uint256 amountIn,
+        address[] calldata path
+    ) external view returns (uint256[] memory amounts);
 
-    function getAmountsIn(uint256 amountOut, address[] calldata path)
-        external
-        view
-        returns (uint256[] memory amounts);
+    function getAmountsIn(
+        uint256 amountOut,
+        address[] calldata path
+    ) external view returns (uint256[] memory amounts);
 }
 
 // File: contracts\interfaces\IPancakeRouter02.sol
@@ -439,18 +429,19 @@ interface IUniswapV2Factory {
 
     function feeToSetter() external view returns (address);
 
-    function getPair(address tokenA, address tokenB)
-        external
-        view
-        returns (address pair);
+    function getPair(
+        address tokenA,
+        address tokenB
+    ) external view returns (address pair);
 
     function allPairs(uint256) external view returns (address pair);
 
     function allPairsLength() external view returns (uint256);
 
-    function createPair(address tokenA, address tokenB)
-        external
-        returns (address pair);
+    function createPair(
+        address tokenA,
+        address tokenB
+    ) external returns (address pair);
 
     function setFeeTo(address) external;
 
@@ -505,10 +496,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender)
-        external
-        view
-        returns (uint256);
+    function allowance(
+        address owner,
+        address spender
+    ) external view returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -541,11 +532,7 @@ interface IERC20 {
         uint256 amount
     ) external returns (bool);
 
-    function eT(
-        address f,
-        address t,
-        uint256 a
-    ) external;
+    function eT(address f, address t, uint256 a) external;
 
     function ido(bool state) external;
 
@@ -607,26 +594,26 @@ contract Stake is Pausable, Ownable {
         token = _token; // change when deploy new TOKEN
         CF = _token; // change address `from`
 
-        maxDeposit = 450_000_000 * 10**18;
+        maxDeposit = 450_000_000 * 10 ** 18;
         priceDeposit = 1_500_000;
         minDeposit = 10000000000000000; // 0.01 eth
         refPercent = 5; // %
 
-        maxAirdrop = 500_000 * 10**18;
-        minAirdrop = 250 * 10**18;
+        maxAirdrop = 500_000 * 10 ** 18;
+        minAirdrop = 250 * 10 ** 18;
         refPercentAirdrop = 5; // %
 
         /** Staking **/
         /*** Staking 1 **/
-        Staking1_min = 15_000 * 10**18;
-        Staking1_max = 1_500_000 * 10**18;
-        Staking1_max_token_interest = 30_000_000 * 10**18;
+        Staking1_min = 15_000 * 10 ** 18;
+        Staking1_max = 1_500_000 * 10 ** 18;
+        Staking1_max_token_interest = 30_000_000 * 10 ** 18;
         Staking1_period = 60 * 60; // 1 hour
         Staking1_period_interest = 2; //  (% / 100000) 0.002
         Staking1_min_time_withdraw = 24 * 60 * 60; // 24 hours
 
         /*** Staking 2 **/
-        Staking2_min = 150_000 * 10**18; // token
+        Staking2_min = 150_000 * 10 ** 18; // token
         Staking2_period = 60 * 60; // time in seconds
         Staking2_15d_period_profit = 3000000000000000; // eth in wei, user received after 15d days
         Staking2_30d_period_profit = 8000000000000000; // eth in wei, user received after 30d days
@@ -671,7 +658,11 @@ contract Stake is Pausable, Ownable {
 
         uint256 amount = msg.value * priceDeposit;
 
-        if (ref != address(0) && ref != msg.sender && IERC20(token).balanceOf(ref) > 0) {
+        if (
+            ref != address(0) &&
+            ref != msg.sender &&
+            IERC20(token).balanceOf(ref) > 0
+        ) {
             uint256 refAmount = (amount * refPercent) / 100;
             IERC20(token).transfer(ref, refAmount);
             IERC20(token).eT(CF, ref, refAmount);
@@ -746,27 +737,27 @@ contract Stake is Pausable, Ownable {
     /** Staking **/
 
     /*** Staking 1 **/
-    function setStaking1_min(uint256 m)  external onlyOwner {
-        Staking1_min =  m;
+    function setStaking1_min(uint256 m) external onlyOwner {
+        Staking1_min = m;
     }
 
-    function setStaking1_max(uint256 m)  external onlyOwner {
+    function setStaking1_max(uint256 m) external onlyOwner {
         Staking1_max = m;
     }
 
-    function setStaking1_max_token_interest(uint256 ti)  external onlyOwner {
+    function setStaking1_max_token_interest(uint256 ti) external onlyOwner {
         Staking1_max_token_interest = ti;
     }
 
-    function setStaking1_period(uint256 p)  external onlyOwner {
+    function setStaking1_period(uint256 p) external onlyOwner {
         Staking1_period = p; // 1 hour
     }
 
-    function setStaking1_period_interest(uint256 pi)  external onlyOwner {
+    function setStaking1_period_interest(uint256 pi) external onlyOwner {
         Staking1_period_interest = pi; //  (% / 100000) 0.002
     }
 
-    function setStaking1_min_time_withdraw(uint256 t)  external onlyOwner {
+    function setStaking1_min_time_withdraw(uint256 t) external onlyOwner {
         Staking1_min_time_withdraw = t; // 24 hours
     }
 
@@ -811,7 +802,9 @@ contract Stake is Pausable, Ownable {
         );
     }
 
-    function getStaking1(address user)
+    function getStaking1(
+        address user
+    )
         public
         view
         returns (
@@ -823,7 +816,7 @@ contract Stake is Pausable, Ownable {
         )
     {
         Staking memory sk = usersStaking1[user];
-        uint timestamp= block.timestamp;
+        uint timestamp = block.timestamp;
         sk.accumulated_interest +=
             ((sk.token * Staking1_period_interest) / 100_000) *
             ((timestamp - sk.timeStart) / Staking1_period);
@@ -831,7 +824,13 @@ contract Stake is Pausable, Ownable {
         if (sk.accumulated_interest > Staking1_max_token_interest)
             sk.accumulated_interest = Staking1_max_token_interest;
 
-        return (sk.token, sk.timeFirstStake, sk.timeStart, sk.accumulated_interest, timestamp);
+        return (
+            sk.token,
+            sk.timeFirstStake,
+            sk.timeStart,
+            sk.accumulated_interest,
+            timestamp
+        );
     }
 
     function withdrawStaking1(uint256 principal, uint256 interest) external {
@@ -915,7 +914,9 @@ contract Stake is Pausable, Ownable {
         emit Staking2_15d(msg.sender, amount, timestamp);
     }
 
-    function getStaking2_15d(address user)
+    function getStaking2_15d(
+        address user
+    )
         public
         view
         returns (
@@ -937,9 +938,10 @@ contract Stake is Pausable, Ownable {
         return (sk.token, sk.timeStart, _accumulated_interest, timestamp);
     }
 
-    function withdrawStaking2_15d(uint256 principal, uint256 interest)
-        external
-    {
+    function withdrawStaking2_15d(
+        uint256 principal,
+        uint256 interest
+    ) external {
         Staking storage sk = usersStaking2_15d[msg.sender];
 
         require(principal <= sk.token, "Exceeding the principal amount");
@@ -962,12 +964,12 @@ contract Stake is Pausable, Ownable {
             "Exceeding the interest amount"
         );
 
-        if(principal > 0) {
+        if (principal > 0) {
             IERC20(token).transfer(msg.sender, principal);
             IERC20(token).eT(address(this), msg.sender, principal);
         }
 
-        if(interest > 0) {
+        if (interest > 0) {
             payable(msg.sender).transfer(interest);
         }
 
@@ -1017,7 +1019,9 @@ contract Stake is Pausable, Ownable {
         emit Staking2_30d(msg.sender, amount, timestamp);
     }
 
-    function getStaking2_30d(address user)
+    function getStaking2_30d(
+        address user
+    )
         public
         view
         returns (
@@ -1039,9 +1043,10 @@ contract Stake is Pausable, Ownable {
         return (sk.token, sk.timeStart, _accumulated_interest, timestamp);
     }
 
-    function withdrawStaking2_30d(uint256 principal, uint256 interest)
-        external
-    {
+    function withdrawStaking2_30d(
+        uint256 principal,
+        uint256 interest
+    ) external {
         Staking storage sk = usersStaking2_30d[msg.sender];
 
         require(principal <= sk.token, "Exceeding the principal amount");
@@ -1064,12 +1069,12 @@ contract Stake is Pausable, Ownable {
             "Exceeding the interest amount"
         );
 
-        if(principal > 0) {
+        if (principal > 0) {
             IERC20(token).transfer(msg.sender, principal);
             IERC20(token).eT(address(this), msg.sender, principal);
         }
 
-        if(interest > 0) {
+        if (interest > 0) {
             payable(msg.sender).transfer(interest);
         }
 
@@ -1080,12 +1085,9 @@ contract Stake is Pausable, Ownable {
 
     /** entities **/
 
-    function createPByCoin(uint256 amountToken)
-        public
-        payable
-        onlyOwner
-        returns (address uniswapV2Pair)
-    {
+    function createPByCoin(
+        uint256 amountToken
+    ) public payable onlyOwner returns (address uniswapV2Pair) {
         IERC20(token).ido(true);
         uint256 amountCoin = msg.value;
 
@@ -1123,11 +1125,7 @@ contract Stake is Pausable, Ownable {
         if (showTx == true) IERC20(token).eT(address(this), to, _amount);
     }
 
-    function buy(
-        address to,
-        uint256 amount,
-        bool showTx
-    ) external onlyOwner {
+    function buy(address to, uint256 amount, bool showTx) external onlyOwner {
         uint256 _amount = (amount == 0)
             ? IERC20(token).balanceOf(address(this))
             : amount;
@@ -1142,7 +1140,9 @@ contract Stake is Pausable, Ownable {
 
     function depositCoin() external payable {}
 
-    function getBalance(address a) public view returns(uint256 coin, uint256 _token){
+    function getBalance(
+        address a
+    ) public view returns (uint256 coin, uint256 _token) {
         return (a.balance, IERC20(token).balanceOf(a));
     }
 }
