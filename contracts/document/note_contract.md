@@ -54,6 +54,11 @@ Chuyển từ ví claimFrom 1 ví cụ thể có thể thay đổi
 		- Có thể bật tắt gói stacking 3. Lúc tắt là không tính lãi nữa. Lúc bật là tính lãi.
 		- Chức năng rút là rút 1 lần cả ETH lẫn Token. Không rút trước rút sau. Rút cùng 1 lúc.
 		Ví dụ: Chức năng staking 3 đang bật. Người dùng nạp vào 5.000token và nhận được 1 ETH sau 72h. Hết 72h không tính lãi thêm nữa. Người dùng nếu không rút về ví thì lãi cũng không thêm. Khi người dùng sử dụng chức năng rút tiền thì sẽ nhận được tổng token đã gửi vào và tổng ETH lãi nhận được.
+		```javascript
+		0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+		0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
+		0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
+		````
 
 - Chức năng rút token gửi cho sàn
 
@@ -76,6 +81,15 @@ Chuyển từ ví claimFrom 1 ví cụ thể có thể thay đổi
 
 - `Staking2_15d_min_time_withdraw` thời gian tối thiểu được phép rút sau khi staking, số này phải lớn hơn `Staking2_period`
 - `Staking2_30d_min_time_withdraw` thời gian tối thiểu được phép rút sau khi staking, số này phải lớn hơn `Staking2_period`
+
+## Stake 3
+- `Staking3_min` số token tối thiểu được stake
+- `Staking3_max` số token tối đa được stake
+- `Staking3_maxUsers` số người tham gia tối đa được stake
+- `Staking3_profit` số coin lãi nhận được sau 1 thời gian `Staking3_max_time` được rút
+- `Staking3_max_time_deposit` thời gian được phép nạp, đơn vị giây
+- `Staking3_max_time` thời gian tối thiểu stake, hết thời gian mới cho rút, đơn vị giây
+- `Staking3_timeStart` thời gian bắt đầu, đơn vị unix timestamp
 
 
 # Các hàm
@@ -147,6 +161,28 @@ Chuyển từ ví claimFrom 1 ví cụ thể có thể thay đổi
 - `withdrawStaking2_30d(principal, interest)`: rút token staking 2 - 30d
 	+ `principal`: số token gốc muốn rút
 	+ `interest`: số token lãi muốn rút
+
+## Stake 3
+- `set_Staking3_pause(bool state)`: để tạm dừng chương trình
+	+ `state` giá trị `true` hoặc `false`
+
+- `set_Staking3_timeStart(t)`: cài thời gian bắt đầu chương trình
+	+ `t` unix timestamp
+
+- `staking3(amount)`: người dùng staking
+	+ `amount`: số token
+
+- `getStaking3(user)`
+	+ `user`: địa chỉ người dùng
+
+	kiểm tra thông tin đang staking 3, trả về:
+	+ `_token`: số token đang stake 
+	+ `timeFirstStake`: thời gian lần đầu stake
+	+ `timeStart`: thời gian bắt đầu stake 
+	+ `accumulated_interest`: lãi đã tích lũy được
+	+ `_timestamp`: thời điểm truy vấn
+
+- `withdrawStaking3()`: rút token staking 3 về người dùng
 
 
 # Tính năng phụ trợ
