@@ -20,22 +20,18 @@ type State = {
 }
 
 
-let count = 0
 class App extends Component<Props> {
   state: State = {
     count: 0,
   };
   componentDidMount(): void {
-    count++
-    if (count > 1) {
-      notification.config({
-        placement: 'bottomLeft',
-      });
+    notification.config({
+      placement: 'bottomLeft',
+    });
 
-      this.props.loadSetting().then((r: ReduxDispatchRespone) => {
-        // log(r.payload)
-      });
-    }
+    this.props.loadSetting().then((r: ReduxDispatchRespone) => {
+      // log(r.payload)
+    });
   }
 
   render() {
