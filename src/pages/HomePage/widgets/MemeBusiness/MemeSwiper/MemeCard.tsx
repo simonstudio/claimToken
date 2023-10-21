@@ -13,7 +13,7 @@ class MemeCard extends Component<Props> {
     return (
       <MemeCardStyled>
         <BoxOutline>
-          <ImageFluid src={this.props.imgUrl}/>
+          <ImageFluid src={this.props.imgUrl} />
         </BoxOutline>
       </MemeCardStyled>
     );
@@ -27,8 +27,7 @@ const MemeCardStyled = styled(Box)`
   img {
     margin: 0 auto;
     max-width: 100%!important;
-    min-height: 500px;
-    max-height: 500px;
+    min-height: 100px;
     width: auto;
   }
 `;

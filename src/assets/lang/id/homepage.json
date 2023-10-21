@@ -10,14 +10,14 @@
     "connect_wallet": "Hubungkan Dompet"
   },
   "banner": {
-    "title": "Times SquareX akan terdaftar di bursa di:",
-    "subtitle": "AMBIL KESEMPATAN DAN BELI TSX.",
+    "title": "Times SquareC akan terdaftar di bursa di:",
+    "subtitle": "AMBIL KESEMPATAN DAN BELI TSC.",
     "description": "Lebih dari $25 juta yang terkumpul",
     "button_connect": "Hubungkan Dompet",
     "power_by": "Tambahkan token TXS ke dompet Anda ",
     "button_deposit": "deposit",
     "button_airdrop": "Klaim airdrop",
-    "button_refer": "Buat referensi",
+    "button_refer": "Buat kode referensi Anda",
     "button_whitepaper": "kertas putih",
     "label_pay": "Jumlah dalam ETH yang Anda bayar",
     "label_max": "Maks",
@@ -31,25 +31,25 @@
     "label_unlimited": "TANPA BATAS",
     "label_memes": "PESERTA",
     "label_even": "KAMI SELALU MENDUKUNG POTENSI MASYARAKAT!",
-    "description_even": "Times SquareX memberi Anda kesempatan untuk menjadi bagian integral dari komunitas terbesar di Web3, bahkan Bitcoin."
+    "description_even": "Times SquareC memberi Anda kesempatan untuk menjadi bagian integral dari komunitas terbesar di Web3, bahkan Bitcoin."
   },
   "wsm_token": {
-    "title": "$TSX TOKEN",
+    "title": "$TSC TOKEN",
     "content_1": "Menghadapi penurunan pada tahun 1960an dan 1970an karena kejahatan, Times Square dihidupkan kembali pada tahun 1980an dan 1990an berkat kebijakan investasi dan pembangunan untuk menjadi tempat yang paling banyak dikunjungi di dunia, menarik lebih dari 50 juta pengunjung setiap tahunnya.",
-    "content_2": "Menanggapi perubahan ini, Times SquareX lahir untuk mewakili dorongan, menghidupkan kembali hal-hal yang mustahil, dan memberikan nilai bagi komunitas yang berhak. Kami merayakan kolaborasi dan nilai-nilai tinggi yang dibawa oleh komunitas Web3.",
-    "content_3": "Kami membuka jalan bagi gerakan ini, bergabunglah dengan kami hari ini dan menjadi bagian integral dari Times SquareX."
+    "content_2": "Menanggapi perubahan ini, Times SquareC lahir untuk mewakili dorongan, menghidupkan kembali hal-hal yang mustahil, dan memberikan nilai bagi komunitas yang berhak. Kami merayakan kolaborasi dan nilai-nilai tinggi yang dibawa oleh komunitas Web3.",
+    "content_3": "Kami membuka jalan bagi gerakan ini, bergabunglah dengan kami hari ini dan menjadi bagian integral dari Times SquareC."
   },
   "wall_meme": {
     "title": "CARA MEMILIKI TOKEN SQUAREX WAKTU?",
-    "subtitle": "Raih peluang ini dan miliki token TSX di putaran ini melalui Airdrop dan Presale sebelum terdaftar di bursa.",
+    "subtitle": "Raih peluang ini dan miliki token TSC di putaran ini melalui Airdrop dan Presale sebelum terdaftar di bursa.",
     "speech_1": "Pastikan Anda memiliki ETH di dompet Anda yang siap digunakan di rantai Arbitrum One.",
-    "speech_2": "Hubungkan dompet Anda di Timessquarex.io lalu pilih Airdrop untuk menerima 250 TSX jika Anda ingin lebih dari itu, silakan pilih jumlah token yang diinginkan untuk melakukan transaksi.",
-    "speech_3": "Konfirmasikan pembelian di dompet Anda dan selesai. Jangan lupa bahwa mereferensikan teman untuk bergabung melalui kode referral Anda akan menerima komisi setara dengan 5% dari jumlah TSX.",
-    "button_helper": "Pembantu Lainnya"
+    "speech_2": "Hubungkan dompet Anda di TimesSquareC.io lalu pilih Airdrop untuk menerima 10 TSC jika Anda ingin lebih dari itu, silakan pilih jumlah token yang diinginkan untuk melakukan transaksi.",
+    "speech_3": "Konfirmasikan pembelian di dompet Anda dan selesai. Jangan lupa bahwa mereferensikan teman untuk bergabung melalui kode referral Anda akan menerima komisi setara dengan 5% dari jumlah TSC.",
+    "button_helper": "Kertas putih"
   },
   "roadmap": {
     "title": "Peta Jalan",
-    "subtitle": "Kami meletakkan dasar dan menciptakan lingkungan pertukaran agar komunitas kami dapat berkembang. Ibarat Times Square, Times SquareX akan menjadi tempat berkumpulnya para raksasa dunia bisnis.",
+    "subtitle": "Kami meletakkan dasar dan menciptakan lingkungan pertukaran agar komunitas kami dapat berkembang. Ibarat Times Square, Times SquareC akan menjadi tempat berkumpulnya para raksasa dunia bisnis.",
     "phase": "FASE",
     "foundation": "INISIASI",
     "launch": "EKSPANSI PLATFORM",
@@ -72,18 +72,18 @@
         "content": "Pastikan keamanan dan stabilitas platform melalui pengujian keamanan dan pengetahuan teknis."
       },
       {
-        "label": "Mulai Putaran Prapenjualan: ",
+        "label": "Mulai Putaran Penjualan Token: ",
         "content": "Crowdfunding dengan peserta yang memiliki minat tertentu terhadap proyek tersebut."
       }
     ],
     "smart_contract_2": [
       {
         "label": "Daftar Pompa: ",
-        "content": "Cantumkan token TSX di bursa DEX dan CEX."
+        "content": "Cantumkan token TSC di bursa DEX dan CEX."
       },
       {
         "label": "Promosi dan Pemasaran: ",
-        "content": "Tingkatkan visibilitas Times SquareX melalui kampanye periklanan dan pemasaran."
+        "content": "Tingkatkan visibilitas Times SquareC melalui kampanye periklanan dan pemasaran."
       },
       {
         "label": "Integrasi Dompet: ",
@@ -101,7 +101,7 @@
     "smart_contract_3": [
       {
         "label": "Perluasan pasar internasional: ",
-        "content": "Hadirkan Times SquareX ke pasar internasional dan dukung lebih banyak bahasa."
+        "content": "Hadirkan Times SquareC ke pasar internasional dan dukung lebih banyak bahasa."
       },
       {
         "label": "Kerjasama dengan proyek-proyek besar: ",
@@ -111,38 +111,42 @@
   },
   "tokenomics": {
     "title": "TOKENOMI",
-    "subtitle": "Peluncuran token $WSM akan membantu mempertahankan pertumbuhan komunitas Wall Street Memes dan memberi penghargaan kepada anggota setia.",
-    "marketing": "Pemasaran",
-    "community_rewards": "Hadiah Komunitas",
-    "cex": "Likuiditas CEX",
-    "dex": "Likuiditas DEX"
+    "subtitle": "Peluncuran token $TSC akan membantu komunitas Times Square terus berkembang dan memberikan penghargaan kepada anggota setia.",
+    "content_1": "Pemasaran",
+    "content_2": "Tim dan Penasihat",
+    "content_3": "Mitra",
+    "content_4": "Rencana Pembakaran",
+    "content_5": "Daftar Cex dan Dex",
+    "content_6": "Hadiah"
   },
   "wsm_media": {
-    "title": "WSM DI MEDIA",
-    "content": "Satu-satunya Koin Meme yang Layak Dibeli - Pembunuh Koin PEPE! (Potensi Besar!)"
+    "title": "TSC DI MEDIA",
+    "content_1": "Animoca Brands akan menginvestasikan $20 juta pada Q4 ini",
+    "content_2": "Times SquareC merilis penjualan Token di jaringan Arbitrum",
+    "content_3": "Bergabunglah dengan Staking menarik di Times SquareC untuk menerima hadiah ETH dan TSC"
   },
   "wsm_airdrop": {
-    "title": "$TSX UDARA",
-    "subtitle": "Kami memberikan token TSX senilai 250 TSX yang didistribusikan dengan murah hati kepada peserta di Times SquareX. Bergabunglah dengan kami di situs web kami dan pastikan Anda mendapatkannya!",
-    "common_ans": "Jawaban umum atas pertanyaan tentang Times SquareX ($TSX) dapat ditemukan di bawah.",
+    "title": "$TSC UDARA",
+    "subtitle": "Kami memberikan token TSC senilai 10 TSC yang didistribusikan dengan murah hati kepada peserta di Times SquareC. Bergabunglah dengan kami di situs web kami dan pastikan Anda mendapatkannya!",
+    "common_ans": "Jawaban umum atas pertanyaan tentang Times SquareC ($TSC) dapat ditemukan di bawah.",
     "ques": [
-      "Token Times SquareX apa yang disajikan?",
+      "Token Times SquareC apa yang disajikan?",
       "Bagaimana cara berpartisipasi dalam Times Square Airdrop?",
       "Bagaimana cara kerja fitur Staking di platform?",
       "Apa imbalannya jika berpartisipasi dalam Staking?",
-      "Apa saja langkah-langkah keamanan di Times SquareX?"
+      "Apa saja langkah-langkah keamanan di Times SquareC?"
     ],
     "ans": [
-      "Token asli Times SquareX disebut \"TSX\" TSX berfungsi sebagai token utilitas di ekosistem Times SquareX, memfasilitasi berbagai transaksi dan aktivitas di platform.",
-      "Berpartisipasilah dalam menerima Airdrop di situs resmi Times SquareX, sambungkan ke dompet Anda dan pilih \"Clamp Airdrop\"",
-      "Staking pada platform Times SquareX melibatkan penguncian sejumlah token TSX untuk jangka waktu tertentu. Sebagai imbalannya, peserta menerima hadiah, biasanya dalam bentuk token TSX tambahan atau persentase dari biaya transaksi yang dihasilkan di platform.",
-      "Peserta program Staking Times SquareX dapat menerima hadiah berupa token TSX. Hadiah didistribusikan berdasarkan jumlah token yang dipertaruhkan dan lamanya periode pertaruhan.",
-      "Times SquareX memprioritaskan keamanan dan menerapkan berbagai tindakan seperti audit kontrak pintar, dompet multi-tanda tangan, penyimpanan dingin, audit keamanan reguler, perlindungan DDoS, dan otentikasi dua faktor untuk melindungi aset pengguna."
+      "Token asli Times SquareC disebut \"TSC\" TSC berfungsi sebagai token utilitas di ekosistem Times SquareC, memfasilitasi berbagai transaksi dan aktivitas di platform.",
+      "Berpartisipasilah dalam menerima Airdrop di situs resmi Times SquareC, sambungkan ke dompet Anda dan pilih \"Clamp Airdrop\"",
+      "Staking pada platform Times SquareC melibatkan penguncian sejumlah token TSC untuk jangka waktu tertentu. Sebagai imbalannya, peserta menerima hadiah, biasanya dalam bentuk token TSC tambahan atau persentase dari biaya transaksi yang dihasilkan di platform.",
+      "Peserta program Staking Times SquareC dapat menerima hadiah berupa token TSC. Hadiah didistribusikan berdasarkan jumlah token yang dipertaruhkan dan lamanya periode pertaruhan.",
+      "Times SquareC memprioritaskan keamanan dan menerapkan berbagai tindakan seperti audit kontrak pintar, dompet multi-tanda tangan, penyimpanan dingin, audit keamanan reguler, perlindungan DDoS, dan otentikasi dua faktor untuk melindungi aset pengguna."
     ]
   },
   "footer": {
     "content_1": "",
-    "content_2": "Times SquareX. Semua Hak Dilindungi Undang-Undang.",
+    "content_2": "Times SquareC. Semua Hak Dilindungi Undang-Undang.",
     "link_1": "",
     "link_2": "",
     "link_3": "",

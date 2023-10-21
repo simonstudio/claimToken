@@ -1,35 +1,95 @@
 {
-  "title": "PASANG DENGAN $WSM",
-  "subtitle": "Stake $WSM Anda sekarang untuk mulai mendapatkan hadiah. Hadiah dihitung berdasarkan persentase dari kumpulan taruhan $WSM Anda dan persentase pengembalian tahunan.",
-  
-
-  "button_label": "Tarik Token yang Dipertaruhkan",
-  "button_header": "Hubungkan Dompet untuk Membeli & Mempertaruhkan",
-
-  "card_1" : {
-    "title": "SALDO YANG DIPERTARUHKAN",
-    "button_label": "Tambahkan Ke Taruhan",
-    "content": "STAKEABLE ANDA"
+  "title": "PASANG DENGAN TOKEN $TSC",
+  "subtitle": "Mulai staking $TSC Anda sekarang untuk mendapatkan reward. Hadiahnya didasarkan pada paket Taruhan yang Anda ikuti dan rumusnya dihitung berdasarkan persentase kumpulan taruhan $TSC Anda dan persentase keuntungan tahunan.",
+  "button_label": "",
+  "button_header": "Hubungkan Dompet untuk Membeli dan Mempertaruhkan",
+  "group_1": {
+    "title": "Taruhan dengan $TSC",
+    "card_1": {
+      "title": "SALDO STAKE ANDA",
+      "button_label": "Tambahkan Ke Taruhan",
+      "content": "TOTAL SALDO YANG DIPERTARUHKAN",
+      "button_label2": " Beli sekarang "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Terima jumlah taruhan kapan saja",
+      "content_2": "APY 194%",
+      "content_3": "Waktu menerima hadiah: kapan saja",
+      "button_label": "Taruhan Sekarang"
+    },
+    "card_3": {
+      "title": "HADIAH TOTAL",
+      "button_label_1": "Klaim Hadiah",
+      "button_label_2": "MENARIK"
+    }
   },
-  "card_2": {
-    "title": "% DARI KOLAM RENANG",
-    "subtitle": "JUMLAH DIPERTARUHKAN"
+  "group_2": {
+    "title": "Taruhan dengan ETH selama 15 hari",
+    "card_1": {
+      "title": "SALDO STAKE ANDA",
+      "button_label": "Tambahkan Ke Taruhan",
+      "content": "TOTAL SALDO YANG DIPERTARUHKAN",
+      "button_label2": " Beli sekarang "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Terima jumlah taruhan setelah 15 hari",
+      "content_2": "APY 73%",
+      "content_3": "Waktu menerima hadiah: 24 jam",
+      "button_label": "Taruhan Sekarang"
+    },
+    "card_3": {
+      "title": "HADIAH TOTAL",
+      "button_label_1": "Klaim Hadiah",
+      "button_label_2": "MENARIK"
+    }
   },
-  "card_3": {
-    "title": "PERKIRAAN HADIAH",
-    "content_1": "Tingkat imbalan bersifat dinamis",
-    "content_2": "Bulanan = Hadiah % / 12",
-    "content_3": "Harian = Hadiah % / 365"
+  "group_3": {
+    "title": "Taruhan dengan ETH selama 30 hari",
+    "card_1": {
+      "title": "SALDO STAKE ANDA",
+      "button_label": "Tambahkan Ke Taruhan",
+      "content": "TOTAL SALDO YANG DIPERTARUHKAN",
+      "button_label2": " Beli sekarang "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Terima jumlah taruhan setelah 30 hari",
+      "content_2": "APY 97%",
+      "content_3": "Waktu menerima hadiah: 24 jam",
+      "button_label": "Taruhan Sekarang"
+    },
+    "card_3": {
+      "title": "HADIAH TOTAL",
+      "button_label_1": "Klaim Hadiah",
+      "button_label_2": "MENARIK"
+    }
   },
-  "card_4": {
-    "title": "HADIAH SAAT INI",
-    "per_block": "Per Blok",
-    "total_reward": "JUMLAH HADIAH",
-    "button_label": "Klaim Hadiah"
-  },
-
-  "card_5": {
-    "title" : "JUMLAH HADIAH",
-    "button_label": "Klaim Hadiah"
+  "group_4": {
+    "title": "Taruhan Terbatas",
+    "card_1": {
+      "title": "SALDO STAKE ANDA",
+      "button_label": "Tambahkan Ke Taruhan",
+      "content": "TOTAL SALDO YANG DIPERTARUHKAN",
+      "button_label2": " Beli sekarang "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Partisipasi terbatas",
+      "content_2": "Terima jumlah Taruhan dan hadiah setelahnya ??? hari",
+      "content_3": "APY ???%",
+      "content_4": "Waktu menerima imbalan: ???",
+      "button_label": "Taruhan Sekarang"
+    },
+    "card_3": {
+      "title": "HADIAH TOTAL",
+      "button_label_1": "Klaim Hadiah",
+      "button_label_2": ""
+    }
   }
 }

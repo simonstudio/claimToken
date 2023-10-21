@@ -14,15 +14,12 @@ class MemeSwiper extends Component<I18n> {
 
 
   imageData = [
-    'https://wallstmemes.com/assets/images/memes/1.png',
-    'https://wallstmemes.com/assets/images/memes/2.png',
-    'https://wallstmemes.com/assets/images/memes/3.png',
-    'https://wallstmemes.com/assets/images/memes/1.png',
-    'https://wallstmemes.com/assets/images/memes/2.png',
-    'https://wallstmemes.com/assets/images/memes/3.png',
-    'https://wallstmemes.com/assets/images/memes/1.png',
-    'https://wallstmemes.com/assets/images/memes/2.png',
-    'https://wallstmemes.com/assets/images/memes/3.png',
+    require('../../../../../assets/image/meme/meme-1.webp'),
+    require('../../../../../assets/image/meme/meme-2.webp'),
+    require('../../../../../assets/image/meme/meme-3.webp'),
+    require('../../../../../assets/image/meme/meme-4.webp'),
+    require('../../../../../assets/image/meme/meme-5.webp'),
+    require('../../../../../assets/image/meme/meme-6.webp'),
 
   ];
 
@@ -36,24 +33,24 @@ class MemeSwiper extends Component<I18n> {
 
   render(): ReactNode {
 
-    const {t} = this.props;
+    const { t } = this.props;
 
-    return(
+    return (
       <MemeSwiperStyled>
-        <Box  display={'flex'} justifyContent={'center'} flexDirection={'column'} alignItems={'center'}>
+        <Box display={'flex'} justifyContent={'center'} flexDirection={'column'} alignItems={'center'}>
           <Box width={'67%'} textAlign={'center'}>
             <Text variant='h2' >{t?.('meme_buss.label_even')}</Text>
             <Text my={4} fontSize={'18px'}>{t?.('meme_buss.description_even')}</Text>
           </Box>
         </Box>
         <Swiper
-          modules={[ Pagination ]}
+          modules={[Pagination]}
           pagination={this.pagination}
           loop={true}
           slidesPerView={1.5}
           spaceBetween={10}
           centeredSlides={true}
-          breakpoints= {{
+          breakpoints={{
             1500: {
               slidesPerView: 2.5,
               spaceBetween: 20,
@@ -63,16 +60,16 @@ class MemeSwiper extends Component<I18n> {
               spaceBetween: 20,
             },
           }}
-          >
-        
+        >
+
           {this.imageData.map((s, index) => {
 
             return <SwiperSlide key={index}>
-              <MemeCard imgUrl={s}/>
+              <MemeCard imgUrl={s} />
             </SwiperSlide>;
 
           })}
-      </Swiper>
+        </Swiper>
 
       </MemeSwiperStyled>
     );
@@ -83,10 +80,8 @@ export default withTranslation('homepage')(MemeSwiper);
 
 const MemeSwiperStyled = styled(Box)`
   .swiper {
-    height: 600px;
     .swiper-slide {
       cursor: pointer;
-
     }
   }
   .swiper-pagination {

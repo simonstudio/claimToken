@@ -3,7 +3,6 @@
  * quản lí các Tokens
  */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import Web3 from "web3";
 import axios from 'axios';
 import { EventEmitter } from "events";
 import { saveSetting } from "./Settings";

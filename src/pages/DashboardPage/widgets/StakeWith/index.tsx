@@ -14,19 +14,19 @@ class StakeWith extends Component<I18n> {
 
     return (
       <StakeWithStyled theme={theme}>
-          <Box display={'flex'} flexDirection={'column'} gap={0.5} maxWidth={'700px'}>
-            <Text variant='h3'> {t?.('title')} </Text>
-            <Text> {t?.('subtitle')} </Text>
-          </Box>
-          <ButtonPrimary sx={{
+        <Box display={'flex'} flexDirection={'column'} gap={0.5} maxWidth={'700px'}>
+          <Text variant='h3'> {t?.('title')} </Text>
+          <Text> {t?.('subtitle')} </Text>
+        </Box>
+        {/* <ButtonPrimary sx={{
             minWidth: '250px'
-          }}><Text fontSize={'14px'} py={1} variant='h3'>{t?.('button_label')}</Text></ButtonPrimary>
+          }}><Text fontSize={'14px'} py={1} variant='h3'>{t?.('button_label')}</Text></ButtonPrimary> */}
       </StakeWithStyled>
     );
   }
 }
 
-const StakeWithStyled = styled(Box)<{theme: Theme}>`
+const StakeWithStyled = styled(Box) <{ theme: Theme }>`
   display: flex;
   align-items: center;
   justify-content: space-between;

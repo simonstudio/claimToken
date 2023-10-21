@@ -2,7 +2,7 @@ import { Box, Theme } from '@mui/material';
 import { Component, ReactNode } from 'react';
 import Text from '../../../../components/atom/Text';
 
-import WSMTokenIcon from '../../../../assets/icon/wsmToken/wsm-meme-bg.svg';
+import WSMTokenIcon from '../../../../assets/icon/wsmToken/times-squarec.svg';
 import styled from '@emotion/styled';
 import { theme } from '../../../../HOCs/useDetachScreen';
 import { withTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ import { I18n } from '../../../../i18';
 class WSMToken extends Component<I18n> {
   render(): ReactNode {
 
-    const {t} = this.props;
+    const { t } = this.props;
 
     return (
       <WSMTokenStyled theme={theme} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
@@ -22,7 +22,7 @@ class WSMToken extends Component<I18n> {
           <Text>{t?.('wsm_token.content_3')}</Text>
         </Box>
         <Box>
-          <img src={WSMTokenIcon}/>
+          <img width={441} src={WSMTokenIcon} />
         </Box>
       </WSMTokenStyled>
     );
@@ -31,7 +31,7 @@ class WSMToken extends Component<I18n> {
 
 export default withTranslation('homepage')(WSMToken);
 
-const WSMTokenStyled = styled(Box)<{theme: Theme}>`
+const WSMTokenStyled = styled(Box) <{ theme: Theme }>`
   padding-left: 24px;
   ${props => props.theme.breakpoints.down('lg')} {
     flex-direction: column;

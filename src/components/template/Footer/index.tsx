@@ -6,7 +6,7 @@ import moment from 'moment';
 import TextLink from '../../atom/Text/TextLink';
 import ListSocial from '../../molecules/ListSocial';
 import { theme } from '../../../HOCs/useDetachScreen';
-import LogoIcon from '../../../assets/icon/LogoIcon';
+import LogoIcon from '../../../assets/icon/logo-white.png';
 import { withTranslation } from 'react-i18next';
 import { I18n } from '../../../i18';
 
@@ -17,7 +17,7 @@ class Footer extends Component<I18n> {
 
     return (
       <FooterStyled theme={theme}>
-        <LogoIcon height={85} width={85} />
+        <img style={{ marginLeft: 20, marginRight: 20 }} src={LogoIcon} width={70} />
         <Box className='footer-content' display={'flex'} alignContent={'center'} justifyContent={'space-between'} gap={'26px'}>
           <Box display={'flex'} flexDirection={'column'} justifyContent={'space-between'}>
             <Text>{t?.('footer.content_1')}</Text>
@@ -32,7 +32,8 @@ class Footer extends Component<I18n> {
           </Box>
           <Box>
             <ListSocial size={25} gap={1} />
-            <Text>xxx@xxx.com</Text>
+            <Text onClick={() => window.location.href = 'mailto:admin@timessquarec.io'}>admin@timessquarec.io</Text>
+            <Text onClick={() => window.open('https://arbiscan.io/token/0x3fc90cf9b01a5086f7ca2d3cae87e6596d739bfa', '_blank')}>contract: 0x3fc90c...96d739bfa</Text>
           </Box>
         </Box>
         <Text className='footer-bottom' mt={4}>{t?.('footer.content_3')}</Text>

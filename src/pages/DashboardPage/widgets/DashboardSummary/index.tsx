@@ -17,85 +17,90 @@ class DashboardSummary extends Component<I18n> {
     const gridItemPros = {
       xs: 12,
       sm: 4,
-      md: 3,
-      lg: 2.4,
+      md: 4,
+      lg: 4,
     };
 
     const cardContent: string[] = [
-      t?.('card_3.content_1') ?? '',
-      t?.('card_3.content_2') ?? '',
-      // t?.('card_3.content_3') ?? '',
+      t?.('group_1.card_2.content_1') ?? '',
+      t?.('group_1.card_2.content_2') ?? '',
+      t?.('group_1.card_2.content_3') ?? ''
     ];
 
     return (
-      <DashboardSummaryStyled container spacing={{ xs: 2, md: 3 }}>
-        <Grid item {...gridItemPros}>
-          <BoxOutlineSecondary>
-            <Text>{t?.('card_1.title')}</Text>
-            <Text variant='h3'>0 <sup>WSM</sup></Text>
-            <ButtonOutline sx={{
-              margin: '0 auto',
-            }}>{t?.('card_1.button_label')}</ButtonOutline>
-            <Text>{t?.('card_1.content')}</Text>
-            <Text variant='h3'>0 <sup>WSM</sup></Text>
-          </BoxOutlineSecondary>
-        </Grid>
+      <>
+        <Text style={{
+          marginBottom: 20
+        }} variant='h3'>{t?.('group_1.title')}</Text>
+        <DashboardSummaryStyled container spacing={{ xs: 2, md: 3 }}>
+          <Grid item {...gridItemPros}>
+            <BoxOutlineSecondary>
+              <Text>{t?.('group_1.card_1.title')}</Text>
+              <Text variant='h3'>0 <sup>TSC</sup></Text>
+              <ButtonOutline sx={{
+                margin: '0 auto',
+              }}>{t?.('group_1.card_1.button_label')}</ButtonOutline>
+              <Text>{t?.('group_1.card_1.content')}</Text>
+              <Text variant='h3'>0 <sup>TSC</sup></Text>
+              <ButtonOutline sx={{
+                margin: '0 auto',
+              }}>&nbsp;&nbsp;{t?.('group_1.card_1.button_label2')}&nbsp;&nbsp;</ButtonOutline>
+            </BoxOutlineSecondary>
+          </Grid>
 
-        {/* card 2 */}
-        <Grid item {...gridItemPros}>
-
-          <BoxOutlineSecondary>
-            <Box className='content'>
-              <Box display={'flex'} gap={1}>
-                <Text>{t?.('card_2.title')}</Text>
-                <ImageFluid src='images/info-icon.svg' />
+          {/* card 2 */}
+          <Grid item {...gridItemPros}>
+            <BoxOutlineSecondary>
+              <Box className='content'>
+                <Text>MIN</Text>
+                <Text variant='h3'>{t?.('group_1.card_2.min')}</Text>
+                <Text>MAX</Text>
+                <Text variant='h3'>{t?.('group_1.card_2.max')}</Text>
               </Box>
-              <Text variant='h3'>0%</Text>
-              <Text>{t?.('card_2.subtitle')}</Text>
-              <Text variant='h3'>0%</Text>
-            </Box>
-          </BoxOutlineSecondary>
-        </Grid>
+              <Text>&nbsp;</Text>
+              <Box display={'flex'} flexDirection={'column'} gap={0.5}>
+                {cardContent.map((s, index) => (
+                  <SubText key={index} text={s} />))}
+              </Box>
+              <Text>&nbsp;</Text>
+              <ButtonOutline sx={{
+                margin: '0 auto',
+              }}>{t?.('group_1.card_2.button_label')}</ButtonOutline>
+            </BoxOutlineSecondary>
+            <Text>&nbsp;</Text>
+          </Grid>
 
-        {/* card 3 */}
-        <Grid item {...gridItemPros}>
-          <BoxOutlineSecondary>
-            <Box className='content'>
-              <Text>{t?.('card_3.title')}</Text>
-              <Text variant='h3'>45%</Text>
-            </Box>
-
-            <Box display={'flex'} flexDirection={'column'} gap={0.5}>
-              {cardContent.map((s, index) => (
-                <SubText key={index} text={s} />))}
-            </Box>
-          </BoxOutlineSecondary>
-        </Grid>
-
-        {/* Card 4 */}
-        <Grid item {...gridItemPros}>
-          <BoxOutlineSecondary>
-            <Box className='content'>
-              <Text>{t?.('card_4.title')}</Text>
-              <Text variant='h3'>75 <sup>{t?.('card_4.per_block')}</sup></Text>
-            </Box>
-          </BoxOutlineSecondary>
-        </Grid>
-
-
-        {/* Card 5 */}
-        <Grid item {...gridItemPros}>
-          <BoxOutlineSecondary>
-            <Box className='content'>
-              <Text>{t?.('card_5.title')}</Text>
-              <Text variant='h3'>0 <sup>WSM</sup></Text>
-            </Box>
-            <ButtonOutline sx={{
-              margin: '0 auto',
-            }}>{t?.('card_5.button_label')}</ButtonOutline>
-          </BoxOutlineSecondary>
-        </Grid>
-      </DashboardSummaryStyled>
+          {/* Card 3 */}
+          <Grid item {...gridItemPros}>
+            <BoxOutlineSecondary>
+              <Box className='content'>
+                <Text>{t?.('group_1.card_3.title')}</Text>
+                <Text variant='h3'>0 <sup>TSC</sup></Text>
+              </Box>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%'
+              }}>
+                <ButtonOutline sx={{
+                  margin: '0 auto',
+                }}>{t?.('group_1.card_3.button_label_1')}</ButtonOutline>
+                <div style={{
+                  marginTop: 20
+                }}></div>
+                {
+                  t?.('group_1.card_3.button_label_2') &&
+                  <ButtonOutline sx={{
+                    margin: '0 auto',
+                  }}>{t?.('group_1.card_3.button_label_2')}</ButtonOutline>
+                }
+              </div>
+            </BoxOutlineSecondary>
+          </Grid>
+        </DashboardSummaryStyled>
+      </>
     );
   }
 }
@@ -112,7 +117,7 @@ class SubText extends Component<{ text: string }> {
   render(): ReactNode {
     return (
       <Box display={'flex'} gap={1} >
-        <ImageFluid src='images/ani-arrow.svg' />
+        {/* <ImageFluid src='https://wallstmemes.com/assets/images/svg-icons/ani-arrow.svg' /> */}
         <Text fontSize={'10px'} color={'#535353'} fontWeight={500}>{this.props.text}</Text>
       </Box>
     );

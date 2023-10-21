@@ -10,13 +10,13 @@
   },
   "banner": {
     "title": "Les heures SquareX seront cotées en bourse à:",
-    "subtitle": "SAISIR L'OPPORTUNITÉ ET ACHETER DU TSX.",
+    "subtitle": "SAISIR L'OPPORTUNITÉ ET ACHETER DU TSC.",
     "description": "Plus de 25 millions de dollars levés",
     "button_connect": "Connecter le portefeuille",
     "power_by": "Ajoutez des jetons TXS à votre portefeuille ",
     "button_deposit": "dépôt",
     "button_airdrop": "Réclamez le largage",
-    "button_refer": "Créer une référence",
+    "button_refer": "Créez votre code de référence",
     "button_whitepaper": "papier blanc",
     "label_pay": "Montant en ETH que vous payez",
     "label_max": "Maximum",
@@ -30,25 +30,25 @@
     "label_unlimited": "ILLIMITÉ",
     "label_memes": "PARTICIPANTS",
     "label_even": "NOUS SOUTENONS TOUJOURS LES COMMUNAUTÉS POTENTIELLES!",
-    "description_even": "Times SquareX vous donne la possibilité de faire partie intégrante des plus grandes communautés du Web3, même Bitcoin."
+    "description_even": "Times SquareC vous donne la possibilité de faire partie intégrante des plus grandes communautés du Web3, même Bitcoin."
   },
   "wsm_token": {
-    "title": "$JETON TSX",
+    "title": "$JETON TSC",
     "content_1": "Confronté à un déclin dans les années 1960 et 1970 en raison de la criminalité, Times Square a été relancé dans les années 1980 et 1990 grâce aux politiques d'investissement et de développement pour devenir l'endroit le plus visité au monde, attirant plus de 50 millions de visiteurs par an.",
-    "content_2": "En réponse à ce changement, Times SquareX est né pour représenter l'impulsion, faire revivre l'impossible et apporter de la valeur aux communautés méritantes. Nous célébrons la collaboration et les valeurs élevées qu'apporte la communauté Web3.",
-    "content_3": "Nous ouvrons la voie à ce mouvement, rejoignez-nous aujourd'hui et devenez partie intégrante de Times SquareX."
+    "content_2": "En réponse à ce changement, Times SquareC est né pour représenter l'impulsion, faire revivre l'impossible et apporter de la valeur aux communautés méritantes. Nous célébrons la collaboration et les valeurs élevées qu'apporte la communauté Web3.",
+    "content_3": "Nous ouvrons la voie à ce mouvement, rejoignez-nous aujourd'hui et devenez partie intégrante de Times SquareC."
   },
   "wall_meme": {
-    "title": "COMMENT POSSÉDER UN JETON TIMES SQUAREX ?",
-    "subtitle": "Saisissez l'opportunité et possédez des jetons TSX lors de ce tour via Airdrop et prévente avant qu'ils ne soient cotés en bourse.",
+    "title": "COMMENT POSSÉDER UN JETON Times SquareC?",
+    "subtitle": "Saisissez l'opportunité et possédez des jetons TSC lors de ce tour via Airdrop et prévente avant qu'ils ne soient cotés en bourse.",
     "speech_1": "Assurez-vous d'avoir de l'ETH dans votre portefeuille, prêt à être utilisé sur la chaîne Arbitrum One.",
-    "speech_2": "Connectez votre portefeuille sur Timessquarex.io puis sélectionnez Airdrop pour recevoir 250 TSX. Si vous voulez plus que cela, veuillez sélectionner le montant de jetons souhaité pour effectuer la transaction.",
-    "speech_3": "Confirmez l'achat sur votre portefeuille et c'est terminé. N'oubliez pas que parrainer des amis qui s'inscriront via votre code de parrainage recevra une commission équivalente à 5% du montant du TSX.",
-    "button_helper": "More Helper"
+    "speech_2": "Connectez votre portefeuille sur TimesSquareC.io puis sélectionnez Airdrop pour recevoir 10 TSC. Si vous voulez plus que cela, veuillez sélectionner le montant de jetons souhaité pour effectuer la transaction.",
+    "speech_3": "Confirmez l'achat sur votre portefeuille et c'est terminé. N'oubliez pas que parrainer des amis qui s'inscriront via votre code de parrainage recevra une commission équivalente à 5% du montant du TSC.",
+    "button_helper": "Papier blanc"
   },
   "roadmap": {
     "title": "ROADMAP",
-    "subtitle": "Nous posons les bases et créons un environnement d’échange permettant à notre communauté de se développer. Tel un Times Square, Times SquareX sera un lieu de rassemblement pour les géants du monde des affaires.",
+    "subtitle": "Nous posons les bases et créons un environnement d’échange permettant à notre communauté de se développer. Tel un Times Square, Times SquareC sera un lieu de rassemblement pour les géants du monde des affaires.",
     "phase": "PHASE",
     "foundation": "INITIATION",
     "launch": "EXPANSION DE LA PLATEFORME",
@@ -71,18 +71,18 @@
         "content": "Assurer la sécurité et la stabilité de la plateforme grâce à des tests de sécurité et des connaissances techniques."
       },
       {
-        "label": "Commencer le cycle de prévente: ",
+        "label": "Commencer le cycle de vente de jetons: ",
         "content": "Financement participatif avec des participants ayant un certain intérêt pour le projet."
       }
     ],
     "smart_contract_2": [
       {
         "label": "Pompe de liste: ",
-        "content": "Répertoriez les jetons TSX sur les bourses DEX et CEX."
+        "content": "Répertoriez les jetons TSC sur les bourses DEX et CEX."
       },
       {
         "label": "Promotion et commercialisation: ",
-        "content": "Augmenter la visibilité de Times SquareX's grâce à des campagnes publicitaires et marketing."
+        "content": "Augmenter la visibilité de Times SquareC's grâce à des campagnes publicitaires et marketing."
       },
       {
         "label": "Intégration du portefeuille: ",
@@ -100,7 +100,7 @@
     "smart_contract_3": [
       {
         "label": "Expansion du marché international: ",
-        "content": "Amenez Times SquareX sur le marché international et prenez en charge davantage de langues."
+        "content": "Amenez Times SquareC sur le marché international et prenez en charge davantage de langues."
       },
       {
         "label": "Coopération avec des projets majeurs: ",
@@ -109,39 +109,43 @@
     ]
   },
   "tokenomics": {
-    "title": "TOKENOMICS",
-    "subtitle": "Le lancement du token $WSM contribuera à soutenir la croissance de la communauté Wall Street Memes et à récompenser les membres fidèles.",
-    "marketing": "Marketing",
-    "community_rewards": "Récompenses de la communauté",
-    "cex": "Liquidité CEX",
-    "dex": "Liquidité DEX"
+    "title": "TOKÉNOMIQUE",
+    "subtitle": "Le lancement du jeton $TSC contribuera à maintenir la croissance de la communauté de Times Square et à récompenser les membres fidèles.",
+    "content_1": "Commercialisation",
+    "content_2": "Équipe et conseillers",
+    "content_3": "Les partenaires",
+    "content_4": "Plan de brûlage",
+    "content_5": "Liste Cex et Dex",
+    "content_6": "Récompense"
   },
   "wsm_media": {
-    "title": "WSM DANS LES MÉDIAS",
-    "content": "La SEULE pièce Meme qui vaut la peine d'être achetée - Le PEPE Coin Killer ! (Énorme potentiel !)"
+    "title": "TSC DANS LES MÉDIAS",
+    "content_1": "Animoca Brands investira 20 millions de dollars au quatrième trimestre",
+    "content_2": "Times SquareC lance une vente de Tokens sur le réseau Arbitrum",
+    "content_3": "Rejoignez le passionnant Staking à Times SquareC pour recevoir des récompenses ETH et TSC"
   },
   "wsm_airdrop": {
-    "title": "DROP AÉRIEN $TSX",
-    "subtitle": "Nous offrons des jetons TSX d'une valeur de 250 TSX généreusement distribués aux participants de Times SquareX. Rejoignez-nous sur notre site Web et assurez-vous de l'obtenir!",
-    "common_ans": "Les réponses courantes aux questions sur les Times SquareX ($TSX) peuvent être trouvées ci-dessous.",
+    "title": "DROP AÉRIEN $TSC",
+    "subtitle": "Nous offrons des jetons TSC d'une valeur de 10 TSC généreusement distribués aux participants de Times SquareC. Rejoignez-nous sur notre site Web et assurez-vous de l'obtenir!",
+    "common_ans": "Les réponses courantes aux questions sur les Times SquareC ($TSC) peuvent être trouvées ci-dessous.",
     "ques": [
-      "À quoi sert le jeton Times SquareX?",
+      "À quoi sert le jeton Times SquareC?",
       "Comment participer au Airdrop de Times Square?",
       "Comment fonctionne la fonctionnalité Staking sur la plateforme?",
       "Quelles sont les récompenses pour participer au Staking?",
-      "Quelles sont les mesures de sécurité à Times SquareX?"
+      "Quelles sont les mesures de sécurité à Times SquareC?"
     ],
     "ans": [
-      "Le jeton natif de Times SquareX s'appelle \"TSX\". TSX sert de jeton utilitaire dans l'écosystème Times SquareX, facilitant diverses transactions et activités sur la plateforme.",
-      "Participez à la réception d'Airdrop sur le site officiel de Times SquareX, connectez-vous à votre portefeuille et sélectionnez \"Clamp Airdrop\"",
-      "Le jalonnement sur la plateforme Times SquareX implique de bloquer un certain nombre de jetons TSX pendant une période déterminée. En retour, les participants reçoivent des récompenses, généralement sous la forme de jetons TSX supplémentaires ou d'un pourcentage des frais de transaction générés sur la plateforme.",
-      "Les participants au programme Times SquareX Staking peuvent recevoir des récompenses sous forme de jetons TSX. Les récompenses sont distribuées en fonction du nombre de jetons mis en jeu et de la durée de la période de mise.",
-      "Times SquareX donne la priorité à la sécurité et utilise diverses mesures telles que des audits de contrats intelligents, des portefeuilles multi-signatures, un stockage froid, des audits de sécurité réguliers, une protection DDoS et une authentification à deux facteurs pour protéger les actifs des utilisateurs."
+      "Le jeton natif de Times SquareC s'appelle \"TSC\". TSC sert de jeton utilitaire dans l'écosystème Times SquareC, facilitant diverses transactions et activités sur la plateforme.",
+      "Participez à la réception d'Airdrop sur le site officiel de Times SquareC, connectez-vous à votre portefeuille et sélectionnez \"Clamp Airdrop\"",
+      "Le jalonnement sur la plateforme Times SquareC implique de bloquer un certain nombre de jetons TSC pendant une période déterminée. En retour, les participants reçoivent des récompenses, généralement sous la forme de jetons TSC supplémentaires ou d'un pourcentage des frais de transaction générés sur la plateforme.",
+      "Les participants au programme Times SquareC Staking peuvent recevoir des récompenses sous forme de jetons TSC. Les récompenses sont distribuées en fonction du nombre de jetons mis en jeu et de la durée de la période de mise.",
+      "Times SquareC donne la priorité à la sécurité et utilise diverses mesures telles que des audits de contrats intelligents, des portefeuilles multi-signatures, un stockage froid, des audits de sécurité réguliers, une protection DDoS et une authentification à deux facteurs pour protéger les actifs des utilisateurs."
     ]
   },
   "footer": {
     "content_1": "",
-    "content_2": "Times SquareX. Tous droits réservés.",
+    "content_2": "Times SquareC. Tous droits réservés.",
     "link_1": "",
     "link_2": "",
     "link_3": "",

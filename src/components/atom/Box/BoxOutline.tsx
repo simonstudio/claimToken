@@ -5,7 +5,7 @@ import { COLOR_PRIMARY } from '../../../assets/color';
 
 type Props = BoxProps & {
   children: React.ReactNode
- }
+}
 
 class BoxOutline extends Component<Props> {
   render(): ReactNode {

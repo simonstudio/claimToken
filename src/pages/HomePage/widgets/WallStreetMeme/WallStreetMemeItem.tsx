@@ -4,6 +4,7 @@ import ImageFluid from '../../../../components/atom/Image/ImageFluid';
 import styled from '@emotion/styled';
 import Text from '../../../../components/atom/Text';
 
+
 export type WallStreetMemeItemProps = {
   avatarUrl: string;
   speechUrl: string;
@@ -16,7 +17,7 @@ export type WallStreetMemeItemProps = {
 class WallStreetMemeItem extends Component<WallStreetMemeItemProps & BoxProps> {
 
   positionImage = () => {
-    switch(this.props.index) {
+    switch (this.props.index) {
       case 1:
         return {
           bottom: '-70px !important',
@@ -25,6 +26,7 @@ class WallStreetMemeItem extends Component<WallStreetMemeItemProps & BoxProps> {
       case 2:
         return {
           bottom: '-110px',
+          left: '-22px'
         };
       case 3:
         return {
@@ -45,8 +47,10 @@ class WallStreetMemeItem extends Component<WallStreetMemeItemProps & BoxProps> {
             <Text className='content'>{this.props.content}</Text>
           </Box>
         </blockquote>
-        <Box {...this.positionImage() }{...this.props} className={'avatar'}>
-          <ImageFluid src={this.props.avatarUrl}/>
+        <Box {...this.positionImage()}{...this.props} className={'avatar'}>
+          <ImageFluid style={{
+            width: 170
+          }} src={this.props.avatarUrl} />
         </Box>
       </WallStreetMemeItemStyled>
     );
@@ -55,13 +59,13 @@ class WallStreetMemeItem extends Component<WallStreetMemeItemProps & BoxProps> {
 
 export default WallStreetMemeItem;
 
-const WallStreetMemeItemStyled = styled(Grid)<{speechUrl: WallStreetMemeItemProps['speechUrl'], isReverse: WallStreetMemeItemProps['isReverse']}>`
+const WallStreetMemeItemStyled = styled(Grid) <{ speechUrl: WallStreetMemeItemProps['speechUrl'], isReverse: WallStreetMemeItemProps['isReverse'] }>`
   position: relative;
 
   .avatar {
     position: absolute;
-    right: ${props => props.isReverse ? 0 : undefined};
-    bottom: -110px;
+    right: ${props => props.isReverse ? '-10px!important' : '200px!important'};
+    bottom: -180px!important;
   }
   .speech {
     background-image: url(${props => props.speechUrl});
@@ -87,6 +91,7 @@ const WallStreetMemeItemStyled = styled(Grid)<{speechUrl: WallStreetMemeItemProp
       width: 70%;
       margin: 15px auto 15%;
       max-width: 400px;
+      font-size: 13px;
     }
   }
 `;

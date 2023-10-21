@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { Box } from '@mui/material';
 import React, { Component, ReactNode } from 'react';
 
-class BoxOutlineSecondary extends Component<{children: React.ReactNode}> {
+class BoxOutlineSecondary extends Component<{ children: React.ReactNode }> {
   render(): ReactNode {
     return (
       <BoxOutlineSecondaryStyled>
@@ -10,7 +10,7 @@ class BoxOutlineSecondary extends Component<{children: React.ReactNode}> {
       </BoxOutlineSecondaryStyled>
     );
   }
-} 
+}
 
 export default BoxOutlineSecondary;
 

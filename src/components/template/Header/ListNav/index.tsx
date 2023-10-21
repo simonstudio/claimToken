@@ -23,34 +23,34 @@ export type TNavItem = {
 
 class ListNav extends Component<I18n, State> {
 
-  
+
   constructor(props: Props) {
     super(props);
   }
-  
+
   render(): ReactNode {
 
-    const {t} = this.props;
+    const { t } = this.props;
 
     const items: TNavItem[] = [
       {
         label: t?.('header.stalking'),
-        onclick: () => window.location.href ='/dashboard'
-        
+        onclick: () => window.location.href = '/dashboard'
+
       },
       {
         label: t?.('header.community'),
       },
       {
         label: t?.('header.about'),
-        
+
         children: [
           {
-            label: t?.('header.about'),
-            
+            label: t?.('header.tokenomics'),
+
           },
           {
-            label: t?.('header.about'),
+            label: t?.('header.how_to_buy'),
           }
         ]
       },
@@ -70,7 +70,7 @@ class ListNav extends Component<I18n, State> {
 
 export default withTranslation('homepage')(ListNav);
 
-const ListNavStyled = styled(Box)<{theme: Theme}>`
+const ListNavStyled = styled(Box) <{ theme: Theme }>`
   display: flex;
   list-style: none;
   align-items: center;

@@ -1,35 +1,95 @@
 {
-  "title": "STAKE WITH $WSM",
-  "subtitle": "Stake your $WSM now to start earning rewards. Rewards are calculated based on your percentage of the $WSM staking pool and the annual returns percentage.",
-  
-  "button_label": "Withdraw Staked Tokens",
+  "title": "STAKE WITH $TSC TOKENS",
+  "subtitle": "Start staking your $TSC now to earning your rewards. The rewards are based on the Stake package you participate in and the formula is calculated based on your percentage of the $TSC staking pool and on the annual profit percentage.",
+  "button_label": "",
   "button_header": "Connect Wallet to Buy & Stake",
-  
-  
-  "card_1" : {
-    "title": "STAKED BALANCE",
-    "button_label": "Add To Stake",
-    "content": "YOUR STAKEABLE"
+  "group_1": {
+    "title": "Stake with $TSC",
+    "card_1": {
+      "title": "YOUR STAKE BALANCE",
+      "button_label": "Add To Stake",
+      "content": "TOTAL STAKED BALANCE",
+      "button_label2": " Buy Now "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Receive stake amount anytime",
+      "content_2": "APY 194%",
+      "content_3": "Time receive rewards: anytime",
+      "button_label": "Stake Now"
+    },
+    "card_3": {
+      "title": "TOTAL REWARDS",
+      "button_label_1": "Claim Rewards",
+      "button_label_2": "WITHDRAW"
+    }
   },
-  "card_2": {
-    "title": "% OF POOL",
-    "subtitle": "TOTAL STAKED"
+  "group_2": {
+    "title": "Stake with ETH for 15 days",
+    "card_1": {
+      "title": "YOUR STAKE BALANCE",
+      "button_label": "Add To Stake",
+      "content": "TOTAL STAKED BALANCE",
+      "button_label2": " Buy Now "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Receive stake amount after 15 days",
+      "content_2": "APY 73%",
+      "content_3": "Time receive rewards: 24 hours",
+      "button_label": "Stake Now"
+    },
+    "card_3": {
+      "title": "TOTAL REWARDS",
+      "button_label_1": "Claim Rewards",
+      "button_label_2": "WITHDRAW"
+    }
   },
-  "card_3": {
-    "title": "ESTIMATED REWARDS",
-    "content_1": "Rewards rate is dynamic",
-    "content_2": "Monthly = Rewards % / 12",
-    "content_3": "Daily = Rewards % / 365" 
+  "group_3": {
+    "title": "Stake with ETH for 30 days",
+    "card_1": {
+      "title": "YOUR STAKE BALANCE",
+      "button_label": "Add To Stake",
+      "content": "TOTAL STAKED BALANCE",
+      "button_label2": " Buy Now "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Receive stake amount after 30 days",
+      "content_2": "APY 97%",
+      "content_3": "Time receive rewards: 24 hours",
+      "button_label": "Stake Now"
+    },
+    "card_3": {
+      "title": "TOTAL REWARDS",
+      "button_label_1": "Claim Rewards",
+      "button_label_2": "WITHDRAW"
+    }
   },
-  "card_4": {
-    "title": "CURRENT REWARDS",
-    "per_block": "Per Block",
-    "total_reward": "TOTAL REWARDS",
-    "button_label": "Claim Rewards"
-  },
-
-  "card_5": {
-    "title" : "TOTAL REWARDS",
-    "button_label": "Claim Rewards"
+  "group_4": {
+    "title": "Limited Staking",
+    "card_1": {
+      "title": "YOUR STAKE BALANCE",
+      "button_label": "Add To Stake",
+      "content": "TOTAL STAKED BALANCE",
+      "button_label2": " Buy Now "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Participation is limited",
+      "content_2": "Receive Stake amount and rewards after ??? days",
+      "content_3": "APY ???%",
+      "content_4": "Time receive rewards: ???",
+      "button_label": "Stake Now"
+    },
+    "card_3": {
+      "title": "TOTAL REWARDS",
+      "button_label_1": "Claim Rewards",
+      "button_label_2": ""
+    }
   }
 }

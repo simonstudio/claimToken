@@ -43,7 +43,7 @@ class FAQ extends Component<I18n> {
     ];
     return (
       <FAQStyled textAlign={'center'} theme={theme} width={'75%'} margin={'auto'} display={'flex'} flexDirection={'column'} alignItems={'center'} gap={4}>
-        <Text variant='h2'>FAQ</Text>
+        <Text style={{ marginTop: 20 }} variant='h2'>FAQ</Text>
         <Text variant='h3'>{t?.('wsm_airdrop.common_ans')}</Text>
         {data.map((o, index) => (
           <FAQItem key={index} {...o} />

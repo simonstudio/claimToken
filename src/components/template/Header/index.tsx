@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { Box } from '@mui/material';
 import { Component, ReactNode } from 'react';
-import LogoIcon from '../../../assets/icon/LogoIcon';
+import LogoIcon from '../../../assets/icon/logo.png';
 import ListNav from './ListNav';
 import ToolNav from './ToolNav';
 import { TScreen } from '../../../HOCs/useDetachScreen';
@@ -23,13 +23,13 @@ class Header extends Component<Props, State> {
     super(props);
   }
 
-  render(): ReactNode {    
+  render(): ReactNode {
     return (
       <HeaderStyled zIndex={1300}>
-        <LogoIcon/>
-        <ListNav/>
-        <ToolNav/>
-        <MobileMenu/>
+        <img src={LogoIcon} width={40} />
+        <ListNav />
+        <ToolNav />
+        <MobileMenu />
       </HeaderStyled>
     );
   }

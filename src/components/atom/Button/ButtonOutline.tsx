@@ -23,7 +23,7 @@ class ButtonOutline extends Component<Props> {
 
 export default ButtonOutline;
 
-const ButtonStyled = styled(Button)<{isBold: boolean}>`
+const ButtonStyled = styled(Button) <{ isBold: boolean }>`
   font-weight: 600;
   border-radius: 9999px;
   font-weight: ${props => props.isBold ? 700 : 500};

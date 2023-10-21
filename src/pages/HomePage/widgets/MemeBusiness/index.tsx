@@ -5,9 +5,9 @@ import MemeSwiper from './MemeSwiper';
 import Text from '../../../../components/atom/Text';
 import ImageFluid from '../../../../components/atom/Image/ImageFluid';
 
-import MemeTrollIcon from '../../../../assets/icon/meme/meme-1.svg';
-import MemeManIcon from '../../../../assets/icon/meme/meme-2.svg';
-import WowIcon from '../../../../assets/icon/meme/wow.svg';
+import MemeTrollIcon from '../../../../assets/icon/meme/bull-business-1.png';
+import MemeManIcon from '../../../../assets/icon/meme/bull-business-2.png';
+import WowIcon from '../../../../assets/icon/meme/bull-business-3.png';
 import { I18n } from '../../../../i18';
 import { withTranslation } from 'react-i18next';
 import { theme } from '../../../../HOCs/useDetachScreen';
@@ -65,7 +65,9 @@ class MemeBusiness extends Component<I18n> {
             </Grid>
           </Grid>
           <Box display={'flex'} justifyContent={'center'} my={4}>
-            <ImageFluid src={WowIcon} />
+            <ImageFluid style={{
+              width: 200
+            }} src={WowIcon} />
           </Box>
         </BoxSection>
 

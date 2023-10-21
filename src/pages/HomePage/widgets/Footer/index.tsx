@@ -7,7 +7,7 @@ class FooterBanner extends Component {
   render(): ReactNode {
     return (
       <FooterBannerStyled>
-        <ImageFluid width={'100%'} src={'https://wallstmemes.com/assets/images/footer-desktop.svg'}/>
+        <ImageFluid width={'100%'} src={require('../../../../assets/image/banner-footer.webp')} />
       </FooterBannerStyled>
     );
   }
