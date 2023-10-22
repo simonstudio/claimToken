@@ -20,12 +20,9 @@ import github from "../../../../assets/icon/github.svg";
 import banner_mobile from '../../../../assets/image/banner-mobile.svg';
 
 
-type Props = I18n & {
+type Props = I18n & {}
 
-}
-
-type State = {
-}
+type State = {}
 
 class Banner extends Component<Props, State> {
 

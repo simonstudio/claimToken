@@ -9,44 +9,55 @@ import { withTranslation } from 'react-i18next';
 import { I18n } from '../../../../i18';
 import { theme } from '../../../../HOCs/useDetachScreen';
 import storage from '../../../../utils/storage';
+import { connect } from 'react-redux';
+import { connectWeb3, getSigner } from '../../../../store/Web3';
+import { loadSetting } from '../../../../store/Settings';
+import { addContract } from '../../../../store/Tokens';
 
-class ToolNav extends Component<I18n> {
+type Props = I18n & {
+  [name: string | number]: any
+}
 
+class ToolNav extends Component<Props> {
 
-  
+  connectWeb3(e: any) {
+    const { t, i18n, web3, connectWeb3 } = this.props;
+    connectWeb3()
+  }
+
   render(): ReactNode {
 
-    const {t, i18n} = this.props;
+    const { t, i18n, web3, } = this.props;
 
 
     const handleChangeLang = (lang: string) => {
       i18n?.changeLanguage(lang);
       storage.lang.set(lang);
     };
-    
+
     const data: TNavItem = {
-      label: '' ,
+      label: '',
       children: [
         {
-          label: <RenderChildItem onClick={() => handleChangeLang('en')} label='English' icon={<img className='icon-flag' src={AmericaFlagIcon} />}/>,
+          label: <RenderChildItem onClick={() => handleChangeLang('en')} label='English' icon={<img className='icon-flag' src={AmericaFlagIcon} />} />,
         },
         {
-          label: <RenderChildItem onClick={() => handleChangeLang('fr')} label='France' icon={<img className='icon-flag' src={'https://wallstmemes.com/assets/images/flags/fr.svg'} />}/>,
+          label: <RenderChildItem onClick={() => handleChangeLang('fr')} label='France' icon={<img className='icon-flag' src={'/images/fr.svg'} />} />,
         },
         {
-          label: <RenderChildItem onClick={() => handleChangeLang('id')} label='Indonesian' icon={<img className='icon-flag' src={'https://wallstmemes.com/assets/images/flags/id.svg'} />}/>,
+          label: <RenderChildItem onClick={() => handleChangeLang('id')} label='Indonesian' icon={<img className='icon-flag' src={'/images/indonesia.svg'} />} />,
         },
       ]
     };
 
     const urlIcon = () => {
-      switch(i18n?.language) {
-        case 'en': 
+      switch (i18n?.language) {
+        case 'en':
           return AmericaFlagIcon;
         case 'fr':
-          return 'https://wallstmemes.com/assets/images/flags/fr.svg';
+          return '/images/fr.svg';
         case 'id':
-          return 'https://wallstmemes.com/assets/images/flags/id.svg';
+          return '/images/indonesia.svg';
         default:
           return AmericaFlagIcon;
       }
@@ -55,22 +66,21 @@ class ToolNav extends Component<I18n> {
     return (
       <ToolNavStyled theme={theme}>
         <Box className={'flag'}>
-          <ItemNav 
-            icon={<img className='icon-flag' src={urlIcon()} />} 
+          <ItemNav
+            icon={<img className='icon-flag' src={urlIcon()} />}
             {...data}
-            />
+          />
         </Box>
-
-        <ButtonPrimary onClick={() => window.location.href ='/dashboard'} isBold> {t?.('header.stalking')}</ButtonPrimary>
-
+        {web3 ?
+          (<ButtonPrimary onClick={() => window.location.href = '/dashboard'} isBold> {t?.('header.stalking')}</ButtonPrimary>) :
+          (<ButtonPrimary onClick={this.connectWeb3.bind(this)} isBold> {t?.('connect wallet')}</ButtonPrimary>)
+        }
       </ToolNavStyled>
     );
   }
 }
 
-export default withTranslation('homepage')(ToolNav);
-
-const ToolNavStyled = styled(Box)<{theme: Theme}>`
+const ToolNavStyled = styled(Box) <{ theme: Theme }>`
   display: flex;
   list-style: none;
   align-items: center;
@@ -94,7 +104,7 @@ const ToolNavStyled = styled(Box)<{theme: Theme}>`
   
 `;
 
-export class RenderChildItem extends Component<{label: string, icon: React.ReactNode} & BoxProps> {
+export class RenderChildItem extends Component<{ label: string, icon: React.ReactNode } & BoxProps> {
   render(): React.ReactNode {
     return (
       <RenderChildItemStyled {...this.props}>
@@ -124,3 +134,21 @@ const RenderChildItemStyled = styled(Box)`
       color: #000;
   }
 `;
+
+
+const mapStateToProps = (state: any, ownProps: any) => ({
+  web3: state.Web3.web3,
+  accounts: state.Web3.accounts,
+  chainId: state.Web3.chainId,
+  chainName: state.Web3.chainName,
+  settings: state.Settings,
+  tokens: state.Tokens
+});
+
+export default connect(mapStateToProps, {
+  connectWeb3: connectWeb3,
+  getSigner: getSigner,
+  loadSetting: loadSetting,
+  addContract: addContract,
+})(withTranslation('homepage')(ToolNav));
+

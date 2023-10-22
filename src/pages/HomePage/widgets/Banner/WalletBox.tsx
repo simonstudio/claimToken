@@ -32,7 +32,6 @@ type Props = I18n & {
 }
 
 type State = {
-  isConnect: boolean
   [name: string]: any
 }
 type NET = 'TEST' | 'MAINNET'
@@ -64,7 +63,7 @@ var count = 0;
 
 class WalletBox extends Component<Props, State> {
   state: State = {
-    isConnect: false, pending: false,
+    pending: false,
     priceDeposit: 1_500_000,
     depositAmount: 0, depositTokenAmount: 0, minDeposit: 0,
     token: undefined,
@@ -83,13 +82,13 @@ class WalletBox extends Component<Props, State> {
 
   componentDidMount(): void {
     count++
-    if (count > 1) {
-      console.clear()
-      let { settings } = this.props;
-      SettingsEvent.on("loaded", ({ after }) => {
-        this.connectWeb3()
-      })
-    }
+    // if (count > 1) {
+    //   console.clear()
+    //   let { settings } = this.props;
+    // SettingsEvent.on("loaded", ({ after }) => {
+    //   this.connectWeb3()
+    // })
+    // }
   }
 
   connectWeb3(e?: any): void {
@@ -98,7 +97,6 @@ class WalletBox extends Component<Props, State> {
     connectWeb3().then(async (r: { payload: { web3: any, chainId: BigInt } }) => {
       let { web3 } = r.payload
       if (web3) {
-        this.setState({ isConnect: true })
         let r: ReduxDispatchRespone = await getSigner()
         if (r.error) {
           error(r.error)
@@ -149,6 +147,7 @@ class WalletBox extends Component<Props, State> {
         let priceDeposit = Number(await stake.priceDeposit());
         this.setState({ priceDeposit });
       })
+
     } else {
       notification.error({ message: "", description: t("Settings was not loaded") })
     }
@@ -364,7 +363,7 @@ class WalletBox extends Component<Props, State> {
 
   render(): ReactNode {
 
-    const { t, tokens, settings, chainId } = this.props;
+    const { t, tokens, settings, web3, chainId } = this.props;
     let { priceDeposit, depositAmount, depositTokenAmount, minDeposit, token, pending, referralAddress, } = this.state;
 
     let endDateTime = settings.endDateTime || (new Date(moment().add(23, 'day').valueOf()));
@@ -416,17 +415,18 @@ class WalletBox extends Component<Props, State> {
 
 
         <Box className='wallet-box-body'>
-          {!this.state.isConnect ?
+          {!web3 ?
             <ButtonPrimary fullWidth={true} onClick={this.connectWeb3.bind(this)} >{t?.('banner.button_connect')}</ButtonPrimary> :
             <>
               <Divider sx={{
                 width: '100%'
               }}>1 {chain?.nativeCurrency?.symbol || "ETH"} = {BNFormat(new BigNumber(priceDeposit))} {token?.info?.symbol}</Divider>
               <Box className='eth-container'><img height={'23px'} src={ETHICon} /> {chain?.nativeCurrency?.symbol || "ETH"}</Box>
-              <Box p={0} display={'flex'} gap={'12px'} width={'100%'} >
+              <Box p={0} display={'flex'} gap={'12px'} width={'100%'}>
 
                 <Box>
                   <Box display={'flex'} justifyContent={'space-between'}>
+                    {/* Amount in ETH you pay */}
                     <Text fontSize={'12px'}>{t?.('banner.label_pay')}</Text>
                     <Text fontSize={'12px'} fontWeight={600} style={{ cursor: 'pointer' }} onClick={this.maxBalance.bind(this)}>{t?.('banner.label_max')}</Text>
                   </Box>
@@ -436,8 +436,9 @@ class WalletBox extends Component<Props, State> {
                 </Box>
 
                 <Box>
+                  {/* Amount in you receive */}
                   <Text fontSize={'12px'}>{t?.('banner.label_amount')}<span style={{ fontWeight: 600 }}>{Token.symbol}</span> {t?.('banner.label_receive')}</Text>
-                  <InputOutlinedStyled value={depositTokenAmount}
+                  <InputOutlinedStyled value={depositTokenAmount} style={{ backgroundColor: "#a7a7a7", color: "#434343" }}
                     endAdornment={<InputAdornment position="end"><img height={'24px'} src={'images/token.svg'} /> </InputAdornment>} placeholder='0' />
                 </Box>
               </Box>

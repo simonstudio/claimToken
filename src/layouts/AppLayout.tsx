@@ -8,20 +8,27 @@ import moment from 'moment';
 import Footer from '../components/template/Footer';
 import FooterBanner from '../pages/HomePage/widgets/Footer';
 import storage from '../utils/storage';
+import { withTranslation } from 'react-i18next';
+import { TFunction } from 'i18next';
+import { connect } from 'react-redux';
+import { loadSetting } from '../store/Settings';
 
 
-type Props = { };
-type State = { };
+type Props = {
+  t?: TFunction<'translation', undefined>
+  [name: string]: any,
+};
+type State = {};
 
 class AppLayout extends Component<Props, State> {
 
   protected theme;
-  
+
 
   constructor(props: Props) {
     super(props);
     this.theme = createTheme({
-      
+
       palette: {
         primary: {
           main: COLOR_PRIMARY
@@ -49,43 +56,54 @@ class AppLayout extends Component<Props, State> {
   }
 
   render() {
+    let { t, settings } = this.props
     !storage.lang.get() && storage.lang.set('en');
 
-    return(
+    let endDateTime = settings.endDateTime || (new Date(moment().add(23, 'day').valueOf()));
+
+    return (
       <ThemeProvider theme={this.theme}>
-        <Header/>
-        <Countdown  
-        date={ new Date(moment().add(23, 'day').valueOf())}
-          renderer={({days ,hours, minutes, seconds, completed }) => {
+        <Header />
+        <Countdown
+          date={endDateTime}
+          renderer={({ days, hours, minutes, seconds, completed }) => {
             if (completed) {
               return 'Finished';
             } else {
               return (
-                <Box 
-                  position={'sticky'} 
+                <Box
+                  position={'sticky'}
                   top={'80px'}
-                  zIndex={1000} 
-                  color={'white'} 
-                  fontWeight={600} 
-                  p={1} 
-                  bgcolor={COLOR_PRIMARY} 
-                  display={'flex'} 
-                  justifyContent={'center'} 
+                  zIndex={1000}
+                  color={'white'}
+                  fontWeight={600}
+                  p={1}
+                  bgcolor={COLOR_PRIMARY}
+                  display={'flex'}
+                  justifyContent={'center'}
                   gap={1}>
-                    Next exchange listing in {days}d {hours}h {minutes}m {seconds}s
+                  {t("Next exchange listing in")} {days}d {hours}h {minutes}m {seconds}s
                 </Box>
               );
             }
           }}
         />
-        <Outlet/>
+        <Outlet />
         <Box mt={14}>
           <FooterBanner />
         </Box>
-        <Footer/>
+        <Footer />
       </ThemeProvider>
     );
   }
 }
 
-export default AppLayout;
+
+
+const mapStateToProps = (state: any, ownProps: any) => ({
+  settings: state.Settings,
+});
+
+export default connect(mapStateToProps, {
+  loadSetting: loadSetting,
+})(withTranslation('homepage')(AppLayout));

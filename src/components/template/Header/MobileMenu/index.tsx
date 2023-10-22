@@ -79,11 +79,11 @@ class MobileMenu extends Component<Props, State> {
         link: '/'
       },
       {
-        label: <RenderChildItem onClick={() => handleChangeLang('fr')} label='France' icon={<img className='icon-flag' src={'https://wallstmemes.com/assets/images/flags/fr.svg'} />} />,
+        label: <RenderChildItem onClick={() => handleChangeLang('fr')} label='France' icon={<img className='icon-flag' src={'/images/fr.svg'} />} />,
         link: '/'
       },
       {
-        label: <RenderChildItem onClick={() => handleChangeLang('id')} label='Indonesian' icon={<img className='icon-flag' src={'https://wallstmemes.com/assets/images/flags/id.svg'} />} />,
+        label: <RenderChildItem onClick={() => handleChangeLang('id')} label='Indonesian' icon={<img className='icon-flag' src={'/images/indonesia.svg'} />} />,
         link: '/'
       },
     ];
