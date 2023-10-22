@@ -31,7 +31,7 @@ class WSMInTheMedia extends Component<I18n> {
     ];
 
     return (
-      <WSMInTheMediaStyled theme={theme} px={4}>
+      <WSMInTheMediaStyled theme={theme} px={4} id='media'>
         <Text mt={20} mb={8} textAlign={'center'} variant='h2'>{t?.('wsm_media.title')}</Text>
         <Grid className='wsm_media-content' container spacing={3}>
           {data.map((o, index) => (

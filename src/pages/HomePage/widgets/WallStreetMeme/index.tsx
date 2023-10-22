@@ -56,7 +56,7 @@ class WallStreetMeme extends Component<I18n> {
     };
 
     return (
-      <WallStreetMemeStyled theme={theme} overflow={'hidden'} mt={1} gap={3} display={'flex'} alignItems={'center'} flexDirection={'column'} justifyContent={'center'}>
+      <WallStreetMemeStyled theme={theme} overflow={'hidden'} mt={1} gap={3} display={'flex'} alignItems={'center'} flexDirection={'column'} justifyContent={'center'} id='howtobuy'>
         <img style={{ marginTop: 100 }} src={LogoIcon} width={70} />
         <Text variant='h2'>{t?.('wall_meme.title')}</Text>
         <Text >{t?.('wall_meme.subtitle')}</Text>

@@ -8,11 +8,9 @@ import { theme } from '../../../../HOCs/useDetachScreen';
 import storage from '../../../../utils/storage';
 
 type Props = {
-
 }
 
 type State = {
-
 }
 
 export type TNavItem = {
@@ -22,7 +20,6 @@ export type TNavItem = {
 }
 
 class ListNav extends Component<I18n, State> {
-
 
   constructor(props: Props) {
     super(props);
@@ -40,6 +37,7 @@ class ListNav extends Component<I18n, State> {
       },
       {
         label: t?.('header.community'),
+        onclick: () => window.location.href = '#community'
       },
       {
         label: t?.('header.about'),
@@ -47,15 +45,17 @@ class ListNav extends Component<I18n, State> {
         children: [
           {
             label: t?.('header.tokenomics'),
-
+            onclick: () => window.location.href = '#tokenomics'
           },
           {
             label: t?.('header.how_to_buy'),
+            onclick: () => window.location.href = '#howtobuy'
           }
         ]
       },
       {
         label: t?.('header.media'),
+        onclick: () => window.location.href = '#media'
       }
     ];
     return (

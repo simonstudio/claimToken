@@ -26,23 +26,23 @@ class ItemNav extends Component<Props, State> {
   }
 
   handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    this.setState({anchorEl: event.currentTarget});
+    this.setState({ anchorEl: event.currentTarget });
   };
 
   handleClose = () => {
-    this.setState({anchorEl: null});
+    this.setState({ anchorEl: null });
   };
 
-  
+
 
   render(): ReactNode {
     return (
       <ItemNavStyled onClick={this.props.onclick}>
-        {! this.props.icon ? <Text>{this.props.label}</Text> : this.props.icon}
+        {!this.props.icon ? <Text>{this.props.label}</Text> : this.props.icon}
 
-        {(this.props.children ?? [])?.length > 0 && 
-          <IconButton  onClick={this.handleClick}><ArrowDownIcon/></IconButton> }
-       
+        {(this.props.children ?? [])?.length > 0 &&
+          <IconButton onClick={this.handleClick}><ArrowDownIcon /></IconButton>}
+
         <PopoverStyled
           id={this.state.anchorEl ? 'item-nav' : ''}
           open={Boolean(this.state.anchorEl)}
@@ -55,7 +55,7 @@ class ItemNav extends Component<Props, State> {
         >
           <Box className='popover-card' display={'flex'} gap={'12px'} padding={2} width={'200px'} flexDirection={'column'}>
             {this.props.children?.map((o, index) => (
-              <Text fontSize={'16px'} fontWeight={'600'} key={index}>{o.label}</Text>
+              <Text fontSize={'16px'} fontWeight={'600'} key={index} onClick={o.onclick} style={{ cursor: "pointer" }}>{o.label}</Text>
             ))}
           </Box>
         </PopoverStyled>

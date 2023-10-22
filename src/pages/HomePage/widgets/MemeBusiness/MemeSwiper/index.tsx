@@ -36,7 +36,7 @@ class MemeSwiper extends Component<I18n> {
     const { t } = this.props;
 
     return (
-      <MemeSwiperStyled>
+      <MemeSwiperStyled id={"community"}>
         <Box display={'flex'} justifyContent={'center'} flexDirection={'column'} alignItems={'center'}>
           <Box width={'67%'} textAlign={'center'}>
             <Text variant='h2' >{t?.('meme_buss.label_even')}</Text>

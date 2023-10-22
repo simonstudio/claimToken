@@ -26,7 +26,10 @@ class Header extends Component<Props, State> {
   render(): ReactNode {
     return (
       <HeaderStyled zIndex={1300}>
-        <img src={LogoIcon} width={40} />
+        <a href='/'>
+          <img src={LogoIcon} width={40} />
+        </a>
+        
         <ListNav />
         <ToolNav />
         <MobileMenu />

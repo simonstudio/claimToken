@@ -49,7 +49,7 @@ class Tokenomics extends Component<I18n> {
       },
     ];
     return (
-      <TokenomicsStyled theme={theme}>
+      <TokenomicsStyled theme={theme} id='tokenomics'>
         <Text variant='h2' textAlign={'center'}>{t?.('tokenomics.title')}</Text>
         <Grid className='token-content' container spacing={2}>
           <Grid item xs={8} sx={{ marginTop: 4, paddingRight: 6 }}>
