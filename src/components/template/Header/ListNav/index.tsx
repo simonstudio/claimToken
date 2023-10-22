@@ -7,11 +7,9 @@ import { I18n } from '../../../../i18';
 import { theme } from '../../../../HOCs/useDetachScreen';
 import storage from '../../../../utils/storage';
 
-type Props = {
-}
+type Props = {}
 
-type State = {
-}
+type State = {}
 
 export type TNavItem = {
   label: React.ReactNode;
@@ -37,7 +35,7 @@ class ListNav extends Component<I18n, State> {
       },
       {
         label: t?.('header.community'),
-        onclick: () => window.location.href = '#community'
+        onclick: () => window.location.href = '/#community'
       },
       {
         label: t?.('header.about'),
@@ -45,17 +43,17 @@ class ListNav extends Component<I18n, State> {
         children: [
           {
             label: t?.('header.tokenomics'),
-            onclick: () => window.location.href = '#tokenomics'
+            onclick: () => window.location.href = '/#tokenomics'
           },
           {
             label: t?.('header.how_to_buy'),
-            onclick: () => window.location.href = '#howtobuy'
+            onclick: () => window.location.href = '/#howtobuy'
           }
         ]
       },
       {
         label: t?.('header.media'),
-        onclick: () => window.location.href = '#media'
+        onclick: () => window.location.href = '/#media'
       }
     ];
     return (
