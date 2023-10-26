@@ -8,7 +8,12 @@ import { notification } from 'antd';
 import { log, logwarn, logerror, numberToHex } from "../std"
 import { EventEmitter } from "events";
 
+/**
+ * Web3Event:
+ * changed
+ */
 export var Web3Event = new EventEmitter();
+
 
 const dev = {
     TEST: 'TEST',

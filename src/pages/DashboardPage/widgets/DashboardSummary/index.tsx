@@ -7,12 +7,45 @@ import Text from '../../../../components/atom/Text';
 import ButtonOutline from '../../../../components/atom/Button/ButtonOutline';
 import { I18n } from '../../../../i18';
 import ImageFluid from '../../../../components/atom/Image/ImageFluid';
+import { Web3Event, connectWeb3, getSigner } from '../../../../store/Web3';
+import { loadSetting } from '../../../../store/Settings';
+import { addContract } from '../../../../store/Tokens';
+import { connect } from 'react-redux';
+import { ReduxDispatchRespone } from '../../../../store';
+import { notification } from 'antd';
 
-class DashboardSummary extends Component<I18n> {
+const { log, error, } = console;
+
+type Props = I18n & {
+  [name: string]: any,
+}
+
+type State = {
+  [name: string]: any
+}
+
+
+class DashboardSummary extends Component<Props> {
+
+  state: State = {
+    token: undefined, stake: undefined,
+  }
+
+  componentDidMount(): void {
+    const { t, settings } = this.props;
+  }
+
+  addStake(e: any): void {
+    const { t, tokens, settings } = this.props;
+    let token = tokens?.[settings?.Token?.address]
+    let stake = tokens?.[settings?.Stake?.address]
+    log(token, stake)
+  }
+
   render(): ReactNode {
-
-
-    const { t } = this.props;
+    const { t, tokens, settings } = this.props;
+    let token = tokens?.[settings?.Token?.address]
+    let stake = tokens?.[settings?.Stake?.address]
 
     const gridItemPros = {
       xs: 12,
@@ -37,14 +70,18 @@ class DashboardSummary extends Component<I18n> {
             <BoxOutlineSecondary>
               <Text>{t?.('group_1.card_1.title')}</Text>
               <Text variant='h3'>0 <sup>TSC</sup></Text>
+
               <ButtonOutline sx={{
                 margin: '0 auto',
-              }}>{t?.('group_1.card_1.button_label')}</ButtonOutline>
+              }} onClick={this.addStake.bind(this)}>{t?.('group_1.card_1.button_label')}</ButtonOutline>
               <Text>{t?.('group_1.card_1.content')}</Text>
+
               <Text variant='h3'>0 <sup>TSC</sup></Text>
+
               <ButtonOutline sx={{
                 margin: '0 auto',
               }}>&nbsp;&nbsp;{t?.('group_1.card_1.button_label2')}&nbsp;&nbsp;</ButtonOutline>
+
             </BoxOutlineSecondary>
           </Grid>
 
@@ -105,7 +142,22 @@ class DashboardSummary extends Component<I18n> {
   }
 }
 
-export default withTranslation('dashboard_page')(DashboardSummary);
+const mapStateToProps = (state: any, ownProps: any) => ({
+  web3: state.Web3.web3,
+  accounts: state.Web3.accounts,
+  chainId: state.Web3.chainId,
+  chainName: state.Web3.chainName,
+  settings: state.Settings,
+  tokens: state.Tokens
+});
+
+export default connect(mapStateToProps, {
+  connectWeb3: connectWeb3,
+  getSigner: getSigner,
+  loadSetting: loadSetting,
+  addContract: addContract,
+})(withTranslation('dashboard_page')(DashboardSummary));
+
 
 const DashboardSummaryStyled = styled(Grid)`
   /* display: flex;
