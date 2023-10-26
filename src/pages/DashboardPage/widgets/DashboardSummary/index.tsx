@@ -13,7 +13,7 @@ import { addContract, getInfo } from '../../../../store/Tokens';
 import { connect } from 'react-redux';
 import { ReduxDispatchRespone } from '../../../../store';
 import { notification } from 'antd';
-import { Contract } from 'ethers';
+import { Contract, JsonRpcSigner } from 'ethers';
 
 const { log, error, } = console;
 
@@ -63,9 +63,15 @@ class DashboardSummary extends Component<Props> {
         this.getInfo(this.props.tokens[address]).then((info: any) => {
           this.setState({ token_info: info })
         })
-
-      if (this.props.tokens[Stake.address] !== prevProps.tokens[Stake.address])
-        this.getStakeInfo(this.props.tokens[Stake.address])
+      let stake = this.props.tokens[Stake.address]
+      if (stake !== prevProps.tokens[Stake.address]) {
+        this.getStakeInfo(stake);
+        this.props.web3.getSigner().then(async (signer: JsonRpcSigner) => {
+          let result = await stake.getStaking1(signer.address)
+          log(result)
+          window.result = result
+        })
+      }
     }
   }
 
@@ -92,7 +98,7 @@ class DashboardSummary extends Component<Props> {
     return stake_info;
   }
 
-  
+
 
   addStake(e: any): void {
     const { t, tokens, settings } = this.props;
