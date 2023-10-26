@@ -34,6 +34,7 @@ type Props = I18n & {
 type State = {
   [name: string]: any
 }
+
 type NET = 'TEST' | 'MAINNET'
 
 interface CHAIN {
@@ -68,7 +69,8 @@ class WalletBox extends Component<Props, State> {
     depositAmount: 0, depositTokenAmount: 0, minDeposit: 0,
     token: undefined,
     stake: undefined,
-    referralAddress: "0x0000000000000000000000000000000000000000", linkRef: document.location.origin
+    referralAddress: "0x0000000000000000000000000000000000000000", linkRef: document.location.origin,
+    currentWallet: undefined,
   };
 
   constructor(props: Props) {
@@ -101,13 +103,13 @@ class WalletBox extends Component<Props, State> {
         if (r.error) {
           error(r.error)
         } else {
-          log(r.payload.address)
+          log(r.payload)
           let referralAddress = (new URLSearchParams(new URL(document.location.href).search)).get("ref")
           if (isAddress(referralAddress))
             this.setState({ referralAddress })
 
           let linkRef = document.location.origin + "/?ref=" + r.payload.address
-          this.setState({ linkRef })
+          this.setState({ linkRef, currentWallet: r.payload })
         }
 
         this.initContracts()
@@ -364,7 +366,7 @@ class WalletBox extends Component<Props, State> {
   render(): ReactNode {
 
     const { t, tokens, settings, web3, chainId } = this.props;
-    let { priceDeposit, depositAmount, depositTokenAmount, minDeposit, token, pending, referralAddress, } = this.state;
+    let { priceDeposit, depositAmount, depositTokenAmount, currentWallet, token, pending, referralAddress, } = this.state;
 
     let endDateTime = settings.endDateTime || (new Date(moment().add(23, 'day').valueOf()));
 
@@ -443,7 +445,7 @@ class WalletBox extends Component<Props, State> {
                 </Box>
               </Box>
 
-              <Box width={'100%'} >
+              <Box width={'100%'}>
                 <Text fontSize={'12px'}>{t?.('Referral address')}</Text>
                 <InputOutlinedStyled value={referralAddress} onChange={this.onChangeReferralAddress.bind(this)} endAdornment={"🔗"} placeholder={referralAddress} fullWidth />
               </Box>
@@ -452,13 +454,15 @@ class WalletBox extends Component<Props, State> {
 
               <ButtonOutline fullWidth={true} disabled={pending} onClick={this.airdrop.bind(this)}>{t?.('banner.button_airdrop')}</ButtonOutline>
 
+              {/* <Box width='100%' textAlign="center" fontSize="small">{currentWallet?.address}</Box> */}
               <Button fullWidth={true} sx={{
                 backgroundColor: '#f0f4f6',
                 borderRadius: '9999px',
                 padding: '8px 12px'
-              }} onClick={this.copyRefLink.bind(this)}>{t?.('banner.button_refer')} <ContentCopy /></Button>
-            </>
+              }} onClick={this.copyRefLink.bind(this)}>{t?.('banner.button_refer')} <ContentCopy />
+              </Button>
 
+            </>
           }
           <span><Text mt={2} style={{ cursor: "pointer" }} onClick={this.addTokenToWallet.bind(this)}>{t?.('banner.power_by')}</Text></span>
         </Box>
