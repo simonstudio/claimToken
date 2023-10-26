@@ -123,7 +123,7 @@ class WalletBox extends Component<Props, State> {
     let { Token, Stake } = settings
 
     if (!web3)
-      notification.error({ message: "", description: t("Web3 is not connected") })
+      notification.error({ message: "", description: t?.("Web3 is not connected") })
 
     else if (Token && Stake) {
       let { addContract } = this.props;

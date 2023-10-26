@@ -9,10 +9,11 @@ import { I18n } from '../../../../i18';
 import ImageFluid from '../../../../components/atom/Image/ImageFluid';
 import { Web3Event, connectWeb3, getSigner } from '../../../../store/Web3';
 import { loadSetting } from '../../../../store/Settings';
-import { addContract } from '../../../../store/Tokens';
+import { addContract, getInfo } from '../../../../store/Tokens';
 import { connect } from 'react-redux';
 import { ReduxDispatchRespone } from '../../../../store';
 import { notification } from 'antd';
+import { Contract } from 'ethers';
 
 const { log, error, } = console;
 
@@ -28,22 +29,80 @@ type State = {
 class DashboardSummary extends Component<Props> {
 
   state: State = {
-    token: undefined, stake: undefined,
+    token_info: {
+      symbol: "Token",
+      decimals: BigInt(1e18),
+      name: "Token",
+      totalSupply: BigInt(0),
+    },
+
+    stake_info: {
+      Staking1_min: 0,
+      Staking1_max: 0,
+      Staking1_max_token_interest: 0,
+      Staking1_period: 0,
+      Staking1_period_interest: 0,
+      Staking1_min_time_withdraw: 0,
+    }
+  }
+
+  constructor(props: Props) {
+    super(props);
+    this.getStakeInfo.bind(this)
   }
 
   componentDidMount(): void {
     const { t, settings } = this.props;
   }
 
+  componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<{}>, snapshot?: any): void {
+    if (prevProps.tokens !== this.props.tokens) {
+      let { address } = this.props.settings.Token
+      let { Stake } = this.props.settings
+      if (this.props.tokens[address] !== prevProps.tokens[address])
+        this.getInfo(this.props.tokens[address]).then((info: any) => {
+          this.setState({ token_info: info })
+        })
+
+      if (this.props.tokens[Stake.address] !== prevProps.tokens[Stake.address])
+        this.getStakeInfo(this.props.tokens[Stake.address])
+    }
+  }
+
+  async getInfo(instance: Contract): Promise<any> {
+    let info = {
+      name: await instance.name(),
+      symbol: await instance.symbol(),
+      decimals: 10 ** Number(await instance.decimals()),
+      totalSupply: await instance.totalSupply(),
+    }
+    return info;
+  }
+
+  async getStakeInfo(instance: Contract): Promise<any> {
+    let stake_info = {
+      "Staking1_min": Number(await instance.Staking1_min()) / 1e18,
+      "Staking1_max": Number(await instance.Staking1_max()) / 1e18,
+      "Staking1_max_token_interest": Number(await instance.Staking1_max_token_interest()) / 1e18,
+      "Staking1_period": Number(await instance.Staking1_period()),
+      "Staking1_period_interest": Number(await instance.Staking1_period_interest()),
+      "Staking1_min_time_withdraw": Number(await instance.Staking1_min_time_withdraw()),
+    }
+    this.setState({ stake_info })
+    return stake_info;
+  }
+
+  
+
   addStake(e: any): void {
     const { t, tokens, settings } = this.props;
     let token = tokens?.[settings?.Token?.address]
     let stake = tokens?.[settings?.Stake?.address]
-    log(token, stake)
   }
 
   render(): ReactNode {
     const { t, tokens, settings } = this.props;
+    const { token_info, stake_info } = this.state;
     let token = tokens?.[settings?.Token?.address]
     let stake = tokens?.[settings?.Stake?.address]
 
@@ -69,14 +128,14 @@ class DashboardSummary extends Component<Props> {
           <Grid item {...gridItemPros}>
             <BoxOutlineSecondary>
               <Text>{t?.('group_1.card_1.title')}</Text>
-              <Text variant='h3'>0 <sup>TSC</sup></Text>
+              <Text variant='h3'>0 <sup>{token?.info?.symbol}</sup></Text>
 
               <ButtonOutline sx={{
                 margin: '0 auto',
               }} onClick={this.addStake.bind(this)}>{t?.('group_1.card_1.button_label')}</ButtonOutline>
               <Text>{t?.('group_1.card_1.content')}</Text>
 
-              <Text variant='h3'>0 <sup>TSC</sup></Text>
+              <Text variant='h3'>0 <sup>{token?.info?.symbol}</sup></Text>
 
               <ButtonOutline sx={{
                 margin: '0 auto',
@@ -90,9 +149,9 @@ class DashboardSummary extends Component<Props> {
             <BoxOutlineSecondary>
               <Box className='content'>
                 <Text>MIN</Text>
-                <Text variant='h3'>{t?.('group_1.card_2.min')}</Text>
+                <Text variant='h3'>{stake_info.Staking1_min} {token?.info?.symbol}</Text>
                 <Text>MAX</Text>
-                <Text variant='h3'>{t?.('group_1.card_2.max')}</Text>
+                <Text variant='h3'>{stake_info.Staking1_max} {token?.info?.symbol}</Text>
               </Box>
               <Text>&nbsp;</Text>
               <Box display={'flex'} flexDirection={'column'} gap={0.5}>
@@ -112,7 +171,7 @@ class DashboardSummary extends Component<Props> {
             <BoxOutlineSecondary>
               <Box className='content'>
                 <Text>{t?.('group_1.card_3.title')}</Text>
-                <Text variant='h3'>0 <sup>TSC</sup></Text>
+                <Text variant='h3'>0 <sup>{token?.info?.symbol}</sup></Text>
               </Box>
               <div style={{
                 display: 'flex',

@@ -5,7 +5,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { ethers, } from "ethers";
 import { notification } from 'antd';
-import { log, logwarn, logerror, numberToHex } from "../std"
+import { log, numberToHex } from "../std"
 import { EventEmitter } from "events";
 
 /**
