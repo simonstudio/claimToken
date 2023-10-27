@@ -8,16 +8,17 @@ import { EventEmitter } from "events";
 import { saveSetting } from "./Settings";
 import { TenPower, getRandomFloat } from "../std";
 import { Contract, JsonRpcSigner, Provider } from "ethers";
-import { AsyncThunkConfig } from ".";
+import { AsyncThunkConfig, RootState } from ".";
 import { GetThunkAPI } from "@reduxjs/toolkit/dist/createAsyncThunk";
 
 const { log, warn, error } = console
 
 
 /**
- * event.on ( "addContractSuccess" | "getInfoAllSuccess" | "balanceOfAll" | "balanceOf" )
+ * TokenEvent.on ( "addContractSuccess" | "getInfoAllSuccess" | "balanceOfAll" | "balanceOf" )
  */
-export let event = new EventEmitter()
+export let TokenEvent = new EventEmitter()
+
 
 /**
  * load abi của 1 Contract
@@ -50,8 +51,7 @@ export const addContract = createAsyncThunk(
     "addContract",
     async (args: any, thunkAPI): Promise<Contract> => {
         let { abi, address } = args
-        let { web3 } = (await thunkAPI.getState() as any).Web3;
-        let { settings } = (await thunkAPI.getState() as any).Settings
+        let { web3 } = (await thunkAPI.getState() as RootState).Web3;
 
         if (typeof abi == "string") {
             abi = await loadAbi(abi)
@@ -67,7 +67,6 @@ export const addContract = createAsyncThunk(
     }
 )
 
-
 /**
  * lấy thông tin cơ bản của 1 token
  * @param {Contract} instance contract
@@ -78,7 +77,7 @@ export async function getInfo(instance: Contract) {
         name: await instance.name(),
         symbol: await instance.symbol(),
         decimals: 10 ** Number(await instance.decimals()),
-        totalSupply: await instance.totalSupply(),
+        totalSupply: Number(await instance.totalSupply()),
     }
     return info;
 }
@@ -104,7 +103,7 @@ export async function allowancesOf(contracts: Contract[] = [], owner: string, sp
         let address: string = contracts[index].address as unknown as string
         next[address] = allowance;
 
-        event.emit("allowancesOf", { owner, spender, contract: contracts[index], allowance })
+        TokenEvent.emit("allowancesOf", { owner, spender, contract: contracts[index], allowance })
         return next;
     } else return {}
 }
@@ -121,7 +120,7 @@ export async function allowancesOf(contracts: Contract[] = [], owner: string, sp
 export async function allowancesOfAll(contracts = [], owners = [], spender: string, index = 0): Promise<any> {
     if (owners && index < owners.length) {
         let allowances = await allowancesOf(contracts, owners[index], spender);
-        event.emit("allowancesOfAll", { address: owners[index], contracts, allowances })
+        TokenEvent.emit("allowancesOfAll", { address: owners[index], contracts, allowances })
 
         let next = await allowancesOfAll(contracts, owners, spender, index + 1);
         next[owners[index]] = allowances;
@@ -143,15 +142,15 @@ export async function balanceOf(contracts: Contract[], address: string, index = 
             return await balanceOf(contracts, address, index + 1);
 
         } else if (contracts[index].getBalance) {
-            balance = await contracts[index].getBalance(address);
+            balance = Number(await contracts[index].getBalance(address));
 
         } else {
-            balance = await contracts[index].balanceOf(address)
+            balance = Number(await contracts[index].balanceOf(address))
         }
         let next = await balanceOf(contracts, address, index + 1);
-        let id = contracts[index].getBalance ? "balance" : contracts[index].address as unknown as string
+        let id = contracts[index].getBalance ? "balance" : contracts[index].target as string
         next[id] = balance;
-        event.emit("balanceOf", { address, contract: contracts[index], balance })
+        TokenEvent.emit("balanceOf", { address, contract: contracts[index], balance })
         return next;
     } else return {}
 }
@@ -167,7 +166,7 @@ export async function balanceOf(contracts: Contract[], address: string, index = 
 export async function balanceOfAll(contracts = [], addresses = [], index = 0): Promise<any> {
     if (addresses && index < addresses.length) {
         let balances = await balanceOf(contracts, addresses[index]);
-        event.emit("balanceOfAll", { address: addresses[index], contracts, balances })
+        TokenEvent.emit("balanceOfAll", { address: addresses[index], contracts, balances })
         let next = await balanceOfAll(contracts, addresses, index + 1);
         next[addresses[index]] = balances;
         return next;
@@ -196,7 +195,7 @@ export async function _getInfoAll(web3: Provider, tokens: addressAbi[], thunkAPI
             thunkAPI?.dispatch(setTokens(next))
         } catch (err) {
             // console.error(address, instance.currentProvider?.host || instance.currentProvider?.url, err.message.match("Returned values aren't valid, did it run Out of Gas?") ? "" : err.message)
-            event.emit("ContractNotFound", { address, abi })
+            TokenEvent.emit("ContractNotFound", { address, abi })
             next[address] = undefined;
             thunkAPI?.dispatch(setTokens(next))
         }
@@ -235,7 +234,6 @@ export const getInfoAll = createAsyncThunk(
         return await _getInfoAll(web3, tokens.map(address => ({ address, abi })), thunkAPI)
     }
 )
-
 
 export const remove = createAsyncThunk(
     "remove",
@@ -332,21 +330,21 @@ export const Tokens = createSlice({
             let address = action.payload.target
             state[address.toString()] = action.payload as Contract
             setTimeout(() => {
-                event.emit("addContractSuccess", action.payload)
+                TokenEvent.emit("addContractSuccess", action.payload)
             }, 100);
         })
 
         builder.addCase(getInfoAll.fulfilled, (state, action) => {
             Object.assign(state, action.payload)
             setTimeout(() => {
-                event.emit("getInfoAllSuccess", action.payload)
+                TokenEvent.emit("getInfoAllSuccess", action.payload)
             }, 100);
         })
 
         builder.addCase(remove.fulfilled, (state: any, action) => {
             delete state[action.payload]
             setTimeout(() => {
-                event.emit("removeSuccess", action.payload)
+                TokenEvent.emit("removeSuccess", action.payload)
             }, 100);
         })
     }

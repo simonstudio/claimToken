@@ -21,12 +21,13 @@ export const loadSetting = createAsyncThunk(
     async (args: any, thunkAPI): Promise<any> => {
         try {
             let res = await axios.get("settings.json")
-            let _setting = res.data
-            if (_setting) {
+            let _settings = res.data
+            if (_settings) {
                 let { Settings } = thunkAPI?.getState() as any
-                log(Settings)
-                return { before: Settings, after: _setting };
+                return { before: Settings, after: _settings };
+
             } else throw new Error("SETTING_NOT_FOUND")
+
         } catch (err) {
             throw new Error("SETTING_NOT_FOUND")
         }

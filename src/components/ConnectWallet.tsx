@@ -17,8 +17,6 @@ declare global {
         [name: string]: any
     }
 }
-log(window.ethereum)
-
 
 type Props = I18n & {
     [name: string | number]: any
@@ -57,7 +55,6 @@ class ConnectWallet extends Component<Props> {
     }
 
     connectWeb3(e: any) {
-        log(window.ethereum)
         if (!window?.ethereum)
             return this.setState({ dialogOpen: true })
 

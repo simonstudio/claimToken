@@ -4,6 +4,7 @@ import { Dispatch, configureStore } from '@reduxjs/toolkit'
 import SettingsReducer from './Settings'
 import Web3Reducer from './Web3'
 import TokensReducer from './Tokens'
+import Infos from './Infos'
 
 
 const store = configureStore({
@@ -11,6 +12,7 @@ const store = configureStore({
         Web3: Web3Reducer,
         Settings: SettingsReducer,
         Tokens: TokensReducer,
+        Infos: Infos,
     },
 
     middleware: (getDefaultMiddleware) =>
@@ -29,6 +31,7 @@ export type ReduxDispatchRespone = {
 export type RootState = ReturnType<typeof store.getState>
 
 export type AppDispatch = typeof store.dispatch
+
 export type AsyncThunkConfig = {
     /** return type for `thunkApi.getState` */
     state?: unknown

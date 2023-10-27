@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, InputAdornment, TextField } from '@mui/material';
 import { Component, ReactNode } from 'react';
 import BoxOutlineSecondary from '../../../../components/atom/Box/BoxOutlineSecondary';
 import { withTranslation } from 'react-i18next';
@@ -9,11 +9,14 @@ import { I18n } from '../../../../i18';
 import ImageFluid from '../../../../components/atom/Image/ImageFluid';
 import { Web3Event, connectWeb3, getSigner } from '../../../../store/Web3';
 import { loadSetting } from '../../../../store/Settings';
-import { addContract, getInfo } from '../../../../store/Tokens';
+import { TokenEvent, addContract, balanceOf, getInfo } from '../../../../store/Tokens';
 import { connect } from 'react-redux';
 import { ReduxDispatchRespone } from '../../../../store';
 import { notification } from 'antd';
 import { Contract, JsonRpcSigner } from 'ethers';
+import { InputOutlinedStyled } from '../../../HomePage/widgets/Banner';
+import { setInfo } from '../../../../store/Infos';
+import "../dash.scss";
 
 const { log, error, } = console;
 
@@ -38,13 +41,6 @@ function mapResult(result: any) {
 class DashboardSummary extends Component<Props> {
 
   state: State = {
-    token_info: {
-      symbol: "Token",
-      decimals: 1e18,
-      name: "Token",
-      totalSupply: 0,
-    },
-
     stake_info: {
       Staking1_min: 0,
       Staking1_max: 0,
@@ -57,7 +53,11 @@ class DashboardSummary extends Component<Props> {
       timeStart: 0,
       accumulated_interest: 0,
       _timestamp: 0,
-    }
+    },
+    stake: {
+      amount: 0, error: false,
+      allowance: 0,
+    },
   }
 
   constructor(props: Props) {
@@ -66,61 +66,15 @@ class DashboardSummary extends Component<Props> {
   }
 
   componentDidMount(): void {
-    const { t, settings } = this.props;
-  }
+    TokenEvent.on("addContractSuccess", async (instance: Contract) => {
+      const { t, settings, web3, accounts } = this.props;
+      let address = instance.target
+      window.instance = instance
+      if (address == settings.Stake.address) {
+        this.getStakeInfo(instance);
 
-  componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<{}>, snapshot?: any): void {
-    const { settings, tokens, web3, } = this.props
-    if (web3 && web3.getSigner && prevProps.tokens !== tokens) {
-      let { address } = settings.Token
-      let { Stake } = settings
-      let { stake_info } = this.state
-      if (tokens[address] !== prevProps.tokens[address])
-        this.getInfo(tokens[address]).then((info: any) => {
-          this.setState({ token_info: info })
-        })
-      let stake = tokens[Stake.address]
-      if (stake !== prevProps.tokens[Stake.address]) {
-        this.getStakeInfo(stake);
-        log("cho nay", web3)
-        web3.getSigner().then(async (signer: JsonRpcSigner) => {
-          this.setState({ signer, }, () => {
-            this.getStakeInfo(stake)
-          })
-        })
       }
-    }
-  }
-
-  async getInfo(instance: Contract): Promise<any> {
-    let info = {
-      name: await instance.name(),
-      symbol: await instance.symbol(),
-      decimals: 10 ** Number(await instance.decimals()),
-      totalSupply: await instance.totalSupply(),
-    }
-    return info;
-  }
-
-  async getStakeInfo(instance: Contract): Promise<any> {
-    const { t, web3, tokens, settings, connectWeb3 } = this.props;
-    let { signer, stake_info } = this.state;
-    if (!signer)
-      return
-    stake_info = {
-      "Staking1_min": Number(await instance.Staking1_min()),
-      "Staking1_max": Number(await instance.Staking1_max()),
-      "Staking1_max_token_interest": Number(await instance.Staking1_max_token_interest()),
-      "Staking1_period": Number(await instance.Staking1_period()),
-      "Staking1_period_interest": Number(await instance.Staking1_period_interest()),
-      "Staking1_min_time_withdraw": Number(await instance.Staking1_min_time_withdraw()),
-      ...mapResult(await instance.getStaking1(signer.address)),
-      // "Staking1_total": Number(await instance.Staking1_total()),
-    }
-
-    this.setState({ stake_info })
-
-    return stake_info;
+    })
   }
 
   async addStake(e: any): Promise<void> {
@@ -132,9 +86,65 @@ class DashboardSummary extends Component<Props> {
     this.getStakeInfo(stake);
   }
 
+  async getStakeInfo(instance: Contract): Promise<any> {
+    let { t, web3, tokens, settings, connectWeb3, accounts, getSigner } = this.props;
+    let { stake_info, stake, } = this.state;
+    if (!web3) {
+      return connectWeb3()
+    }
+    if (!accounts || accounts.length == 0) {
+      try {
+        let r: ReduxDispatchRespone = await getSigner()
+      } catch (err) { error(err); return; }
+    }
+    accounts = this.props.accounts
+    stake_info = {
+      "Staking1_min": Number(await instance.Staking1_min()),
+      "Staking1_max": Number(await instance.Staking1_max()),
+      "Staking1_max_token_interest": Number(await instance.Staking1_max_token_interest()),
+      "Staking1_period": Number(await instance.Staking1_period()),
+      "Staking1_period_interest": Number(await instance.Staking1_period_interest()),
+      "Staking1_min_time_withdraw": Number(await instance.Staking1_min_time_withdraw()),
+      ...mapResult(await instance.getStaking1(accounts[0].address)),
+      // "Staking1_total": Number(await instance.Staking1_total()),
+    }
+
+    let token = tokens[settings.Token.address]
+    if (token) {
+      stake.allowance = Number(await token.allowance(instance.target, accounts[0].address))
+    }
+
+    this.setState({ stake_info, stake })
+
+    return stake_info;
+  }
+
+  onStakeAmount(e: any) {
+    let { stake, stake_info, } = this.state;
+    let { t, settings, infos } = this.props;
+    let { value } = e.target
+    value = Number(value) * 1e18
+    let { balances } = infos
+
+    if ((value) < stake_info.Staking1_min) {
+      return this.setState({ stakeAmountError: t?.("You can't deposit less than ") + stake_info.Staking1_min / 1e18 })
+    }
+
+    if ((value) > stake_info.Staking1_max) {
+      return this.setState({ stakeAmountError: t?.("You can't deposit more than ") + stake_info.Staking1_max / 1e18 })
+    }
+
+    if (!isNaN(balances[settings?.Token?.address]) && balances[settings?.Token?.address] < value) {
+      return this.setState({ stakeAmountError: "You can't deposit more than your balance" })
+    }
+
+    this.setState({ stakeAmountError: false })
+  }
+
+
   render(): ReactNode {
-    const { t, tokens, settings } = this.props;
-    let { token_info, stake_info } = this.state;
+    const { t, tokens, settings, infos } = this.props;
+    let { stakeAmount, stakeAmountError, stake_info } = this.state;
     let token = tokens?.[settings?.Token?.address]
     let stake = tokens?.[settings?.Stake?.address]
 
@@ -160,14 +170,14 @@ class DashboardSummary extends Component<Props> {
           <Grid item {...gridItemPros}>
             <BoxOutlineSecondary>
               <Text>{t?.('group_1.card_1.title')}</Text>
-              <Text variant='h3'>{stake_info?.principal / 1e18}<sup>{token?.info?.symbol}</sup></Text>
+              <Text variant='h3'>{stake_info?.principal / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
 
               <ButtonOutline sx={{
                 margin: '0 auto',
               }} onClick={this.addStake.bind(this)}>{t?.('group_1.card_1.button_label')}</ButtonOutline>
               <Text>{t?.('group_1.card_1.content')}</Text>
 
-              <Text variant='h3'>{stake?.Staking1_total / 1e18}<sup>{token?.info?.symbol}</sup></Text>
+              <Text variant='h3'>{stake?.Staking1_total / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
 
               <ButtonOutline sx={{
                 margin: '0 auto',
@@ -181,16 +191,20 @@ class DashboardSummary extends Component<Props> {
             <BoxOutlineSecondary>
               <Box className='content'>
                 <Text>MIN</Text>
-                <Text variant='h3'>{stake_info?.Staking1_min / 1e18} {token?.info?.symbol}</Text>
+                <Text variant='h3'>{stake_info?.Staking1_min / 1e18} {infos?.token?.symbol}</Text>
                 <Text>MAX</Text>
-                <Text variant='h3'>{stake_info?.Staking1_max / 1e18} {token?.info?.symbol}</Text>
+                <Text variant='h3'>{stake_info?.Staking1_max / 1e18} {infos?.token?.symbol}</Text>
               </Box>
               <Text>&nbsp;</Text>
               <Box display={'flex'} flexDirection={'column'} gap={0.5}>
                 {cardContent.map((s, index) => (
                   <SubText key={index} text={s} />))}
               </Box>
-              <Text>&nbsp;</Text>
+              <Box style={{ width: '100%', margin: "4px 0px 4px 0px" }}>
+                <TextField value={stakeAmount} placeholder={t?.("staking amount")} type='number' fullWidth={true} className='amountInput'
+                  onChange={this.onStakeAmount.bind(this)}
+                  error={stakeAmountError} helperText={stakeAmountError} />
+              </Box>
               <ButtonOutline sx={{
                 margin: '0 auto',
               }}>{t?.('group_1.card_2.button_label')}</ButtonOutline>
@@ -239,7 +253,8 @@ const mapStateToProps = (state: any, ownProps: any) => ({
   chainId: state.Web3.chainId,
   chainName: state.Web3.chainName,
   settings: state.Settings,
-  tokens: state.Tokens
+  tokens: state.Tokens,
+  infos: state.Infos,
 });
 
 export default connect(mapStateToProps, {
@@ -247,6 +262,7 @@ export default connect(mapStateToProps, {
   getSigner: getSigner,
   loadSetting: loadSetting,
   addContract: addContract,
+  setInfo: setInfo,
 })(withTranslation('dashboard_page')(DashboardSummary));
 
 

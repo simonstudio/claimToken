@@ -245,8 +245,6 @@ export const connectWeb3 = createAsyncThunk(
         } catch (error) {
             throw error;
         }
-        window.web3 = web3;
-        window.thunk = thunkAPI;
         return { web3, chainId };
     }
 )
@@ -254,7 +252,7 @@ export const connectWeb3 = createAsyncThunk(
 export const getSigner = createAsyncThunk(
     'getSigner',
     async (args, thunkAPI): Promise<JsonRpcSigner> => {
-        return (await thunkAPI.getState() as any).Web3.web3.getSigner()
+        return await (await thunkAPI.getState() as any).Web3.web3.getSigner()
     }
 )
 
@@ -378,7 +376,12 @@ export const web3Slice = createSlice({
         });
 
         builder.addCase(getSigner.fulfilled, (state: any, action) => {
-            state.accounts = [action.payload]
+            let found = state.accounts.findIndex((account: JsonRpcSigner) => account.address === action.payload.address)
+            if (found > -1) {
+                state.accounts[found] = action.payload;
+            } else
+                state.accounts = [...state.accounts, action.payload]
+
         })
 
         builder.addCase(switchChain.fulfilled, (state, action) => {

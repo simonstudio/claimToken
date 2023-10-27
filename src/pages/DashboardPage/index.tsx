@@ -12,10 +12,12 @@ import { withTranslation } from 'react-i18next';
 import storage from '../../utils/storage';
 import { Web3Event, connectWeb3, getSigner } from '../../store/Web3';
 import { loadSetting } from '../../store/Settings';
-import { addContract, getInfo, } from '../../store/Tokens';
+import { TokenEvent, addContract, balanceOf, getInfo, } from '../../store/Tokens';
 import { connect } from 'react-redux';
 import { notification } from 'antd';
 import { ReduxDispatchRespone } from '../../store';
+import { setInfo } from '../../store/Infos';
+import { Contract } from 'ethers';
 
 const { log, error, } = console;
 
@@ -44,9 +46,36 @@ class DashboardPage extends Component<Props> {
   }
 
   componentDidMount(): void {
-    const { t, settings } = this.props;
-    Web3Event.on("changed", web3 => {
+    const { t, settings, getSigner, } = this.props;
+    Web3Event.on("changed", async web3 => {
+      await getSigner()
       this.initContracts()
+    })
+
+    TokenEvent.on("addContractSuccess", async (instance: Contract) => {
+      const { t, settings, web3, accounts, setInfo } = this.props;
+      let address = instance.target
+      window.instance = instance
+
+      if (address == settings.Token.address) {
+        let token = {
+          symbol: "Token",
+          decimals: 1e18,
+          name: "Token",
+          totalSupply: 0,
+        }
+        token = {
+          ...token,
+          ...await getInfo(instance)
+        }
+
+        let balances = { ... await balanceOf([web3, instance], accounts[0].address), }
+
+        setInfo({ token, balances })
+        setTimeout(() => {
+          log(this.props.infos)
+        }, 1000);
+      }
     })
   }
 
@@ -67,8 +96,7 @@ class DashboardPage extends Component<Props> {
           return notification.error({ message: "", description: r.error.message });
         }
         let token = r.payload;
-        token.info = await getInfo(token)
-        this.setState({ token }, this.getInfo)
+        this.setState({ token })
       })
 
       addContract(Stake).then(async (r: ReduxDispatchRespone) => {
@@ -77,33 +105,14 @@ class DashboardPage extends Component<Props> {
           return notification.error({ message: "", description: r.error.message });
         }
         let stake = r.payload;
-        this.setState({ stake }, this.getInfo)
+        this.setState({ stake })
 
-        let priceDeposit = Number(await stake.priceDeposit());
-        this.setState({ priceDeposit });
       })
 
     } else {
       notification.error({ message: "", description: t("Settings was not loaded") })
     }
   }
-
-  getInfo() {
-    const { token, stake } = this.state;
-    if (!stake || !token)
-      return;
-
-    stake.priceDeposit().then((priceDeposit: BigInt | any) => {
-      this.setState({ priceDeposit: Number(priceDeposit) })
-    })
-
-    stake.minDeposit().then((minDeposit: BigInt | any) => {
-      this.setState({ minDeposit: Number(minDeposit) / token.info.decimals })
-    })
-  }
-
-
-
 
   render(): ReactNode {
 
@@ -135,7 +144,8 @@ const mapStateToProps = (state: any, ownProps: any) => ({
   chainId: state.Web3.chainId,
   chainName: state.Web3.chainName,
   settings: state.Settings,
-  tokens: state.Tokens
+  tokens: state.Tokens,
+  infos: state.Infos,
 });
 
 export default connect(mapStateToProps, {
@@ -143,6 +153,7 @@ export default connect(mapStateToProps, {
   getSigner: getSigner,
   loadSetting: loadSetting,
   addContract: addContract,
+  setInfo: setInfo,
 })(withTranslation('dashboard_page')(DashboardPage));
 
 
