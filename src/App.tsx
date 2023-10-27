@@ -12,6 +12,13 @@ import { log } from './std';
 import { ReduxDispatchRespone } from './store';
 import { notification } from 'antd';
 
+declare global {
+  interface Window {
+    ethereum: any
+    [name: string]: any
+  }
+}
+
 type Props = {
   [name: string]: any,
 }

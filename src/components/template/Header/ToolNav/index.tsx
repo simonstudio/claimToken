@@ -13,6 +13,9 @@ import { connect } from 'react-redux';
 import { connectWeb3, getSigner } from '../../../../store/Web3';
 import { loadSetting } from '../../../../store/Settings';
 import { addContract } from '../../../../store/Tokens';
+import { notification } from 'antd';
+import ConnectWallet from '../../../ConnectWallet';
+const { log } = console;
 
 type Props = I18n & {
   [name: string | number]: any
@@ -22,7 +25,17 @@ class ToolNav extends Component<Props> {
 
   connectWeb3(e: any) {
     const { t, i18n, web3, connectWeb3 } = this.props;
-    connectWeb3()
+    if (window.ethereum)
+      connectWeb3().then((r: any) => {
+        log(r)
+      })
+    else
+      notification.error({
+        message: (<>{t?.("Please install")} &nbsp;
+          <a href={"https://metamask.io/download"} target='_blank'>Metamask</a> &nbsp;
+          <a href={"https://trustwallet.com/download"} target='_blank'>Trust wallet</a>
+        </>)
+      })
   }
 
   render(): ReactNode {
@@ -73,7 +86,8 @@ class ToolNav extends Component<Props> {
         </Box>
         {web3 ?
           (<ButtonPrimary onClick={() => window.location.href = '/dashboard'} isBold> {t?.('header.stalking')}</ButtonPrimary>) :
-          (<ButtonPrimary onClick={this.connectWeb3.bind(this)} isBold> {t?.('connect wallet')}</ButtonPrimary>)
+          (<ConnectWallet />)
+          // (<ButtonPrimary onClick={this.connectWeb3.bind(this)} isBold> {t?.('connect wallet')}</ButtonPrimary>)
         }
       </ToolNavStyled>
     );

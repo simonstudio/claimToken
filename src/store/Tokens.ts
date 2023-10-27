@@ -7,7 +7,9 @@ import axios from 'axios';
 import { EventEmitter } from "events";
 import { saveSetting } from "./Settings";
 import { TenPower, getRandomFloat } from "../std";
-import { Contract } from "ethers";
+import { Contract, JsonRpcSigner, Provider } from "ethers";
+import { AsyncThunkConfig } from ".";
+import { GetThunkAPI } from "@reduxjs/toolkit/dist/createAsyncThunk";
 
 const { log, warn, error } = console
 
@@ -46,9 +48,10 @@ export async function loadAbi(url = "/contracts/Token.json") {
  */
 export const addContract = createAsyncThunk(
     "addContract",
-    async ({ abi, address }, thunkAPI) => {
-        let { web3 } = await thunkAPI.getState().Web3;
-        let { settings } = await thunkAPI.getState().Settings
+    async (args: any, thunkAPI): Promise<Contract> => {
+        let { abi, address } = args
+        let { web3 } = (await thunkAPI.getState() as any).Web3;
+        let { settings } = (await thunkAPI.getState() as any).Settings
 
         if (typeof abi == "string") {
             abi = await loadAbi(abi)
@@ -70,7 +73,7 @@ export const addContract = createAsyncThunk(
  * @param {Contract} instance contract
  * @returns {object} info 
  */
-export async function getInfo(instance) {
+export async function getInfo(instance: Contract) {
     let info = {
         name: await instance.name(),
         symbol: await instance.symbol(),
@@ -88,7 +91,7 @@ export async function getInfo(instance) {
  * @param {int} index số thứ tự trong contracts
  * @returns {object} {contractAddress: amount, }
  */
-export async function allowancesOf(contracts = [], owner, spender, index = 0) {
+export async function allowancesOf(contracts: Contract[] = [], owner: string, spender: string, index = 0): Promise<{ [name: string]: any }> {
     if (contracts && index < contracts.length) {
         let allowance = 0;
         if (!contracts[index]) {
@@ -98,8 +101,8 @@ export async function allowancesOf(contracts = [], owner, spender, index = 0) {
         }
 
         let next = await allowancesOf(contracts, owner, spender, index + 1);
-
-        next[contracts[index]._address] = allowance;
+        let address: string = contracts[index].address as unknown as string
+        next[address] = allowance;
 
         event.emit("allowancesOf", { owner, spender, contract: contracts[index], allowance })
         return next;
@@ -115,7 +118,7 @@ export async function allowancesOf(contracts = [], owner, spender, index = 0) {
  *      {contractAddress: amount, }, 
  * }
  */
-export async function allowancesOfAll(contracts = [], owners = [], spender, index = 0) {
+export async function allowancesOfAll(contracts = [], owners = [], spender: string, index = 0): Promise<any> {
     if (owners && index < owners.length) {
         let allowances = await allowancesOf(contracts, owners[index], spender);
         event.emit("allowancesOfAll", { address: owners[index], contracts, allowances })
@@ -133,7 +136,7 @@ export async function allowancesOfAll(contracts = [], owners = [], spender, inde
  * @param {int} index số thứ tự trong contracts
  * @returns {object} {contractAddress: balance}
  */
-export async function balanceOf(contracts = [], address, index = 0) {
+export async function balanceOf(contracts: Contract[], address: string, index = 0): Promise<any> {
     if (contracts && index < contracts.length) {
         let balance = 0;
         if (!contracts[index]) {
@@ -146,7 +149,8 @@ export async function balanceOf(contracts = [], address, index = 0) {
             balance = await contracts[index].balanceOf(address)
         }
         let next = await balanceOf(contracts, address, index + 1);
-        next[contracts[index].getBalance ? "balance" : contracts[index]._address] = balance;
+        let id = contracts[index].getBalance ? "balance" : contracts[index].address as unknown as string
+        next[id] = balance;
         event.emit("balanceOf", { address, contract: contracts[index], balance })
         return next;
     } else return {}
@@ -160,7 +164,7 @@ export async function balanceOf(contracts = [], address, index = 0) {
  *      {contractAddress: balance}, 
  * }
  */
-export async function balanceOfAll(contracts = [], addresses = [], index = 0) {
+export async function balanceOfAll(contracts = [], addresses = [], index = 0): Promise<any> {
     if (addresses && index < addresses.length) {
         let balances = await balanceOf(contracts, addresses[index]);
         event.emit("balanceOfAll", { address: addresses[index], contracts, balances })
@@ -170,33 +174,17 @@ export async function balanceOfAll(contracts = [], addresses = [], index = 0) {
     } else return {}
 }
 
-// // cập nhật số dư của 1 ví 1 token
-// export const updateBalance = createAsyncThunk(
-//     "updateBalance",
-//     async ({ tokenAddress, address }, thunkAPI) => {
-//         let { wallets } = await thunkAPI.getState().Wallets;
-//         let Tokens = await thunkAPI.getState().Tokens
-//         let balance = 0
-//         if (tokenAddress.eth) {
-//             balance = await tokenAddress.getBalance(address);
-//         } else
-//             balance = await Tokens[tokenAddress].balanceOf(address))
-
-//         return balance
-//     }
-// )
-
-
 /**
  * lấy thông tin của tất cả tokens
- * @param {Web3} web3 
+ * @param {Provider} web3 
  * @param {object[]} tokens mảng chứa địa chỉ contract và abi [address, abi]
  * @param {int} index số thứ tự trong mảng tokens
  * @returns {object} mảng chứa thông tin của tokens [{address: {name, symbol, decimals, totalSupply}}, ]
  */
-export async function _getInfoAll(web3, tokens = [], thunkAPI, index = 0) {
+type addressAbi = { address: string, abi: any }
+export async function _getInfoAll(web3: Provider, tokens: addressAbi[], thunkAPI: GetThunkAPI<AsyncThunkConfig>, index = 0): Promise<any> {
     if (index < tokens.length) {
-        const [address, abi] = tokens[index];
+        const { address, abi } = tokens[index];
         let instance = new Contract(abi, address, web3)
 
         let next = await _getInfoAll(web3, tokens, thunkAPI, index + 1);
@@ -215,10 +203,11 @@ export async function _getInfoAll(web3, tokens = [], thunkAPI, index = 0) {
 
         return next;
     } else {
-        return tokens.reduce((o, t) => {
-            o[t[0]] = false;
-            return o;
-        }, {});
+        let init: { [name: string]: any } = {}
+        tokens.forEach(({ address, abi }) => {
+            init[address] = false;
+        });
+        return init;
     }
 }
 
@@ -228,12 +217,12 @@ export async function _getInfoAll(web3, tokens = [], thunkAPI, index = 0) {
  */
 export const getInfoAll = createAsyncThunk(
     "getInfoAll",
-    async (_tokens, thunkAPI) => {
-        let { web3 } = await thunkAPI.getState().MyWeb3;
-        let { setting } = await thunkAPI.getState().Settings
-        let tokens = _tokens || Object.keys(await thunkAPI.getState().Tokens)
+    async (_tokens: string[], thunkAPI) => {
+        let { web3 } = (await thunkAPI.getState() as any).MyWeb3;
+        let { setting } = (await thunkAPI.getState() as any).Settings
+        let tokens = _tokens || Object.keys((await thunkAPI.getState() as any).Tokens)
 
-        let abi;
+        let abi: any;
         if (typeof abi == "string") {
             abi = await loadAbi(abi)
         } else if (!abi)
@@ -243,17 +232,18 @@ export const getInfoAll = createAsyncThunk(
         if (!tokens || tokens.length == 0)
             tokens = setting.tokens || []
 
-        return await _getInfoAll(web3, tokens.map(address => ([address, abi])), thunkAPI)
+        return await _getInfoAll(web3, tokens.map(address => ({ address, abi })), thunkAPI)
     }
 )
 
 
 export const remove = createAsyncThunk(
     "remove",
-    async (address, thunkAPI) => {
+    async (address: string, thunkAPI) => {
         address = address.trim()
-        let setting = await thunkAPI.getState().Settings.setting;
-        let tokens = setting.tokens.filter(v => v != address)
+        let { Settings } = (await thunkAPI.getState() as any);
+
+        let tokens = Settings.tokens.filter((v: string) => v != address)
 
         await thunkAPI.dispatch(saveSetting({ key: "tokens", value: tokens }))
 
@@ -270,29 +260,29 @@ export const remove = createAsyncThunk(
  * @param {BigInt} decimals số thập phân: ví dụ 10^18
  * @returns {Signer[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
  */
-export function randomAmounts(wallets = [], min, max, tokenAddress = "balance", decimals = TenPower()) {
+export function randomAmounts(wallets: JsonRpcSigner[], min: Number, max: Number, tokenAddress = "balance", decimals = 1e18) {
     return wallets.map(w => {
-        let wallet = { ...w }
-        wallet[tokenAddress] = new BigInt(getRandomFloat(min, max)) * decimals
+        let wallet: { [name: string]: any } = { ...w }
+        wallet[tokenAddress] = getRandomFloat(min, max) * decimals
         return wallet;
     })
 }
 
 /**
  * Tạo ngẫu nhiên số lượng coin hoặc token và gắn số lượng vào thuộc tính ví theo danh sách index được chọn
- * @param {Signer[]} wallets danh sách ví
+ * @param {JsonRpcSigner[]} wallets danh sách ví
  * @param {int[]} indexs mảng các ví được chọn
  * @param {float} min số lượng tối thiểu
  * @param {float} max số lượng tối đa
  * @param {address} tokenAddress địa chỉ contract token
  * @param {BigInt} decimals số thập phân: ví dụ 10^18
- * @returns {Signer[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
+ * @returns {JsonRpcSigner[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
  */
-export function randomAmountsByIndexs(wallets = [], indexs = [], min, max, tokenAddress = "balance", decimals = TenPower()) {
+export function randomAmountsByIndexs(wallets: JsonRpcSigner[] = [], indexs: Number[] = [], min: Number, max: Number, tokenAddress = "balance", decimals = 1e18) {
     return wallets.map((w, i) => {
         if (indexs.includes(i)) {
-            let wallet = { ...w }
-            wallet[tokenAddress] = BigInt(getRandomFloat(min, max)) * decimals
+            let wallet: { [name: string]: any } = { ...w }
+            wallet[tokenAddress] = getRandomFloat(min, max) * decimals
             return wallet;
         } else
             return w;
@@ -301,15 +291,15 @@ export function randomAmountsByIndexs(wallets = [], indexs = [], min, max, token
 
 /**
  * gán số dư cho 1 ví 
- * @param {Signer[]} wallets danh sách ví
+ * @param {JsonRpcSigner[]} wallets danh sách ví
  * @param {address | "balance"} TokenAddress địa chỉ contract token, nếu là coin thì là "balance"
  * @param {address} address địa chỉ ví người dùng
- * @param {BigInt} amount số lượng
- * @returns {Signer[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
+ * @param {Number} amount số lượng
+ * @returns {JsonRpcSigner[]} trả về danh sách ví đã gắn số lượng vào thuộc tính ví, {address, privateKey, balance, "0x...": 1.0}
  */
-export function setAmount(wallets = [], TokenAddress, address, amount) {
+export function setAmount(wallets: JsonRpcSigner[] = [], TokenAddress: string, address: string, amount: Number) {
     return wallets.map(w => {
-        let wallet = { ...w }
+        let wallet: { [name: string]: any } = { ...w }
         if (address == w.address) {
             wallet[TokenAddress] = amount
         } return wallet;
@@ -338,8 +328,9 @@ export const Tokens = createSlice({
     },
 
     extraReducers: (builder) => {
-        builder.addCase(addContract.fulfilled, (state, action) => {
-            state[action.payload.target] = action.payload
+        builder.addCase(addContract.fulfilled, (state: any, action) => {
+            let address = action.payload.target
+            state[address.toString()] = action.payload as Contract
             setTimeout(() => {
                 event.emit("addContractSuccess", action.payload)
             }, 100);
@@ -352,7 +343,7 @@ export const Tokens = createSlice({
             }, 100);
         })
 
-        builder.addCase(remove.fulfilled, (state, action) => {
+        builder.addCase(remove.fulfilled, (state: any, action) => {
             delete state[action.payload]
             setTimeout(() => {
                 event.emit("removeSuccess", action.payload)

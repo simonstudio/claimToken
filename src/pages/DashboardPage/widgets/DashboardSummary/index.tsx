@@ -70,18 +70,20 @@ class DashboardSummary extends Component<Props> {
   }
 
   componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<{}>, snapshot?: any): void {
-    if (prevProps.tokens !== this.props.tokens) {
-      let { address } = this.props.settings.Token
-      let { Stake } = this.props.settings
+    const { settings, tokens, web3, } = this.props
+    if (web3 && web3.getSigner && prevProps.tokens !== tokens) {
+      let { address } = settings.Token
+      let { Stake } = settings
       let { stake_info } = this.state
-      if (this.props.tokens[address] !== prevProps.tokens[address])
-        this.getInfo(this.props.tokens[address]).then((info: any) => {
+      if (tokens[address] !== prevProps.tokens[address])
+        this.getInfo(tokens[address]).then((info: any) => {
           this.setState({ token_info: info })
         })
-      let stake = this.props.tokens[Stake.address]
+      let stake = tokens[Stake.address]
       if (stake !== prevProps.tokens[Stake.address]) {
         this.getStakeInfo(stake);
-        this.props.web3.getSigner().then(async (signer: JsonRpcSigner) => {
+        log("cho nay", web3)
+        web3.getSigner().then(async (signer: JsonRpcSigner) => {
           this.setState({ signer, }, () => {
             this.getStakeInfo(stake)
           })

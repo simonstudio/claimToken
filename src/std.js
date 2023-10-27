@@ -123,7 +123,7 @@ function isUrl(url) {
  * @param {int} decimals số thập phân sau dấu chấm
  * @returns {float}
  */
-function getRandomFloat(min, max, decimals) {
+function getRandomFloat(min, max, decimals=0) {
     min = parseFloat(min)
     max = parseFloat(max)
 

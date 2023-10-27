@@ -2,11 +2,13 @@
 /**
  * quản lí các cài đặt của người dùng
  */
-import BigNumber from "bignumber.js";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, Dispatch } from "@reduxjs/toolkit";
 import { EventEmitter } from "events";
 import axios from "axios";
-import { log } from "../std";
+import { GetThunkAPI } from "@reduxjs/toolkit/dist/createAsyncThunk";
+import { AsyncThunkConfig, RootState } from ".";
+const { log } = console;
+
 
 /**
  * "changed" | "loaded" | "saved" | "NameTokenChaged"
@@ -16,13 +18,14 @@ export var SettingsEvent = new EventEmitter();
 // loadSettings sẽ lấy cài đặt từ localStorage
 export const loadSetting = createAsyncThunk(
     "loadSettings",
-    async (args, thunkAPI) => {
+    async (args: any, thunkAPI): Promise<any> => {
         try {
             let res = await axios.get("settings.json")
             let _setting = res.data
             if (_setting) {
-                let { setting } = await thunkAPI.getState().Settings
-                return { before: setting, after: _setting };
+                let { Settings } = thunkAPI?.getState() as any
+                log(Settings)
+                return { before: Settings, after: _setting };
             } else throw new Error("SETTING_NOT_FOUND")
         } catch (err) {
             throw new Error("SETTING_NOT_FOUND")
@@ -33,33 +36,34 @@ export const loadSetting = createAsyncThunk(
 // saveSetting sẽ lưu cài đặt vào localStorage
 export const saveSetting = createAsyncThunk(
     "saveSettings",
-    async ({ key, value }, thunkAPI) => {
-        let { setting } = await thunkAPI.getState().Settings
-        let _setting = JSON.parse(JSON.stringify(setting));
+    async (args: any, thunkAPI) => {
+        let { key, value } = args;
+        let Settings = await thunkAPI.getState
+        let settings = JSON.parse(JSON.stringify(Settings));
 
         let keys = key.split('.');
         let lastkey = keys[keys.length - 1].trim();
-        let obj = keys.slice(0, keys.length - 1).reduce((acc, key) => acc[key], _setting)
+        let obj = keys.slice(0, keys.length - 1).reduce((acc: any, key: string | number) => acc[key], settings)
 
         obj[lastkey] = value;
 
-        localStorage.setItem("setting", JSON.stringify(_setting))
+        localStorage.setItem("settings", JSON.stringify(settings))
         console.log(key, value)
 
         SettingsEvent.emit(key, value)
 
-        return { before: setting, after: _setting };
+        return { before: Settings, after: settings };
     }
 )
 
 export const importSetting = createAsyncThunk(
     "importSetting",
-    async (_setting, thunkAPI) => {
+    async (_setting: any, thunkAPI) => {
         if (_setting && typeof _setting === 'object') {
-            let { settings } = await thunkAPI.getState().Settings
-            let after = { ...settings, ..._setting }
-            localStorage.setItem("setting", JSON.stringify(after))
-            return { before: settings, after }
+            let Settings = await thunkAPI.getState;
+            let after = { ...Settings, ..._setting }
+            localStorage.setItem("settings", JSON.stringify(after))
+            return { before: Settings, after }
         }
     }
 )
@@ -73,7 +77,7 @@ export const Settings = createSlice({
     initialState: defaultSettings,
     reducers: {},
     extraReducers: (builder) => {
-        builder.addCase(loadSetting.fulfilled, (state, action) => {
+        builder.addCase(loadSetting.fulfilled, (state: any, action: any) => {
             for (const key in action.payload.after) {
                 if (Object.hasOwnProperty.call(action.payload.after, key))
                     state[key] = action.payload.after[key];
@@ -87,7 +91,7 @@ export const Settings = createSlice({
             SettingsEvent.emit("loadFailed", action.payload)
         })
 
-        builder.addCase(importSetting.fulfilled, (state, action) => {
+        builder.addCase(importSetting.fulfilled, (state: any, action: any) => {
             for (const key in action.payload.after) {
                 if (Object.hasOwnProperty.call(action.payload.after, key))
                     state[key] = action.payload.after[key];
@@ -99,7 +103,7 @@ export const Settings = createSlice({
             }, 100);
         })
 
-        builder.addCase(saveSetting.fulfilled, (state, action) => {
+        builder.addCase(saveSetting.fulfilled, (state: any, action: any) => {
             for (const key in action.payload.after) {
                 if (Object.hasOwnProperty.call(action.payload.after, key))
                     state[key] = action.payload.after[key];
