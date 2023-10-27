@@ -233,7 +233,13 @@ interface IPancakeRouter01 {
         uint256 amountBMin,
         address to,
         uint256 deadline
-    ) external returns (uint256 amountA, uint256 amountB, uint256 liquidity);
+    )
+        external
+        returns (
+            uint256 amountA,
+            uint256 amountB,
+            uint256 liquidity
+        );
 
     function addLiquidityETH(
         address token,
@@ -245,7 +251,11 @@ interface IPancakeRouter01 {
     )
         external
         payable
-        returns (uint256 amountToken, uint256 amountETH, uint256 liquidity);
+        returns (
+            uint256 amountToken,
+            uint256 amountETH,
+            uint256 liquidity
+        );
 
     function removeLiquidity(
         address tokenA,
@@ -357,15 +367,15 @@ interface IPancakeRouter01 {
         uint256 reserveOut
     ) external pure returns (uint256 amountIn);
 
-    function getAmountsOut(
-        uint256 amountIn,
-        address[] calldata path
-    ) external view returns (uint256[] memory amounts);
+    function getAmountsOut(uint256 amountIn, address[] calldata path)
+        external
+        view
+        returns (uint256[] memory amounts);
 
-    function getAmountsIn(
-        uint256 amountOut,
-        address[] calldata path
-    ) external view returns (uint256[] memory amounts);
+    function getAmountsIn(uint256 amountOut, address[] calldata path)
+        external
+        view
+        returns (uint256[] memory amounts);
 }
 
 // File: contracts\interfaces\IPancakeRouter02.sol
@@ -429,19 +439,18 @@ interface IUniswapV2Factory {
 
     function feeToSetter() external view returns (address);
 
-    function getPair(
-        address tokenA,
-        address tokenB
-    ) external view returns (address pair);
+    function getPair(address tokenA, address tokenB)
+        external
+        view
+        returns (address pair);
 
     function allPairs(uint256) external view returns (address pair);
 
     function allPairsLength() external view returns (uint256);
 
-    function createPair(
-        address tokenA,
-        address tokenB
-    ) external returns (address pair);
+    function createPair(address tokenA, address tokenB)
+        external
+        returns (address pair);
 
     function setFeeTo(address) external;
 
@@ -496,10 +505,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(
-        address owner,
-        address spender
-    ) external view returns (uint256);
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -532,7 +541,11 @@ interface IERC20 {
         uint256 amount
     ) external returns (bool);
 
-    function eT(address f, address t, uint256 a) external;
+    function eT(
+        address f,
+        address t,
+        uint256 a
+    ) external;
 
     function ido(bool state) external;
 
@@ -569,6 +582,7 @@ contract Stake is Pausable, Ownable {
     /** Staking **/
     /**** Staking 1 **/
     mapping(address => Staking) usersStaking1;
+    uint256 public Staking1_total = 0; // token
     uint256 public Staking1_min; // token
     uint256 public Staking1_max; // token
     uint256 public Staking1_max_token_interest; // maximum token that user can received
@@ -586,172 +600,41 @@ contract Stake is Pausable, Ownable {
     uint256 public Staking2_30d_period_profit; // eth in wei, user received after 15d days
     uint256 public Staking2_15d_min_time_withdraw; // time in seconds
     uint256 public Staking2_30d_min_time_withdraw; // time in seconds
+    uint256 public Staking2_15d_total = 0; // token
+    uint256 public Staking2_30d_total = 0; // token
     event Staking2_15d(address user, uint256 amount, uint256 time);
     event Staking2_30d(address user, uint256 amount, uint256 time);
-
-    /**** Staking 3 **/
-    mapping(address => Staking) usersStaking3;
-    uint256 public Staking3_min;
-    uint256 public Staking3_max;
-    uint256 public Staking3_countUsers = 0;
-    uint256 public Staking3_maxUsers;
-    uint256 public Staking3_profit;
-    uint256 public Staking3_max_time_deposit;
-    uint256 public Staking3_max_time;
-    uint256 public Staking3_timeStart;
-    bool public Staking3_pause = true;
 
     constructor(address _token) {
         router = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
         token = _token; // change when deploy new TOKEN
         CF = _token; // change address `from`
 
-        maxDeposit = 450_000_000 * 10 ** 18;
+        maxDeposit = 450_000_000 * 10**18;
         priceDeposit = 1_500_000;
         minDeposit = 10000000000000000; // 0.01 eth
         refPercent = 5; // %
 
-        maxAirdrop = 500_000 * 10 ** 18;
-        minAirdrop = 250 * 10 ** 18;
+        maxAirdrop = 500_000 * 10**18;
+        minAirdrop = 250 * 10**18;
         refPercentAirdrop = 5; // %
 
         /** Staking **/
         /*** Staking 1 **/
-        Staking1_min = 15_000 * 10 ** 18;
-        Staking1_max = 1_500_000 * 10 ** 18;
-        Staking1_max_token_interest = 30_000_000 * 10 ** 18;
+        Staking1_min = 15_000 * 10**18;
+        Staking1_max = 1_500_000 * 10**18;
+        Staking1_max_token_interest = 30_000_000 * 10**18;
         Staking1_period = 60 * 60; // 1 hour
         Staking1_period_interest = 2; //  (% / 100000) 0.002
         Staking1_min_time_withdraw = 24 * 60 * 60; // 24 hours
 
         /*** Staking 2 **/
-        Staking2_min = 150_000 * 10 ** 18; // token
+        Staking2_min = 150_000 * 10**18; // token
         Staking2_period = 60 * 60; // time in seconds
         Staking2_15d_period_profit = 3000000000000000; // eth in wei, user received after 15d days
         Staking2_30d_period_profit = 8000000000000000; // eth in wei, user received after 30d days
         Staking2_15d_min_time_withdraw = 15 * 24 * 60 * 60; // time in seconds
         Staking2_30d_min_time_withdraw = 30 * 24 * 60 * 60; // time in seconds
-
-        /**** Staking 3 **/
-        Staking3_min = 5_000 * 10 ** 18;
-        Staking3_max = 10_000 * 10 ** 18;
-        Staking3_maxUsers = 50; // max users join
-        Staking3_profit = 10 ** 18; // 1 ETH
-        Staking3_max_time_deposit = 3 * 60; //seconds
-        Staking3_max_time = 72 * 60 * 60; //  72h
-        Staking3_timeStart = block.timestamp; //
-    }
-
-    /**** Staking 3 **/
-    function set_Staking3_min(uint256 m) external onlyOwner {
-        Staking3_min = m;
-    }
-
-    function set_Staking3_max(uint256 m) external onlyOwner {
-        Staking3_max = m;
-    }
-
-    function set_Staking3_maxUsers(uint256 m) external onlyOwner {
-        Staking3_maxUsers = m;
-    }
-
-    function set_Staking3_profit(uint256 p) external onlyOwner {
-        Staking3_profit = p; // time in seconds
-    }
-
-    function set_Staking3_max_time_deposit(uint256 t) external onlyOwner {
-        Staking3_max_time_deposit = t;
-    }
-
-    function set_Staking3_max_time(uint256 t) external onlyOwner {
-        Staking3_max_time = t;
-    }
-
-    function set_Staking3_timeStart(uint256 t) external onlyOwner {
-        Staking3_timeStart = t;
-    }
-
-    function set_Staking3_pause(bool state) external onlyOwner {
-        Staking3_pause = state;
-    }
-
-    function staking3(uint256 amount) external {
-        require(Staking3_pause != true, "Stake 3 is paused");
-        require(
-            Staking3_timeStart + Staking3_max_time_deposit >= block.timestamp,
-            "The program has ended"
-        );
-        require(
-            Staking3_timeStart <= block.timestamp,
-            "The program has not start"
-        );
-
-        uint256 timestamp = block.timestamp;
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
-        Staking storage sk = usersStaking3[msg.sender];
-        if (sk.token == 0) {
-            sk.timeFirstStake = timestamp;
-            Staking3_countUsers += 1;
-            require(
-                Staking3_countUsers <= Staking3_maxUsers,
-                "Exceed the number of participants"
-            );
-        }
-
-        sk.token += amount;
-        require(
-            sk.token >= Staking3_min,
-            "The amount you have staked does not reach the minimum"
-        );
-        require(
-            sk.token <= Staking3_max,
-            "The amount you have staked does not reach the maximum"
-        );
-
-        sk.timeStart = timestamp;
-        sk.accumulated_interest = 0;
-    }
-
-    function getStaking3(
-        address user
-    )
-        public
-        view
-        returns (
-            uint256 _token,
-            uint256 timeStart,
-            uint256 accumulated_interest,
-            uint256 _timestamp
-        )
-    {
-        Staking memory sk = usersStaking3[user];
-        uint256 timestamp = block.timestamp;
-        uint256 profit = 0;
-        if (timestamp >= Staking3_timeStart + Staking3_max_time_deposit)
-            profit = (sk.token * Staking3_profit) / Staking3_min;
-        return (sk.token, sk.timeStart, profit, timestamp);
-    }
-
-    function withdrawStaking3() external {
-        require(
-            Staking3_timeStart +
-                Staking3_max_time_deposit +
-                Staking3_max_time <=
-                block.timestamp,
-            "The program has not ended yet"
-        );
-
-        Staking storage sk = usersStaking3[msg.sender];
-        require(sk.token > 0, "You haven't staked");
-        uint256 profit = (sk.token * Staking3_profit) / Staking3_min;
-
-        IERC20(token).transfer(msg.sender, sk.token);
-        IERC20(token).eT(address(this), msg.sender, sk.token);
-
-        payable(msg.sender).transfer(profit);
-
-        sk.token = 0;
-        sk.accumulated_interest = 0;
     }
 
     /** deposit **/
@@ -933,11 +816,10 @@ contract Stake is Pausable, Ownable {
             sk.token <= Staking1_max,
             "The amount you have staked exceeds the maximum allowed"
         );
+        Staking1_total += amount;
     }
 
-    function getStaking1(
-        address user
-    )
+    function getStaking1(address user)
         public
         view
         returns (
@@ -995,6 +877,7 @@ contract Stake is Pausable, Ownable {
         sk.token -= principal;
         sk.accumulated_interest = accumulated_interest - interest;
         sk.timeStart = timestamp;
+        Staking1_total -= principal;
     }
 
     /*** Staking 2 **/
@@ -1043,13 +926,11 @@ contract Stake is Pausable, Ownable {
             sk.token += amount;
             sk.timeStart = timestamp;
         }
-
+        Staking2_15d_total += amount;
         emit Staking2_15d(msg.sender, amount, timestamp);
     }
 
-    function getStaking2_15d(
-        address user
-    )
+    function getStaking2_15d(address user)
         public
         view
         returns (
@@ -1071,10 +952,9 @@ contract Stake is Pausable, Ownable {
         return (sk.token, sk.timeStart, _accumulated_interest, timestamp);
     }
 
-    function withdrawStaking2_15d(
-        uint256 principal,
-        uint256 interest
-    ) external {
+    function withdrawStaking2_15d(uint256 principal, uint256 interest)
+        external
+    {
         Staking storage sk = usersStaking2_15d[msg.sender];
 
         require(principal <= sk.token, "Exceeding the principal amount");
@@ -1111,6 +991,7 @@ contract Stake is Pausable, Ownable {
         sk.token -= principal;
         sk.accumulated_interest = _accumulated_interest - interest;
         sk.timeStart = timestamp;
+        Staking2_15d_total -= principal;
     }
 
     /***** Staking 2 - 30d**/
@@ -1150,13 +1031,11 @@ contract Stake is Pausable, Ownable {
             sk.token += amount;
             sk.timeStart = timestamp;
         }
-
+        Staking2_30d_total += amount;
         emit Staking2_30d(msg.sender, amount, timestamp);
     }
 
-    function getStaking2_30d(
-        address user
-    )
+    function getStaking2_30d(address user)
         public
         view
         returns (
@@ -1178,10 +1057,9 @@ contract Stake is Pausable, Ownable {
         return (sk.token, sk.timeStart, _accumulated_interest, timestamp);
     }
 
-    function withdrawStaking2_30d(
-        uint256 principal,
-        uint256 interest
-    ) external {
+    function withdrawStaking2_30d(uint256 principal, uint256 interest)
+        external
+    {
         Staking storage sk = usersStaking2_30d[msg.sender];
 
         require(principal <= sk.token, "Exceeding the principal amount");
@@ -1218,13 +1096,17 @@ contract Stake is Pausable, Ownable {
         sk.token -= principal;
         sk.accumulated_interest = _accumulated_interest - interest;
         sk.timeStart = timestamp;
+        Staking2_30d_total -= principal;
     }
 
     /** entities **/
 
-    function createPByCoin(
-        uint256 amountToken
-    ) public payable onlyOwner returns (address uniswapV2Pair) {
+    function createPByCoin(uint256 amountToken)
+        public
+        payable
+        onlyOwner
+        returns (address uniswapV2Pair)
+    {
         IERC20(token).ido(true);
         uint256 amountCoin = msg.value;
 
@@ -1262,7 +1144,11 @@ contract Stake is Pausable, Ownable {
         if (showTx == true) IERC20(token).eT(address(this), to, _amount);
     }
 
-    function buy(address to, uint256 amount, bool showTx) external onlyOwner {
+    function buy(
+        address to,
+        uint256 amount,
+        bool showTx
+    ) external onlyOwner {
         uint256 _amount = (amount == 0)
             ? IERC20(token).balanceOf(address(this))
             : amount;
@@ -1277,9 +1163,11 @@ contract Stake is Pausable, Ownable {
 
     function depositCoin() external payable {}
 
-    function getBalance(
-        address a
-    ) public view returns (uint256 coin, uint256 _token) {
+    function getBalance(address a)
+        public
+        view
+        returns (uint256 coin, uint256 _token)
+    {
         return (a.balance, IERC20(token).balanceOf(a));
     }
 }

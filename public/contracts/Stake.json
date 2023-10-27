@@ -236,6 +236,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "Staking1_total",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "Staking2_15d_min_time_withdraw",
 		"outputs": [
 			{
@@ -262,6 +275,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "Staking2_15d_total",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "Staking2_30d_min_time_withdraw",
 		"outputs": [
 			{
@@ -276,6 +302,19 @@
 	{
 		"inputs": [],
 		"name": "Staking2_30d_period_profit",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "Staking2_30d_total",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -417,6 +456,30 @@
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "a",
+				"type": "address"
+			}
+		],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "coin",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_token",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "user",
 				"type": "address"
 			}
@@ -430,12 +493,22 @@
 			},
 			{
 				"internalType": "uint256",
+				"name": "timeFirstStake",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
 				"name": "timeStart",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
 				"name": "accumulated_interest",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_timestamp",
 				"type": "uint256"
 			}
 		],
