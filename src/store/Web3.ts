@@ -3,10 +3,12 @@
  * quản lí web3 từ trình duyệt
  */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { ethers, } from "ethers";
+import { JsonRpcProvider, JsonRpcSigner, Provider, ethers, } from "ethers";
 import { notification } from 'antd';
 import { log, numberToHex } from "../std"
 import { EventEmitter } from "events";
+import { GetThunkAPI } from "@reduxjs/toolkit/dist/createAsyncThunk";
+import { AsyncThunkConfig } from ".";
 
 /**
  * Web3Event:
@@ -21,7 +23,7 @@ const dev = {
 }
 
 
-export const CHAINS = {
+export const CHAINS: { [id: string | number]: any } = {
     1337: {
         id: 1337,
         nativeCurrency: {
@@ -205,7 +207,7 @@ export const CHAINS = {
     },
 
 
-    getParamsById: (id) => {
+    getParamsById: (id: string | number) => {
         //copy params
         let params = { ...Object.values(CHAINS).find(item => item.id === id) };
         const listParams = ['nativeCurrency', 'chainId', 'rpcUrls', 'chainName', 'blockExplorerUrls'];
@@ -221,10 +223,10 @@ export const CHAINS = {
 
 export const connectWeb3 = createAsyncThunk(
     'connectWeb3',
-    async (url, thunkAPI) => {
+    async (url: string, thunkAPI) => {
         // Wait for loading completion to avoid race conditions with web3 injection timing.
         // Modern dapp browsers...
-        let web3 = null;
+        let web3: Provider;
         let chainId = 0;
 
         try {
@@ -237,11 +239,9 @@ export const connectWeb3 = createAsyncThunk(
                 log("connectWeb3: window.ethereum");
 
             } else {
-                web3 = ethers.getDefaultProvider()
-                log("getDefaultProvider", web3);
-
+                throw new Error("Can not connect web3")
             }
-            chainId = (await web3.getNetwork()).chainId;
+            chainId = Number((await web3.getNetwork()).chainId);
         } catch (error) {
             throw error;
         }
@@ -253,54 +253,54 @@ export const connectWeb3 = createAsyncThunk(
 
 export const getSigner = createAsyncThunk(
     'getSigner',
-    async (args, thunkAPI) => {
-        return await thunkAPI.getState().Web3.web3.getSigner()
+    async (args, thunkAPI): Promise<JsonRpcSigner> => {
+        return (await thunkAPI.getState() as any).Web3.web3.getSigner()
     }
 )
 
-let _switchChain;
+async function _switchChain(args: any, thunkAPI: GetThunkAPI<AsyncThunkConfig>): Promise<any> {
 
-export const switchChain = createAsyncThunk(
-    "switchChain",
-    _switchChain = async (args, thunkAPI) => {
+    let chainId = parseInt(args);
+    if (chainId === 1337) chainId = 5777;
 
-        let chainId = parseInt(args);
-        if (chainId === 1337) chainId = 5777;
-
-        let web3 = await thunkAPI.getState().Web3.web3;
-        if (chainId == window.ethereum.networkVersion) return chainId
-        if (!isNaN(chainId) && chainId != parseInt(window.ethereum.networkVersion)) {
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: web3.utils.toHex(chainId) }]
-                })
-                return window.ethereum.networkVersion;
-            } catch (error) {
-                // if chain was not added, add chain
-                if (error.code === 4902 || error.code === -32603) {
-                    let params = CHAINS.getParamsById(chainId);
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_addEthereumChain',
-                            params: [params]
-                        })
-                        notification.success(["add chain " + params.chainName + " success"])
-                        return _switchChain(args, thunkAPI);
-                    } catch (error) {
-                        console.error(error);
-                        notification.error(error.message)
-                    }
-                } else {
-                    console.error("chain error ", error)
-                    notification.error(error.message)
+    let web3 = (await thunkAPI.getState() as any).Web3.web3;
+    if (chainId == window.ethereum.networkVersion) return chainId
+    if (!isNaN(chainId) && chainId != parseInt(window.ethereum.networkVersion)) {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: web3.utils.toHex(chainId) }]
+            })
+            return window.ethereum.networkVersion;
+        } catch (err: any) {
+            // if chain was not added, add chain
+            if (err.code === 4902 || err.code === -32603) {
+                let params = CHAINS.getParamsById(chainId);
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [params]
+                    })
+                    notification.success({ message: ["add chain " + params.chainName + " success"] })
+                    return _switchChain(args, thunkAPI);
+                } catch (err: any) {
+                    console.error(err);
+                    notification.error(err.message)
                 }
+            } else {
+                console.error("chain error ", err)
+                notification.error(err.message)
             }
         }
     }
+}
+
+export const switchChain = createAsyncThunk(
+    "switchChain",
+    _switchChain
 )
 
-export async function addTokenToMetamask(tokenAddress, tokenSymbol, tokenDecimals, tokenImage) {
+export async function addTokenToMetamask(tokenAddress: string, tokenSymbol: string, tokenDecimals: Number, tokenImage: string) {
     try {
         // wasAdded is a boolean. Like any RPC method, an error may be thrown.
         const wasAdded = await window.ethereum.request({
@@ -344,28 +344,29 @@ export const web3Slice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(connectWeb3.fulfilled, (state, action) => {
+        builder.addCase(connectWeb3.fulfilled, (state: any, action) => {
             state.web3 = action.payload.web3;
+            let chainId = action.payload.chainId.toString();
 
-            if (CHAINS[action.payload.chainId]) {
+            if (CHAINS[chainId]) {
                 state.chainId = action.payload.chainId;
-                state.chainName = CHAINS[action.payload.chainId].chainName;
+                state.chainName = CHAINS[chainId].chainName;
             };
 
             if (window.ethereum) {
                 // detect Metamask account change
-                window.ethereum.on('accountsChanged', function (accounts) {
+                window.ethereum.on('accountsChanged', function (accounts: any) {
                     console.log('accountsChanges', accounts);
                     window.location.reload();
                 });
 
                 // detect Network account change
-                window.ethereum.on('networkChanged', function (networkId) {
+                window.ethereum.on('networkChanged', function (networkId: any) {
                     console.log('networkChanged', networkId);
                     window.location.reload();
                 });
 
-                window.ethereum.on('chainChanged', (_chainId) => {
+                window.ethereum.on('chainChanged', (_chainId: any) => {
                     log(_chainId)
                     window.location.reload()
                 });
@@ -376,7 +377,7 @@ export const web3Slice = createSlice({
             }, 100);
         });
 
-        builder.addCase(getSigner.fulfilled, (state, action) => {
+        builder.addCase(getSigner.fulfilled, (state: any, action) => {
             state.accounts = [action.payload]
         })
 

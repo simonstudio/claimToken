@@ -31,7 +31,6 @@ class DashboardPage extends Component<Props> {
 
   state: State = {
     token: undefined, stake: undefined,
-
   }
 
   constructor(props: I18n) {
