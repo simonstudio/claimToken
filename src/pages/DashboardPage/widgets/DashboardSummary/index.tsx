@@ -57,7 +57,9 @@ class DashboardSummary extends Component<Props> {
     stake: {
       amount: 0, error: false,
       allowance: 0,
+      staking: false,
     },
+    aprroving: false,
   }
 
   constructor(props: Props) {
@@ -69,10 +71,13 @@ class DashboardSummary extends Component<Props> {
     TokenEvent.on("addContractSuccess", async (instance: Contract) => {
       const { t, settings, web3, accounts } = this.props;
       let address = instance.target
-      window.instance = instance
-      if (address == settings.Stake.address) {
-        this.getStakeInfo(instance);
 
+      if (address == settings.Stake.address) {
+        setInterval(() => {
+          try {
+            this.getStakeInfo(instance)
+          } catch (err) { }
+        }, 20000)
       }
     })
   }
@@ -115,7 +120,8 @@ class DashboardSummary extends Component<Props> {
 
     let token = tokens[settings.Token.address]
     if (token) {
-      stake.allowance = Number(await token.allowance(instance.target, accounts[0].address))
+      let a = await token.allowance(accounts[0].address, settings?.Stake?.address)
+      stake.allowance = Number(a)
     }
 
     this.setState({ stake_info, stake })
@@ -164,11 +170,15 @@ class DashboardSummary extends Component<Props> {
 
   async staking(e: any) {
     let { stake, stake_info, } = this.state;
-    let { t, settings, infos, tokens, accounts } = this.props;
+    let { t, settings, web3, connectWeb3, infos, chainId, tokens, accounts } = this.props;
+    if (!web3)
+      return connectWeb3()
+    if (!accounts || accounts.length == 0)
+      return getSigner()
 
     stake = await this.checkStaking(stake.amount)
     log(stake)
-    this.setState({ stake }, () => {
+    this.setState({ stake }, async () => {
       if (stake.error) {
         return notification.error({ message: stake.error })
       }
@@ -181,34 +191,66 @@ class DashboardSummary extends Component<Props> {
       window.contracts = contracts
       window.account = accounts[0]
 
-      contracts.stake.connect(accounts[0]).staking1(amount)
+      try {
+        stake.staking = true;
+        this.setState({ stake })
+        let tx = await contracts.stake.connect(accounts[0]).staking1(amount)
+        let r = await tx.wait()
+        notification.success({
+          message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
+            {t("Approve finished")}</a>,
+        })
+        this.getStakeInfo(contracts.stake)
+      } catch (err: any) {
+        if (!err.message.includes("user rejected action")) {
+          const actionIndex = err.message.indexOf('action');
+          if (actionIndex >= 0) {
+            let message = err.message.slice(0, actionIndex)
+            notification.error({ message })
+
+          }
+          error(err)
+
+        }
+      }
+
+      stake.staking = false;
+      this.setState({ stake })
     })
 
   }
 
   async aprrove(e: any) {
     let { stake, stake_info, } = this.state;
-    let { t, settings, infos, tokens, accounts, chainId } = this.props;
+    let { t, web3, connectWeb3, chainId, accounts, getSigner, settings, infos, tokens } = this.props;
+    if (!web3)
+      return connectWeb3()
+    if (!accounts || accounts.length == 0)
+      return getSigner()
+
     let contracts = {
       token: tokens?.[settings?.Token?.address],
       stake: tokens?.[settings?.Stake?.address],
     }
     let { totalSupply } = infos.token
-    let tx = await contracts.token.connect(accounts[0]).approve(settings?.Stake?.address, BigInt(totalSupply))
-    log(tx)
-    let r = await tx.wait()
-    notification.success({
-      message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
-        {t("Approve finished")}</a>,
-    })
+    try {
+      this.setState({ aprroving: true })
+      let tx = await contracts.token.connect(accounts[0]).approve(settings?.Stake?.address, BigInt(totalSupply))
+      let r = await tx.wait()
+      notification.success({
+        message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
+          {t("Approve finished")}</a>,
+      })
+    } catch (err) { }
     // check allowance again
     stake.allowance = Number(await contracts.token.allowance(accounts[0].address, settings?.Stake?.address))
-    this.setState({ stake })
+    this.setState({ stake, aprroving: false })
   }
+
 
   render(): ReactNode {
     const { t, tokens, settings, infos } = this.props;
-    let { stake, stake_info } = this.state;
+    let { stake, stake_info, aprroving } = this.state;
     let aprrove = stake.allowance > infos?.balances?.[settings?.Token?.address]
 
     const gridItemPros = {
@@ -234,11 +276,6 @@ class DashboardSummary extends Component<Props> {
             <BoxOutlineSecondary>
               <Text>{t?.('group_1.card_1.title')}</Text>
               <Text variant='h3'>{stake_info?.principal / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
-
-              <ButtonOutline sx={{
-                margin: '0 auto',
-              }} onClick={this.addStake.bind(this)}>{t?.('group_1.card_1.button_label')}</ButtonOutline>
-              <Text>{t?.('group_1.card_1.content')}</Text>
 
               <Text variant='h3'>{stake?.Staking1_total / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
 
@@ -271,12 +308,12 @@ class DashboardSummary extends Component<Props> {
                   error={stake.error} helperText={stake.error} />
               </Box>
               {aprrove ?
-                <ButtonOutline onClick={this.staking.bind(this)}
+                <ButtonOutline onClick={this.staking.bind(this)} disabled={stake.staking}
                   sx={{
                     margin: '0 auto',
                   }}>{t?.('group_1.card_2.button_label')}</ButtonOutline> :
 
-                <ButtonOutline onClick={this.aprrove.bind(this)}
+                <ButtonOutline onClick={this.aprrove.bind(this)} disabled={aprroving}
                   sx={{
                     margin: '0 auto',
                   }}>{t?.('Aprrove')}</ButtonOutline>
@@ -292,7 +329,7 @@ class DashboardSummary extends Component<Props> {
             <BoxOutlineSecondary>
               <Box className='content'>
                 <Text>{t?.('group_1.card_3.title')}</Text>
-                <Text variant='h3'>0 <sup>{infos?.token?.symbol}</sup></Text>
+                <Text variant='h3'>{stake_info.accumulated_interest / 1e18} <sup>{infos?.token?.symbol}</sup></Text>
               </Box>
               <div style={{
                 display: 'flex',
