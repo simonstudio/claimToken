@@ -95,6 +95,7 @@ class DashboardSummary extends Component<Props> {
     if (!accounts || accounts.length == 0) {
       try {
         let r: ReduxDispatchRespone = await getSigner()
+        return
       } catch (err) { error(err); return; }
     }
     accounts = this.props.accounts
@@ -105,9 +106,12 @@ class DashboardSummary extends Component<Props> {
       "Staking1_period": Number(await instance.Staking1_period()),
       "Staking1_period_interest": Number(await instance.Staking1_period_interest()),
       "Staking1_min_time_withdraw": Number(await instance.Staking1_min_time_withdraw()),
-      ...mapResult(await instance.getStaking1(accounts[0].address)),
       // "Staking1_total": Number(await instance.Staking1_total()),
     }
+
+    try {
+      stake_info = { ...stake_info, ...mapResult(await instance.getStaking1(accounts[0].address)), }
+    } catch (err) { }
 
     let token = tokens[settings.Token.address]
     if (token) {
@@ -123,30 +127,35 @@ class DashboardSummary extends Component<Props> {
     let { stake, stake_info, } = this.state;
     let { t, settings, infos } = this.props;
     let { value } = e.target
+    stake.amount = value
     value = Number(value) * 1e18
-    let { balances } = infos
+    let balance = infos?.balances?.[settings?.Token?.address] || undefined
 
     if ((value) < stake_info.Staking1_min) {
-      return this.setState({ stakeAmountError: t?.("You can't deposit less than ") + stake_info.Staking1_min / 1e18 })
+      stake.error = t?.("You can't deposit less than ") + stake_info.Staking1_min / 1e18
     }
 
-    if ((value) > stake_info.Staking1_max) {
-      return this.setState({ stakeAmountError: t?.("You can't deposit more than ") + stake_info.Staking1_max / 1e18 })
+    else if ((value) > stake_info.Staking1_max) {
+      stake.error = t?.("You can't deposit more than ") + stake_info.Staking1_max / 1e18
     }
 
-    if (!isNaN(balances[settings?.Token?.address]) && balances[settings?.Token?.address] < value) {
-      return this.setState({ stakeAmountError: "You can't deposit more than your balance" })
+    else if (balance >= 0 && balance < value) {
+      stake.error = t?.("You can't deposit more than your balance")
     }
-
-    this.setState({ stakeAmountError: false })
+    else {
+      stake.error = false
+    }
+    this.setState({ stake })
   }
 
 
   render(): ReactNode {
     const { t, tokens, settings, infos } = this.props;
-    let { stakeAmount, stakeAmountError, stake_info } = this.state;
-    let token = tokens?.[settings?.Token?.address]
-    let stake = tokens?.[settings?.Stake?.address]
+    let { stake, stake_info } = this.state;
+    let contracts = {
+      token: tokens?.[settings?.Token?.address],
+      stake: tokens?.[settings?.Stake?.address],
+    }
 
     const gridItemPros = {
       xs: 12,
@@ -200,11 +209,14 @@ class DashboardSummary extends Component<Props> {
                 {cardContent.map((s, index) => (
                   <SubText key={index} text={s} />))}
               </Box>
+
+              {/* stake Amount */}
               <Box style={{ width: '100%', margin: "4px 0px 4px 0px" }}>
-                <TextField value={stakeAmount} placeholder={t?.("staking amount")} type='number' fullWidth={true} className='amountInput'
+                <TextField value={stake.amount} placeholder={t?.("staking amount")} type='number' fullWidth={true} className='amountInput'
                   onChange={this.onStakeAmount.bind(this)}
-                  error={stakeAmountError} helperText={stakeAmountError} />
+                  error={stake.error} helperText={stake.error} />
               </Box>
+
               <ButtonOutline sx={{
                 margin: '0 auto',
               }}>{t?.('group_1.card_2.button_label')}</ButtonOutline>
@@ -217,7 +229,7 @@ class DashboardSummary extends Component<Props> {
             <BoxOutlineSecondary>
               <Box className='content'>
                 <Text>{t?.('group_1.card_3.title')}</Text>
-                <Text variant='h3'>0 <sup>{token?.info?.symbol}</sup></Text>
+                <Text variant='h3'>0 <sup>{infos?.token?.symbol}</sup></Text>
               </Box>
               <div style={{
                 display: 'flex',

@@ -68,13 +68,12 @@ class DashboardPage extends Component<Props> {
           ...token,
           ...await getInfo(instance)
         }
+        try {
+          let balances = { ... await balanceOf([web3, instance], accounts[0].address), }
+          setInfo({ balances })
+        } catch (err) { }
 
-        let balances = { ... await balanceOf([web3, instance], accounts[0].address), }
-
-        setInfo({ token, balances })
-        setTimeout(() => {
-          log(this.props.infos)
-        }, 1000);
+        setInfo({ token })
       }
     })
   }
