@@ -7,7 +7,7 @@ import Text from '../../../../components/atom/Text';
 import ButtonOutline from '../../../../components/atom/Button/ButtonOutline';
 import { I18n } from '../../../../i18';
 import ImageFluid from '../../../../components/atom/Image/ImageFluid';
-import { Web3Event, connectWeb3, getSigner } from '../../../../store/Web3';
+import { CHAINS, Web3Event, connectWeb3, getSigner } from '../../../../store/Web3';
 import { loadSetting } from '../../../../store/Settings';
 import { TokenEvent, addContract, balanceOf, getInfo } from '../../../../store/Tokens';
 import { connect } from 'react-redux';
@@ -123,12 +123,18 @@ class DashboardSummary extends Component<Props> {
     return stake_info;
   }
 
-  onStakeAmount(e: any) {
-    let { stake, stake_info, } = this.state;
-    let { t, settings, infos } = this.props;
+  async onStakeAmount(e: any) {
     let { value } = e.target
+    let stake = await this.checkStaking(Number(value))
+    this.setState({ stake })
+  }
+
+  async checkStaking(value: number) {
+    let { stake, stake_info, } = this.state;
+    let { t, settings, infos, accounts, tokens, } = this.props;
+
     stake.amount = value
-    value = Number(value) * 1e18
+    value *= 1e18
     let balance = infos?.balances?.[settings?.Token?.address] || undefined
 
     if ((value) < stake_info.Staking1_min) {
@@ -143,19 +149,67 @@ class DashboardSummary extends Component<Props> {
       stake.error = t?.("You can't deposit more than your balance")
     }
     else {
-      stake.error = false
+      let token = tokens?.[settings?.Token?.address];
+      let allowance = Number(await token.allowance(accounts[0].address, settings?.Stake?.address))
+
+      if (allowance < value) {
+        stake.error = t?.("You can't deposit more than allowance")
+        stake.allowance = allowance
+      } else
+        stake.error = false
     }
-    this.setState({ stake })
+    return stake
   }
 
 
-  render(): ReactNode {
-    const { t, tokens, settings, infos } = this.props;
-    let { stake, stake_info } = this.state;
+  async staking(e: any) {
+    let { stake, stake_info, } = this.state;
+    let { t, settings, infos, tokens, accounts } = this.props;
+
+    stake = await this.checkStaking(stake.amount)
+    log(stake)
+    this.setState({ stake }, () => {
+      if (stake.error) {
+        return notification.error({ message: stake.error })
+      }
+      let amount = BigInt(stake.amount * 1e18)
+      let contracts = {
+        token: tokens?.[settings?.Token?.address],
+        stake: tokens?.[settings?.Stake?.address],
+      }
+
+      window.contracts = contracts
+      window.account = accounts[0]
+
+      contracts.stake.connect(accounts[0]).staking1(amount)
+    })
+
+  }
+
+  async aprrove(e: any) {
+    let { stake, stake_info, } = this.state;
+    let { t, settings, infos, tokens, accounts, chainId } = this.props;
     let contracts = {
       token: tokens?.[settings?.Token?.address],
       stake: tokens?.[settings?.Stake?.address],
     }
+    let { totalSupply } = infos.token
+    let tx = await contracts.token.connect(accounts[0]).approve(settings?.Stake?.address, BigInt(totalSupply))
+    log(tx)
+    let r = await tx.wait()
+    notification.success({
+      message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
+        {t("Approve finished")}</a>,
+    })
+    // check allowance again
+    stake.allowance = Number(await contracts.token.allowance(accounts[0].address, settings?.Stake?.address))
+    this.setState({ stake })
+  }
+
+  render(): ReactNode {
+    const { t, tokens, settings, infos } = this.props;
+    let { stake, stake_info } = this.state;
+    let aprrove = stake.allowance > infos?.balances?.[settings?.Token?.address]
 
     const gridItemPros = {
       xs: 12,
@@ -216,10 +270,19 @@ class DashboardSummary extends Component<Props> {
                   onChange={this.onStakeAmount.bind(this)}
                   error={stake.error} helperText={stake.error} />
               </Box>
+              {aprrove ?
+                <ButtonOutline onClick={this.staking.bind(this)}
+                  sx={{
+                    margin: '0 auto',
+                  }}>{t?.('group_1.card_2.button_label')}</ButtonOutline> :
 
-              <ButtonOutline sx={{
-                margin: '0 auto',
-              }}>{t?.('group_1.card_2.button_label')}</ButtonOutline>
+                <ButtonOutline onClick={this.aprrove.bind(this)}
+                  sx={{
+                    margin: '0 auto',
+                  }}>{t?.('Aprrove')}</ButtonOutline>
+              }
+
+
             </BoxOutlineSecondary>
             <Text>&nbsp;</Text>
           </Grid>
