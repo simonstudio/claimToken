@@ -422,7 +422,7 @@ class WalletBox extends Component<Props, State> {
             <>
               <Divider sx={{
                 width: '100%'
-              }}>1 {chain?.nativeCurrency?.symbol || "ETH"} = {BNFormat(new BigNumber(priceDeposit))} {token?.info?.symbol}</Divider>
+              }}>1 {chain?.nativeCurrency?.symbol || "ETH"} = {BNFormat(priceDeposit)} {token?.info?.symbol}</Divider>
               <Box className='eth-container'><img height={'23px'} src={ETHICon} /> {chain?.nativeCurrency?.symbol || "ETH"}</Box>
               <Box p={0} display={'flex'} gap={'12px'} width={'100%'}>
 

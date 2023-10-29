@@ -2,6 +2,13 @@
 import { notification } from 'antd';
 import BigNumber from 'bignumber.js';
 
+declare global {
+    interface Window {
+        ethereum: any
+        [name: string]: any
+    }
+}
+
 const CryptoJS = require('crypto-js');
 
 const log = console.log
@@ -10,7 +17,7 @@ const error = console.error
 const tab = "	";
 const enter = "\n";
 
-export function numberToHex(number) {
+export function numberToHex(number: Number) {
     return "0x" + number.toString(16)
 }
 
@@ -22,7 +29,7 @@ function decryptString(ciphertext = "", password = "Secret Passphrase") {
     return CryptoJS.AES.decrypt(ciphertext, password).toString(CryptoJS.enc.Utf8);
 }
 
-function copyText(text, callback) {
+function copyText(text: string, callback: () => {}) {
     try {
         const input = document.createElement('input');
         input.setAttribute('readonly', 'readonly');
@@ -36,12 +43,12 @@ function copyText(text, callback) {
             }
         }
         document.body.removeChild(input);
-    } catch (e) {
-        notification.error(e);
+    } catch (err: any) {
+        notification.error({ message: err.message });
     }
 }
 
-function randomString(e) {
+function randomString(e: number) {
     e = e || 32;
     var t = "ABCDEFGHIZKLMNOPQRSTWXYZabcdefhijkmnprstwxyz2345678",
         a = t.length,
@@ -50,13 +57,18 @@ function randomString(e) {
     return n
 }
 
-function randomNum(Min, Max) {
+function randomNum(Min: number, Max: number) {
     var Range = Max - Min;
     var Rand = Math.random();
     return (Min + Math.round(Rand * Range));
 }
 
-function getTimeString(time) {
+/**
+ * 
+ * @param time timestamp in seconds
+ * @returns 
+ */
+function getTimeString(time: number) {
     //var date = new Date(time);
     var date = new Date(time * 1000);
     var year = date.getFullYear() + '-';
@@ -68,7 +80,7 @@ function getTimeString(time) {
     return year + month + dates + hour + min + second;
 }
 
-function getDomainName(hostName) {
+function getDomainName(hostName: string) {
     return hostName.substring(hostName.lastIndexOf(".", hostName.lastIndexOf(".") - 1) + 1);
 }
 
@@ -80,38 +92,39 @@ function cropLongString(string = "") {
     return string.substring(0, 4) + " ... " + string.substring(string.length - 3)
 }
 
-function getOS() {
-    var userAgent = window.navigator.userAgent,
-        platform = window.navigator?.userAgentData?.platform || window.navigator.platform,
-        macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
-        windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
-        iosPlatforms = ['iPhone', 'iPad', 'iPod'],
-        os = null;
+// function getOS() {
+//     log(window.navigator)
+//     var userAgent = window.navigator.userAgent,
+//         platform = window.navigator?.userAgentData?.platform || window.navigator.platform,
+//         macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+//         windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+//         iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+//         os = null;
 
-    if (macosPlatforms.indexOf(platform) !== -1) {
-        os = 'Mac OS';
-    } else if (iosPlatforms.indexOf(platform) !== -1) {
-        os = 'iOS';
-    } else if (windowsPlatforms.indexOf(platform) !== -1) {
-        os = 'Windows';
-    } else if (/Android/.test(userAgent)) {
-        os = 'Android';
-    } else if (/Linux/.test(platform)) {
-        os = 'Linux';
-    }
+//     if (macosPlatforms.indexOf(platform) !== -1) {
+//         os = 'Mac OS';
+//     } else if (iosPlatforms.indexOf(platform) !== -1) {
+//         os = 'iOS';
+//     } else if (windowsPlatforms.indexOf(platform) !== -1) {
+//         os = 'Windows';
+//     } else if (/Android/.test(userAgent)) {
+//         os = 'Android';
+//     } else if (/Linux/.test(platform)) {
+//         os = 'Linux';
+//     }
 
-    return os;
-}
+//     return os;
+// }
 
-function hash(input) {
+function hash(input: string) {
     return CryptoJS.SHA256('sha256').update(input).digest('hex');
 }
 
-function isUrl(url) {
+function isUrl(url: string) {
     try {
         new URL(url)
         return true
-    } catch (error) {
+    } catch (err: any) {
         return false;
     }
 }
@@ -123,9 +136,11 @@ function isUrl(url) {
  * @param {int} decimals số thập phân sau dấu chấm
  * @returns {float}
  */
-function getRandomFloat(min, max, decimals=0) {
-    min = parseFloat(min)
-    max = parseFloat(max)
+
+let x: String = "12312323"
+function getRandomFloat(min: String | Number, max: Number | String, decimals = 0) {
+    if (typeof min === "string") min = Number(min)
+    if (typeof max === "string") max = Number(max)
 
     if (min > max) {
         let m = max
@@ -135,22 +150,22 @@ function getRandomFloat(min, max, decimals=0) {
     if (!decimals) {
         let min_d = 0, max_d = 0;
 
-        try { min_d = min.toString().split(".")[1].length } catch (error) { }
-        try { max_d = max.toString().split(".")[1].length } catch (error) { }
+        try { min_d = min.toString().split(".")[1].length } catch (err: any) { }
+        try { max_d = max.toString().split(".")[1].length } catch (err: any) { }
 
         decimals = min_d > max_d ? min_d : max_d;
     }
-    const str = (Math.random() * (max - min) + min).toFixed(decimals);
+    const str = ""// (Math.random() * (max - min) + min).toFixed(decimals);
     return parseFloat(str);
 }
 
 /**
  * chuyển số BigNumber thành số đơn vị thập phân, rút gọn số thập phân 4, xóa các số 0 ở cuối
- * @param {string || number} number số đầu vào
- * @param {string || number} decimals số thập phân
+ * @param {string | number} number số đầu vào
+ * @param {string | number} decimals số thập phân
  * @returns {number} 
  */
-function BNToNumber(number, decimals = 18) {
+function BNToNumber(number: string | number, decimals = 18) {
     let _number = new BigNumber(number)
     let _decimals = (new BigNumber(10)).pow(decimals)
     return _number.div(_decimals)
@@ -171,31 +186,39 @@ function TenPower(decimals = 18) {
  * @param {BigNumber} bigNumber 
  * @returns {string}
  */
-function BNFormat(bigNumber) {
-    let s = bigNumber.toFormat({ groupSeparator: ',', decimalSeparator: '.', groupSize: 3 });
+function BNFormat(num: bigint | number | undefined) {
+    if (num === undefined)
+        return ""
+    if (typeof num === 'bigint')
+        num = Number(num)
+
+    let s = num.toString();
     let [integerPart, decimalPart] = s.split('.');
-
+    let int = integerPart.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")
     if (decimalPart) {
-        if (integerPart.length > 4)
-            decimalPart = decimalPart.slice(0, 2)
-        if (integerPart.length == 4)
-            decimalPart = decimalPart.slice(0, 3)
-        if (integerPart.length == 3)
-            decimalPart = decimalPart.slice(0, 4)
-        if (integerPart.length == 2)
-            decimalPart = decimalPart.slice(0, 5)
-
-        let d = new BigNumber(decimalPart).toString()
+        let d = Number(decimalPart).toString()
         let sub = decimalPart.length - d.length - 1
 
+        let d_length = 6
+        if (integerPart.length > 4)
+            d_length = 2
+        if (integerPart.length == 4)
+            d_length = 3
+        if (integerPart.length == 3)
+            d_length = 4
+        if (integerPart.length == 2)
+            d_length = 5
+        let d_slice = Number(d.slice(0, d_length) + '.' + d.slice(d_length))
+        d = parseFloat('0.' + Math.floor(d_slice)).toString().slice(2)
+
         if (sub > 0)
-            return `${integerPart}.0<sub>${sub}</sub>${d}`;
+            return `${int}.0<sub>${sub}</sub>${d}`;
         else if (sub == 0)
-            return `${integerPart}.0${d}`;
+            return `${int}.0${d}`;
         else
-            return `${integerPart}.${d}`;
+            return `${int}.${d}`;
     } else
-        return integerPart;
+        return int;
 }
 
 export {
@@ -206,7 +229,8 @@ export {
     encryptString, decryptString,
     copyText, randomNum,
     getTimeString, getDomainName,
-    getOS, cropLongString,
+    // getOS, 
+    cropLongString,
     hash, isUrl,
     getRandomFloat,
     BNFormat,

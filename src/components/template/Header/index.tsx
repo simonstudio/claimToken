@@ -9,9 +9,7 @@ import { TScreen } from '../../../HOCs/useDetachScreen';
 import MobileMenu from './MobileMenu';
 
 
-type Props = TScreen & {
-
-}
+type Props = TScreen & {}
 
 type State = {
   isMobile: boolean

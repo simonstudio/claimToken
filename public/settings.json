@@ -8,7 +8,6 @@
         "abi": "contracts/USDT.json"
     },
     "Stake": {
-        
         "address": "0x20743d70D0bE95dc27cfE2dB3651A7693829193f",
         "abi": "contracts/Stake.json"
     },

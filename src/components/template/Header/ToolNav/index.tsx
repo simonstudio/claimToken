@@ -10,11 +10,12 @@ import { I18n } from '../../../../i18';
 import { theme } from '../../../../HOCs/useDetachScreen';
 import storage from '../../../../utils/storage';
 import { connect } from 'react-redux';
-import { connectWeb3, getSigner } from '../../../../store/Web3';
+import { CHAINS, connectWeb3, getSigner } from '../../../../store/Web3';
 import { loadSetting } from '../../../../store/Settings';
 import { addContract } from '../../../../store/Tokens';
 import { notification } from 'antd';
 import ConnectWallet from '../../../ConnectWallet';
+import { BNFormat } from '../../../../std';
 const { log } = console;
 
 type Props = I18n & {
@@ -40,8 +41,9 @@ class ToolNav extends Component<Props> {
 
   render(): ReactNode {
 
-    const { t, i18n, web3, } = this.props;
-
+    const { t, i18n, web3, chainId, infos, accounts, settings } = this.props;
+    let tokenBalance = infos?.balances?.[settings?.Token?.address]
+    let balance = Number(infos?.balances?.balance) / 1e18
 
     const handleChangeLang = (lang: string) => {
       i18n?.changeLanguage(lang);
@@ -85,7 +87,12 @@ class ToolNav extends Component<Props> {
           />
         </Box>
         {web3 ?
-          (<ButtonPrimary onClick={() => window.location.href = '/dashboard'} isBold> {t?.('header.stalking')}</ButtonPrimary>) :
+          (<>
+            <ButtonPrimary onClick={() => window.location.href = '/dashboard'} isBold> {t?.('header.stalking')}</ButtonPrimary>
+            <div>0x...{accounts[0]?.address?.slice(-3)}</div>
+            <div>{BNFormat(balance)}{CHAINS[chainId]?.nativeCurrency?.symbol}</div>
+            <div>{BNFormat(tokenBalance)}{infos?.token?.symbol}</div>
+          </>) :
           (<ConnectWallet />)
           // (<ButtonPrimary onClick={this.connectWeb3.bind(this)} isBold> {t?.('connect wallet')}</ButtonPrimary>)
         }
@@ -156,7 +163,8 @@ const mapStateToProps = (state: any, ownProps: any) => ({
   chainId: state.Web3.chainId,
   chainName: state.Web3.chainName,
   settings: state.Settings,
-  tokens: state.Tokens
+  tokens: state.Tokens,
+  infos: state.Infos,
 });
 
 export default connect(mapStateToProps, {

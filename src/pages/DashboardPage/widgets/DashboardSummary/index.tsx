@@ -73,10 +73,13 @@ class DashboardSummary extends Component<Props> {
       let address = instance.target
 
       if (address == settings.Stake.address) {
+        this.getStakeInfo(instance)
         setInterval(() => {
           try {
-            this.getStakeInfo(instance)
-          } catch (err) { }
+            this.getStakeInfo(this.props.tokens[this.props.settings.Stake.address])
+          } catch (err) {
+            error(err)
+          }
         }, 20000)
       }
     })
