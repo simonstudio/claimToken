@@ -51,6 +51,22 @@ class DashboardPage extends Component<Props> {
       await getSigner()
       this.initContracts()
     })
+    Web3Event.on("accountsChanged", async account => {
+      const { t, settings, tokens, accounts, infos, setInfo } = this.props;
+      try {
+        let token = {
+          ...infos.token,
+          ...await getInfo(tokens[settings.Token.address])
+        }
+        setInfo({ token })
+
+        let balances = { ... await balanceOf([this.props.web3, tokens[settings.Token.address]], account.address), }
+        setInfo({ balances })
+
+      } catch (err) {
+        error(err)
+      }
+    })
 
     TokenEvent.on("addContractSuccess", async (instance: Contract) => {
       const { t, settings, web3, accounts, setInfo } = this.props;
@@ -71,7 +87,7 @@ class DashboardPage extends Component<Props> {
         try {
           let balances = { ... await balanceOf([web3, instance], accounts[0].address), }
           setInfo({ balances })
-        } catch (err) { 
+        } catch (err) {
           error(err)
         }
 

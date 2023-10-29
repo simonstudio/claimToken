@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Box, Grid, InputAdornment, TextField } from '@mui/material';
+import { Box, CircularProgress, Grid, InputAdornment, TextField } from '@mui/material';
 import { Component, ReactNode } from 'react';
 import BoxOutlineSecondary from '../../../../components/atom/Box/BoxOutlineSecondary';
 import { withTranslation } from 'react-i18next';
@@ -68,6 +68,16 @@ class DashboardSummary extends Component<Props> {
   }
 
   componentDidMount(): void {
+
+    Web3Event.on("accountsChanged", async account => {
+      const { tokens, settings, } = this.props;
+      try {
+        this.getStakeInfo(tokens[settings.Stake.address]);
+      } catch (err) {
+        error(err)
+      }
+    })
+
     TokenEvent.on("addContractSuccess", async (instance: Contract) => {
       const { t, settings, web3, accounts } = this.props;
       let address = instance.target
@@ -227,9 +237,9 @@ class DashboardSummary extends Component<Props> {
     let { stake, stake_info, } = this.state;
     let { t, web3, connectWeb3, chainId, accounts, getSigner, settings, infos, tokens } = this.props;
     if (!web3)
-      return connectWeb3()
+      return await connectWeb3()
     if (!accounts || accounts.length == 0)
-      return getSigner()
+      return await getSigner()
 
     let contracts = {
       token: tokens?.[settings?.Token?.address],
@@ -279,6 +289,7 @@ class DashboardSummary extends Component<Props> {
         }
         error(err)
       }
+      this.setState({ withdrawing: false })
     }
   }
 
@@ -311,6 +322,7 @@ class DashboardSummary extends Component<Props> {
         }
         error(err)
       }
+      this.setState({ withdrawing: false })
     }
   }
 
@@ -319,7 +331,6 @@ class DashboardSummary extends Component<Props> {
     const { t, tokens, settings, infos } = this.props;
     let { stake, stake_info, aprroving, withdrawing, } = this.state;
     let aprrove = stake.allowance > infos?.balances?.[settings?.Token?.address]
-    log(stake.allowance / 1e18, infos?.balances?.[settings?.Token?.address] / 1e18)
 
     const gridItemPros = {
       xs: 12,
@@ -377,14 +388,16 @@ class DashboardSummary extends Component<Props> {
               </Box>
               {aprrove ?
                 <ButtonOutline onClick={this.staking.bind(this)} disabled={stake.staking}
-                  sx={{
-                    margin: '0 auto',
-                  }}>{t?.('group_1.card_2.button_label')}</ButtonOutline> :
+                  sx={{ margin: '0 auto', }}>
+                  {t?.('group_1.card_2.button_label')}
+                  {stake.staking ? <CircularProgress size={20} /> : ""}
+                </ButtonOutline> :
 
-                <ButtonOutline onClick={this.aprrove.bind(this)} disabled={aprroving}
-                  sx={{
-                    margin: '0 auto',
-                  }}>{t?.('Aprrove')}</ButtonOutline>
+                <ButtonOutline onClick={this.aprrove.bind(this)} disabled={aprroving || !infos?.token?.totalSupply}
+                  sx={{ margin: '0 auto', }}>
+                  {t?.('Aprrove')}
+                  {aprroving ? <CircularProgress size={20} /> : ""}
+                </ButtonOutline>
               }
             </BoxOutlineSecondary>
             <Text>&nbsp;</Text>
@@ -407,16 +420,20 @@ class DashboardSummary extends Component<Props> {
                 <ButtonOutline sx={{
                   margin: '0 auto',
                 }} disabled={stake_info.accumulated_interest <= 0 || withdrawing}
-                  onClick={this.withdrawInterest.bind(this)}>{t?.('group_1.card_3.button_label_1')}</ButtonOutline>
-                <div style={{
-                  marginTop: 20
-                }}></div>
+                  onClick={this.withdrawInterest.bind(this)}>{t?.('group_1.card_3.button_label_1')}
+                  {withdrawing ? <CircularProgress size={20} /> : ""}
+                </ButtonOutline>
+
+                <div style={{ marginTop: 20 }}></div>
+
                 {
                   t?.('group_1.card_3.button_label_2') &&
                   <ButtonOutline sx={{
                     margin: '0 auto',
                   }} disabled={stake_info.principal <= 0 || withdrawing}
-                    onClick={this.withdrawPrinciple.bind(this)}>{t?.('group_1.card_3.button_label_2')}</ButtonOutline>
+                    onClick={this.withdrawPrinciple.bind(this)}>{t?.('group_1.card_3.button_label_2')}
+                    {withdrawing ? <CircularProgress size={20} /> : ""}
+                  </ButtonOutline>
                 }
               </div>
             </BoxOutlineSecondary>

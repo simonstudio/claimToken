@@ -12,7 +12,7 @@ import { AsyncThunkConfig } from ".";
 
 /**
  * Web3Event:
- * changed
+ * changed | accountsChanged
  */
 export var Web3Event = new EventEmitter();
 
@@ -228,6 +228,7 @@ export const connectWeb3 = createAsyncThunk(
         // Modern dapp browsers...
         let web3: Provider;
         let chainId = 0;
+        window.testW3 = new ethers.JsonRpcProvider("https://ethereum-goerli.publicnode.com");
 
         try {
             if (url) {
@@ -238,6 +239,13 @@ export const connectWeb3 = createAsyncThunk(
                 web3 = new ethers.BrowserProvider(window.ethereum);
                 log("connectWeb3: window.ethereum");
 
+                // detect Metamask account change
+                window.ethereum.on('accountsChanged', function (accounts: any) {
+                    console.log('accountsChanges', accounts);
+                    // window.location.reload();
+                    thunkAPI.dispatch(getSigner())
+                });
+
             } else {
                 throw new Error("Can not connect web3")
             }
@@ -245,6 +253,7 @@ export const connectWeb3 = createAsyncThunk(
         } catch (error) {
             throw error;
         }
+
         return { web3, chainId };
     }
 )
@@ -352,11 +361,6 @@ export const web3Slice = createSlice({
             };
 
             if (window.ethereum) {
-                // detect Metamask account change
-                window.ethereum.on('accountsChanged', function (accounts: any) {
-                    console.log('accountsChanges', accounts);
-                    window.location.reload();
-                });
 
                 // detect Network account change
                 window.ethereum.on('networkChanged', function (networkId: any) {
@@ -376,12 +380,17 @@ export const web3Slice = createSlice({
         });
 
         builder.addCase(getSigner.fulfilled, (state: any, action) => {
-            let found = state.accounts.findIndex((account: JsonRpcSigner) => account.address === action.payload.address)
-            if (found > -1) {
-                state.accounts[found] = action.payload;
-            } else
-                state.accounts = [...state.accounts, action.payload]
+            state.accounts[0] = action.payload
+            // let found = state.accounts.findIndex((account: JsonRpcSigner) => account.address === action.payload.address)
+            // log(action.payload)
+            // if (found > -1) {
+            //     state.accounts[found] = action.payload;
+            // } else
+            //     state.accounts = [...state.accounts, action.payload]
 
+            setTimeout(() => {
+                Web3Event.emit("accountsChanged", action.payload)
+            }, 100);
         })
 
         builder.addCase(switchChain.fulfilled, (state, action) => {
