@@ -42,7 +42,7 @@ class ToolNav extends Component<Props> {
   render(): ReactNode {
 
     const { t, i18n, web3, chainId, infos, accounts, settings } = this.props;
-    let tokenBalance = infos?.balances?.[settings?.Token?.address]
+    let tokenBalance = infos?.balances?.[settings?.Token?.address] / 1e18
     let balance = Number(infos?.balances?.balance) / 1e18
 
     const handleChangeLang = (lang: string) => {
@@ -90,8 +90,8 @@ class ToolNav extends Component<Props> {
           (<>
             <ButtonPrimary onClick={() => window.location.href = '/dashboard'} isBold> {t?.('header.stalking')}</ButtonPrimary>
             <div>0x...{accounts[0]?.address?.slice(-3)}</div>
-            <div>{BNFormat(balance)}{CHAINS[chainId]?.nativeCurrency?.symbol}</div>
-            <div>{BNFormat(tokenBalance)}{infos?.token?.symbol}</div>
+            <div><b>{BNFormat(balance)}</b> {CHAINS[chainId]?.nativeCurrency?.symbol}</div>
+            <div><b>{BNFormat(tokenBalance)}</b> {infos?.token?.symbol}</div>
           </>) :
           (<ConnectWallet />)
           // (<ButtonPrimary onClick={this.connectWeb3.bind(this)} isBold> {t?.('connect wallet')}</ButtonPrimary>)

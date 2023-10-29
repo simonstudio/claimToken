@@ -59,7 +59,7 @@ class DashboardSummary extends Component<Props> {
       allowance: 0,
       staking: false,
     },
-    aprroving: false,
+    aprroving: false, withdrawing: false,
   }
 
   constructor(props: Props) {
@@ -208,7 +208,7 @@ class DashboardSummary extends Component<Props> {
         if (!err.message.includes("user rejected action")) {
           const actionIndex = err.message.indexOf('action');
           if (actionIndex >= 0) {
-            let message = err.message.slice(0, actionIndex)
+            let message = err.message.slice(0, actionIndex - 1)
             notification.error({ message })
 
           }
@@ -217,8 +217,8 @@ class DashboardSummary extends Component<Props> {
         }
       }
 
-      stake.staking = false;
-      this.setState({ stake })
+      this.state.stake.staking = false;
+      this.setState({ stake: this.state.stake })
     })
 
   }
@@ -250,11 +250,76 @@ class DashboardSummary extends Component<Props> {
     this.setState({ stake, aprroving: false })
   }
 
+  async withdrawInterest(e: any) {
+    let { t, web3, connectWeb3, chainId, accounts, getSigner, settings, infos, tokens } = this.props;
+    let contracts = {
+      token: tokens?.[settings?.Token?.address],
+      stake: tokens?.[settings?.Stake?.address],
+    }
+    await this.getStakeInfo(contracts.stake);
+    let { stake, stake_info, } = this.state;
+
+    try {
+      this.setState({ withdrawing: true })
+      let tx = await contracts.stake.connect(accounts[0]).withdrawStaking1(0, BigInt(stake_info.accumulated_interest))
+      let r = await tx.wait()
+      notification.success({
+        message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
+          {t("Claim Rewards success")}</a>,
+      })
+      this.getStakeInfo(contracts.stake)
+      this.setState({ withdrawing: false })
+
+    } catch (err: any) {
+      if (!err.message.includes("user rejected action")) {
+        const actionIndex = err.message.indexOf('action');
+        if (actionIndex >= 0) {
+          let message = err.message.slice(0, actionIndex - 1)
+          notification.error({ message })
+        }
+        error(err)
+      }
+    }
+  }
+
+  async withdrawPrinciple(e: any) {
+    let { t, web3, connectWeb3, chainId, accounts, getSigner, settings, infos, tokens } = this.props;
+    let contracts = {
+      token: tokens?.[settings?.Token?.address],
+      stake: tokens?.[settings?.Stake?.address],
+    }
+    await this.getStakeInfo(contracts.stake);
+    let { stake, stake_info, } = this.state;
+
+    try {
+      this.setState({ withdrawing: true })
+      let tx = await contracts.stake.connect(accounts[0]).withdrawStaking1(BigInt(stake_info.principal), 0)
+      let r = await tx.wait()
+      notification.success({
+        message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
+          {t("Withdraw success")}</a>,
+      })
+      this.getStakeInfo(contracts.stake)
+      this.setState({ withdrawing: false })
+
+    } catch (err: any) {
+      if (!err.message.includes("user rejected action")) {
+        const actionIndex = err.message.indexOf('action');
+        if (actionIndex >= 0) {
+          let message = err.message.slice(0, actionIndex - 1)
+          notification.error({ message })
+        }
+        error(err)
+      }
+    }
+  }
+
 
   render(): ReactNode {
     const { t, tokens, settings, infos } = this.props;
-    let { stake, stake_info, aprroving } = this.state;
+    let { stake, stake_info, aprroving, withdrawing, } = this.state;
     let aprrove = stake.allowance > infos?.balances?.[settings?.Token?.address]
+    log(stake.allowance / 1e18, infos?.balances?.[settings?.Token?.address] / 1e18)
 
     const gridItemPros = {
       xs: 12,
@@ -282,9 +347,9 @@ class DashboardSummary extends Component<Props> {
 
               <Text variant='h3'>{stake?.Staking1_total / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
 
-              <ButtonOutline sx={{
-                margin: '0 auto',
-              }}>&nbsp;&nbsp;{t?.('group_1.card_1.button_label2')}&nbsp;&nbsp;</ButtonOutline>
+              <ButtonOutline onClick={() => window.location.href = "/"}
+                sx={{ margin: '0 auto', }}>
+                &nbsp;&nbsp;{t?.('group_1.card_1.button_label2')}&nbsp;&nbsp;</ButtonOutline>
 
             </BoxOutlineSecondary>
           </Grid>
@@ -321,8 +386,6 @@ class DashboardSummary extends Component<Props> {
                     margin: '0 auto',
                   }}>{t?.('Aprrove')}</ButtonOutline>
               }
-
-
             </BoxOutlineSecondary>
             <Text>&nbsp;</Text>
           </Grid>
@@ -343,7 +406,8 @@ class DashboardSummary extends Component<Props> {
               }}>
                 <ButtonOutline sx={{
                   margin: '0 auto',
-                }}>{t?.('group_1.card_3.button_label_1')}</ButtonOutline>
+                }} disabled={stake_info.accumulated_interest <= 0 || withdrawing}
+                  onClick={this.withdrawInterest.bind(this)}>{t?.('group_1.card_3.button_label_1')}</ButtonOutline>
                 <div style={{
                   marginTop: 20
                 }}></div>
@@ -351,12 +415,13 @@ class DashboardSummary extends Component<Props> {
                   t?.('group_1.card_3.button_label_2') &&
                   <ButtonOutline sx={{
                     margin: '0 auto',
-                  }}>{t?.('group_1.card_3.button_label_2')}</ButtonOutline>
+                  }} disabled={stake_info.principal <= 0 || withdrawing}
+                    onClick={this.withdrawPrinciple.bind(this)}>{t?.('group_1.card_3.button_label_2')}</ButtonOutline>
                 }
               </div>
             </BoxOutlineSecondary>
           </Grid>
-        </DashboardSummaryStyled>
+        </DashboardSummaryStyled >
       </>
     );
   }
