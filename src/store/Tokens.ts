@@ -6,7 +6,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios';
 import { EventEmitter } from "events";
 import { saveSetting } from "./Settings";
-import { TenPower, getRandomFloat } from "../std";
+import { getRandomFloat } from "../std";
 import { Contract, JsonRpcSigner, Provider } from "ethers";
 import { AsyncThunkConfig, RootState } from ".";
 import { GetThunkAPI } from "@reduxjs/toolkit/dist/createAsyncThunk";

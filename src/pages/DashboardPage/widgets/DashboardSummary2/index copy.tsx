@@ -42,12 +42,11 @@ class DashboardSummary extends Component<Props> {
 
   state: State = {
     stake_info: {
-      Staking1_min: 0,
-      Staking1_max: 0,
-      Staking1_max_token_interest: 0,
-      Staking1_period: 0,
-      Staking1_period_interest: 0,
-      Staking1_min_time_withdraw: 0,
+      Staking2_min: 0,
+      Staking2_period: 0,
+      Staking2_15d_period_profit: 0,
+      Staking2_15d_min_time_withdraw: 0,
+      Staking2_15d_total: 0,
 
       principal: 0,
       timeFirstStake: 0,
@@ -69,11 +68,10 @@ class DashboardSummary extends Component<Props> {
   }
 
   componentDidMount(): void {
-
     Web3Event.on("accountsChanged", async account => {
       const { tokens, settings, } = this.props;
       try {
-        this.getStakeInfo(tokens[settings.Stake.address]);
+        // this.getStakeInfo(tokens[settings.Stake.address]);
       } catch (err) {
         error(err)
       }
@@ -84,14 +82,14 @@ class DashboardSummary extends Component<Props> {
       let address = instance.target
 
       if (address == settings.Stake.address) {
-        this.getStakeInfo(instance)
-        setInterval(() => {
-          try {
-            this.getStakeInfo(this.props.tokens[this.props.settings.Stake.address])
-          } catch (err) {
-            error(err)
-          }
-        }, 20000)
+        // this.getStakeInfo(instance)
+        // setInterval(() => {
+        //   try {
+        //     this.getStakeInfo(this.props.tokens[this.props.settings.Stake.address])
+        //   } catch (err) {
+        //     error(err)
+        //   }
+        // }, 20000)
       }
     })
   }
@@ -119,13 +117,11 @@ class DashboardSummary extends Component<Props> {
     }
     accounts = this.props.accounts
     stake_info = {
-      Staking1_min: Number(await instance.Staking1_min()),
-      Staking1_max: Number(await instance.Staking1_max()),
-      Staking1_max_token_interest: Number(await instance.Staking1_max_token_interest()),
-      Staking1_period: Number(await instance.Staking1_period()),
-      Staking1_period_interest: Number(await instance.Staking1_period_interest()),
-      Staking1_min_time_withdraw: Number(await instance.Staking1_min_time_withdraw()),
-      // "Staking1_total": Number(await instance.Staking1_total()),
+      Staking2_min: Number(await instance.Staking2_min()),
+      Staking2_period: Number(await instance.Staking2_period()),
+      Staking2_15d_period_profit: Number(await instance.Staking2_15d_period_profit()),
+      Staking2_15d_min_time_withdraw: Number(await instance.Staking2_15d_min_time_withdraw()),
+      Staking2_15d_total: Number(await instance.Staking2_15d_total()),
     }
 
     try {
@@ -157,12 +153,8 @@ class DashboardSummary extends Component<Props> {
     value *= 1e18
     let balance = infos?.balances?.[settings?.Token?.address] || undefined
 
-    if ((value) < stake_info.Staking1_min) {
-      stake.error = t?.("You can't deposit less than ") + stake_info.Staking1_min / 1e18
-    }
-
-    else if ((value) > stake_info.Staking1_max) {
-      stake.error = t?.("You can't deposit more than ") + stake_info.Staking1_max / 1e18
+    if ((value) < stake_info.Staking2_min) {
+      stake.error = t?.("You can't deposit less than ") + stake_info.Staking2_min / 1e18
     }
 
     else if (balance >= 0 && balance < value) {
@@ -341,27 +333,27 @@ class DashboardSummary extends Component<Props> {
     };
 
     const cardContent: string[] = [
-      t?.('group_1.card_2.content_1') ?? '',
-      t?.('group_1.card_2.content_2') ?? '',
-      t?.('group_1.card_2.content_3') ?? ''
+      t?.('group_2.card_2.content_1') ?? '',
+      t?.('group_2.card_2.content_2') ?? '',
+      t?.('group_2.card_2.content_3') ?? ''
     ];
 
     return (
       <>
         <Text style={{
           marginBottom: 20
-        }} variant='h3'>{t?.('group_1.title')}</Text>
+        }} variant='h3'>{t?.('group_2.title')}</Text>
         <DashboardSummaryStyled container spacing={{ xs: 2, md: 3 }}>
           <Grid item {...gridItemPros}>
             <BoxOutlineSecondary>
-              <Text>{t?.('group_1.card_1.title')}</Text>
+              <Text>{t?.('group_2.card_1.title')}</Text>
               <Text variant='h3'>{stake_info?.principal / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
 
               <Text variant='h3'>{stake?.Staking1_total / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
 
               <ButtonOutline onClick={() => window.location.href = "/"}
                 sx={{ margin: '0 auto', }}>
-                &nbsp;&nbsp;{t?.('group_1.card_1.button_label2')}&nbsp;&nbsp;</ButtonOutline>
+                &nbsp;&nbsp;{t?.('group_2.card_1.button_label2')}&nbsp;&nbsp;</ButtonOutline>
 
             </BoxOutlineSecondary>
           </Grid>
@@ -371,9 +363,9 @@ class DashboardSummary extends Component<Props> {
             <BoxOutlineSecondary>
               <Box className='content'>
                 <Text>MIN</Text>
-                <Text variant='h3'>{stake_info?.Staking1_min / 1e18} {infos?.token?.symbol}</Text>
+                <Text variant='h3'>{stake_info?.Staking2_min / 1e18} {infos?.token?.symbol}</Text>
                 <Text>MAX</Text>
-                <Text variant='h3'>{stake_info?.Staking1_max / 1e18} {infos?.token?.symbol}</Text>
+                <Text variant='h3'>∞</Text>
               </Box>
               <Text>&nbsp;</Text>
               <Box display={'flex'} flexDirection={'column'} gap={0.5}>
@@ -390,7 +382,7 @@ class DashboardSummary extends Component<Props> {
               {aprrove ?
                 <ButtonOutline onClick={this.staking.bind(this)} disabled={stake.staking}
                   sx={{ margin: '0 auto', }}>
-                  {t?.('group_1.card_2.button_label')}
+                  {t?.('group_2.card_2.button_label')}
                   {stake.staking ? <CircularProgress size={20} /> : ""}
                 </ButtonOutline> :
 
@@ -408,7 +400,7 @@ class DashboardSummary extends Component<Props> {
           <Grid item {...gridItemPros}>
             <BoxOutlineSecondary>
               <Box className='content'>
-                <Text>{t?.('group_1.card_3.title')}</Text>
+                <Text>{t?.('group_2.card_3.title')}</Text>
                 <Text variant='h3'>{stake_info.accumulated_interest / 1e18} <sup>{infos?.token?.symbol}</sup></Text>
               </Box>
               <div style={{
@@ -421,18 +413,18 @@ class DashboardSummary extends Component<Props> {
                 <ButtonOutline sx={{
                   margin: '0 auto',
                 }} disabled={stake_info.accumulated_interest <= 0 || withdrawing}
-                  onClick={this.withdrawInterest.bind(this)}>{t?.('group_1.card_3.button_label_1')}
+                  onClick={this.withdrawInterest.bind(this)}>{t?.('group_2.card_3.button_label_1')}
                   {withdrawing ? <CircularProgress size={20} /> : ""}
                 </ButtonOutline>
 
                 <div style={{ marginTop: 20 }}></div>
 
                 {
-                  t?.('group_1.card_3.button_label_2') &&
+                  t?.('group_2.card_3.button_label_2') &&
                   <ButtonOutline sx={{
                     margin: '0 auto',
                   }} disabled={stake_info.principal <= 0 || withdrawing}
-                    onClick={this.withdrawPrinciple.bind(this)}>{t?.('group_1.card_3.button_label_2')}
+                    onClick={this.withdrawPrinciple.bind(this)}>{t?.('group_2.card_3.button_label_2')}
                     {withdrawing ? <CircularProgress size={20} /> : ""}
                   </ButtonOutline>
                 }
