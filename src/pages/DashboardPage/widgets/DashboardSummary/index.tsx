@@ -73,7 +73,7 @@ class DashboardSummary extends Component<Props> {
     Web3Event.on("accountsChanged", async account => {
       const { tokens, settings, } = this.props;
       try {
-        this.getStakeInfo(tokens[settings.Stake.address]);
+        this.getStakeInfo();
       } catch (err) {
         error(err)
       }
@@ -84,10 +84,10 @@ class DashboardSummary extends Component<Props> {
       let address = instance.target
 
       if (address == settings.Stake.address) {
-        this.getStakeInfo(instance)
+        this.getStakeInfo()
         setInterval(() => {
           try {
-            this.getStakeInfo(this.props.tokens[this.props.settings.Stake.address])
+            this.getStakeInfo()
           } catch (err) {
             error(err)
           }
@@ -101,11 +101,10 @@ class DashboardSummary extends Component<Props> {
     let { } = this.state;
     if (!web3)
       return connectWeb3()
-    let stake = tokens?.[settings?.Stake?.address]
-    this.getStakeInfo(stake);
+    this.getStakeInfo();
   }
 
-  async getStakeInfo(instance: Contract): Promise<any> {
+  async getStakeInfo(): Promise<any> {
     let { t, web3, tokens, settings, connectWeb3, accounts, getSigner } = this.props;
     let { stake_info, stake, } = this.state;
     if (!web3) {
@@ -118,14 +117,22 @@ class DashboardSummary extends Component<Props> {
       } catch (err) { error(err); return; }
     }
     accounts = this.props.accounts
+
+    let instance = tokens?.[settings?.Stake?.address]
+    if (!instance) {
+      error(instance)
+      return;
+    }
+
     stake_info = {
+      ...stake_info,
       Staking1_min: Number(await instance.Staking1_min()),
       Staking1_max: Number(await instance.Staking1_max()),
       Staking1_max_token_interest: Number(await instance.Staking1_max_token_interest()),
       Staking1_period: Number(await instance.Staking1_period()),
       Staking1_period_interest: Number(await instance.Staking1_period_interest()),
       Staking1_min_time_withdraw: Number(await instance.Staking1_min_time_withdraw()),
-      // "Staking1_total": Number(await instance.Staking1_total()),
+      Staking1_total: Number(await instance.Staking1_total()),
     }
 
     try {
@@ -214,7 +221,7 @@ class DashboardSummary extends Component<Props> {
           message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
             {t("Approve finished")}</a>,
         })
-        this.getStakeInfo(contracts.stake)
+        this.getStakeInfo()
       } catch (err: any) {
         if (!err.message.includes("user rejected action")) {
           const actionIndex = err.message.indexOf('action');
@@ -267,7 +274,7 @@ class DashboardSummary extends Component<Props> {
       token: tokens?.[settings?.Token?.address],
       stake: tokens?.[settings?.Stake?.address],
     }
-    await this.getStakeInfo(contracts.stake);
+    await this.getStakeInfo();
     let { stake, stake_info, } = this.state;
 
     try {
@@ -278,7 +285,7 @@ class DashboardSummary extends Component<Props> {
         message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
           {t("Claim Rewards success")}</a>,
       })
-      this.getStakeInfo(contracts.stake)
+      this.getStakeInfo()
       this.setState({ withdrawing: false })
 
     } catch (err: any) {
@@ -300,7 +307,7 @@ class DashboardSummary extends Component<Props> {
       token: tokens?.[settings?.Token?.address],
       stake: tokens?.[settings?.Stake?.address],
     }
-    await this.getStakeInfo(contracts.stake);
+    await this.getStakeInfo();
     let { stake, stake_info, } = this.state;
 
     try {
@@ -311,7 +318,7 @@ class DashboardSummary extends Component<Props> {
         message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
           {t("Withdraw success")}</a>,
       })
-      this.getStakeInfo(contracts.stake)
+      this.getStakeInfo()
       this.setState({ withdrawing: false })
 
     } catch (err: any) {
@@ -354,11 +361,13 @@ class DashboardSummary extends Component<Props> {
         <DashboardSummaryStyled container spacing={{ xs: 2, md: 3 }}>
           <Grid item {...gridItemPros}>
             <BoxOutlineSecondary>
-              <Text>{t?.('group_1.card_1.title')}</Text>
-              <Text variant='h3'>{stake_info?.principal / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
+              <Text>{t?.('group_1.card_1.title')}
+                <Text variant='h3' margin={"10px"}>{stake_info?.principal / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
+              </Text>
 
-              <Text variant='h3'>{stake?.Staking1_total / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
-
+              <Text>{t?.('group_1.card_1.content')}
+                <Text variant='h3' margin={"10px"}>{stake_info?.Staking1_total / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
+              </Text>
               <ButtonOutline onClick={() => window.location.href = "/"}
                 sx={{ margin: '0 auto', }}>
                 &nbsp;&nbsp;{t?.('group_1.card_1.button_label2')}&nbsp;&nbsp;</ButtonOutline>

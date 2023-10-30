@@ -532,6 +532,11 @@
 			},
 			{
 				"internalType": "uint256",
+				"name": "timeFirstStake",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
 				"name": "timeStart",
 				"type": "uint256"
 			},
@@ -562,6 +567,11 @@
 			{
 				"internalType": "uint256",
 				"name": "_token",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timeFirstStake",
 				"type": "uint256"
 			},
 			{

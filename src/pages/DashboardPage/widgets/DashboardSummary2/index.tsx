@@ -37,7 +37,8 @@ function mapResult(result: any) {
     _timestamp: Number(result[4]) * 1000,
   }
 }
-var count = 0
+
+let count = 0;
 class DashboardSummary extends Component<Props> {
 
   state: State = {
@@ -69,11 +70,9 @@ class DashboardSummary extends Component<Props> {
 
   componentDidMount(): void {
     Web3Event.on("accountsChanged", async account => {
-      log(count++)
       const { tokens, settings, } = this.props;
       try {
-        log(tokens[settings.Stake.address])
-        this.getStakeInfo(tokens[settings.Stake.address]);
+        this.getStakeInfo();
       } catch (err) {
         error(err)
       }
@@ -84,14 +83,14 @@ class DashboardSummary extends Component<Props> {
       let address = instance.target
 
       if (address == settings.Stake.address) {
-        // this.getStakeInfo(instance)
-        // setInterval(() => {
-        //   try {
-        //     this.getStakeInfo(this.props.tokens[this.props.settings.Stake.address])
-        //   } catch (err) {
-        //     error(err)
-        //   }
-        // }, 20000)
+        this.getStakeInfo()
+        setInterval(() => {
+          try {
+            this.getStakeInfo()
+          } catch (err) {
+            error(err)
+          }
+        }, 9000)
       }
     })
   }
@@ -102,10 +101,11 @@ class DashboardSummary extends Component<Props> {
     if (!web3)
       return connectWeb3()
     let stake = tokens?.[settings?.Stake?.address]
-    this.getStakeInfo(stake);
+    this.getStakeInfo();
   }
 
-  async getStakeInfo(instance: Contract): Promise<any> {
+  async getStakeInfo(): Promise<any> {
+
     let { t, web3, tokens, settings, connectWeb3, accounts, getSigner } = this.props;
     let { stake_info, stake, } = this.state;
     if (!web3) {
@@ -118,7 +118,15 @@ class DashboardSummary extends Component<Props> {
       } catch (err) { error(err); return; }
     }
     accounts = this.props.accounts
+
+    let instance = tokens?.[settings?.Stake?.address]
+    if (!instance) {
+      error(instance)
+      return;
+    }
+
     stake_info = {
+      ...stake_info,
       Staking2_min: Number(await instance.Staking2_min()),
       Staking2_period: Number(await instance.Staking2_period()),
       Staking2_15d_period_profit: Number(await instance.Staking2_15d_period_profit()),
@@ -127,8 +135,10 @@ class DashboardSummary extends Component<Props> {
     }
 
     try {
-      stake_info = { ...stake_info, ...mapResult(await instance.getStaking2(accounts[0].address)), }
-    } catch (err) { }
+      stake_info = { ...stake_info, ...mapResult(await instance.getStaking2_15d(accounts[0].address)), }
+    } catch (err: any) {
+      error(err)
+    }
 
     let token = tokens[settings.Token.address]
     if (token) {
@@ -175,7 +185,6 @@ class DashboardSummary extends Component<Props> {
     return stake
   }
 
-
   async staking(e: any) {
     let { stake, stake_info, } = this.state;
     let { t, settings, web3, connectWeb3, infos, chainId, tokens, accounts } = this.props;
@@ -202,13 +211,13 @@ class DashboardSummary extends Component<Props> {
       try {
         stake.staking = true;
         this.setState({ stake })
-        let tx = await contracts.stake.connect(accounts[0]).staking1(amount)
+        let tx = await contracts.stake.connect(accounts[0]).staking2_15d(amount)
         let r = await tx.wait()
         notification.success({
           message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
             {t("Approve finished")}</a>,
         })
-        this.getStakeInfo(contracts.stake)
+        this.getStakeInfo()
       } catch (err: any) {
         if (!err.message.includes("user rejected action")) {
           const actionIndex = err.message.indexOf('action');
@@ -261,18 +270,18 @@ class DashboardSummary extends Component<Props> {
       token: tokens?.[settings?.Token?.address],
       stake: tokens?.[settings?.Stake?.address],
     }
-    await this.getStakeInfo(contracts.stake);
+    await this.getStakeInfo();
     let { stake, stake_info, } = this.state;
 
     try {
       this.setState({ withdrawing: true })
-      let tx = await contracts.stake.connect(accounts[0]).withdrawStaking1(0, BigInt(stake_info.accumulated_interest))
+      let tx = await contracts.stake.connect(accounts[0]).withdrawStaking2_15d(0, BigInt(stake_info.accumulated_interest))
       let r = await tx.wait()
       notification.success({
         message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
           {t("Claim Rewards success")}</a>,
       })
-      this.getStakeInfo(contracts.stake)
+      this.getStakeInfo()
       this.setState({ withdrawing: false })
 
     } catch (err: any) {
@@ -294,18 +303,18 @@ class DashboardSummary extends Component<Props> {
       token: tokens?.[settings?.Token?.address],
       stake: tokens?.[settings?.Stake?.address],
     }
-    await this.getStakeInfo(contracts.stake);
+    await this.getStakeInfo();
     let { stake, stake_info, } = this.state;
 
     try {
       this.setState({ withdrawing: true })
-      let tx = await contracts.stake.connect(accounts[0]).withdrawStaking1(BigInt(stake_info.principal), 0)
+      let tx = await contracts.stake.connect(accounts[0]).withdrawStaking2_15d(BigInt(stake_info.principal), 0)
       let r = await tx.wait()
       notification.success({
         message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
           {t("Withdraw success")}</a>,
       })
-      this.getStakeInfo(contracts.stake)
+      this.getStakeInfo()
       this.setState({ withdrawing: false })
 
     } catch (err: any) {
@@ -348,11 +357,13 @@ class DashboardSummary extends Component<Props> {
         <DashboardSummaryStyled container spacing={{ xs: 2, md: 3 }}>
           <Grid item {...gridItemPros}>
             <BoxOutlineSecondary>
-              <Text>{t?.('group_2.card_1.title')}</Text>
-              <Text variant='h3'>{stake_info?.principal / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
+              <Text>{t?.('group_2.card_1.title')}
+                <Text variant='h3' margin={"10px"}>{stake_info?.principal / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
+              </Text>
 
-              <Text variant='h3'>{stake?.Staking1_total / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
-
+              <Text>{t?.('group_2.card_1.content')}
+                <Text variant='h3' margin={"10px"}>{stake_info?.Staking2_15d_total / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
+              </Text>
               <ButtonOutline onClick={() => window.location.href = "/"}
                 sx={{ margin: '0 auto', }}>
                 &nbsp;&nbsp;{t?.('group_2.card_1.button_label2')}&nbsp;&nbsp;</ButtonOutline>
