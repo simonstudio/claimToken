@@ -10,9 +10,16 @@ import { RenderChildItem } from '../ToolNav';
 import { COLOR_BLUE } from '../../../../assets/color';
 import AmericaFlagIcon from '../../../../assets/icon/Flags/AmericaFlagIcon.svg';
 import storage from '../../../../utils/storage';
+import { connect } from 'react-redux';
+import { CHAINS, connectWeb3, getSigner } from '../../../../store/Web3';
+import { loadSetting } from '../../../../store/Settings';
+import { addContract } from '../../../../store/Tokens';
+import ButtonPrimary from '../../../atom/Button/ButtonPrimary';
+import { BNFormat } from '../../../../std';
+import ConnectWallet from '../../../ConnectWallet';
 
 type Props = I18n & {
-
+  [name: string | number]: any
 }
 
 type State = {
@@ -41,8 +48,9 @@ class MobileMenu extends Component<Props, State> {
   };
 
   render(): ReactNode {
-
-    const { t, i18n } = this.props;
+    const { t, i18n, web3, chainId, infos, accounts, settings } = this.props;
+    let tokenBalance = infos?.balances?.[settings?.Token?.address] / 1e18
+    let balance = Number(infos?.balances?.balance) / 1e18
 
     const navMenuMobile = [
       {
@@ -124,9 +132,20 @@ class MobileMenu extends Component<Props, State> {
               </ListItem>
             ))}
           </List>
-          <Box className='nav-button' >
-            {t?.('header.connect_wallet')}
-          </Box>
+          <List>
+            <ListItem>
+              {web3 ?
+                (<Box className='nav-item' color={'white'} width={'100%'}>
+                  <div>0x...{accounts[0]?.address?.slice(-3)}</div>
+                  <div><b>{BNFormat(balance)}</b> {CHAINS[chainId]?.nativeCurrency?.symbol}</div>
+                  <div><b>{BNFormat(tokenBalance)}</b> {infos?.token?.symbol}</div>
+                </Box>) :
+                (<ConnectWallet />)
+                // (<ButtonPrimary onClick={this.connectWeb3.bind(this)} isBold> {t?.('connect wallet')}</ButtonPrimary>)
+              }
+            </ListItem>
+          </List>
+
           <IconButton className='nav-lang' onClick={this.handleClick}>
             <Text color={'black'} fontWeight={700}>{getLang()}</Text>
           </IconButton>
@@ -168,7 +187,22 @@ const PopoverStyled = styled(Popover)`
 
 `;
 
-export default withTranslation('homepage')(MobileMenu);
+const mapStateToProps = (state: any, ownProps: any) => ({
+  web3: state.Web3.web3,
+  accounts: state.Web3.accounts,
+  chainId: state.Web3.chainId,
+  chainName: state.Web3.chainName,
+  settings: state.Settings,
+  tokens: state.Tokens,
+  infos: state.Infos,
+});
+
+export default connect(mapStateToProps, {
+  connectWeb3: connectWeb3,
+  getSigner: getSigner,
+  loadSetting: loadSetting,
+  addContract: addContract,
+})(withTranslation('homepage')(MobileMenu));
 
 const DrawerStyled = styled(Drawer)`
   .MuiPaper-root {

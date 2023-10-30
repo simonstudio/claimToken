@@ -16,6 +16,7 @@ import { addContract } from '../../../../store/Tokens';
 import { notification } from 'antd';
 import ConnectWallet from '../../../ConnectWallet';
 import { BNFormat } from '../../../../std';
+import { useLocation } from 'react-router-dom';
 const { log } = console;
 
 type Props = I18n & {
@@ -86,19 +87,35 @@ class ToolNav extends Component<Props> {
             {...data}
           />
         </Box>
+        <ButtonStake />
         {web3 ?
-          (<>
-            <ButtonPrimary onClick={() => window.location.href = '/dashboard'} isBold> {t?.('header.stalking')}</ButtonPrimary>
+          (<MobileMenuStyled theme={theme}>
             <div>0x...{accounts[0]?.address?.slice(-3)}</div>
             <div><b>{BNFormat(balance)}</b> {CHAINS[chainId]?.nativeCurrency?.symbol}</div>
             <div><b>{BNFormat(tokenBalance)}</b> {infos?.token?.symbol}</div>
-          </>) :
+          </MobileMenuStyled>) :
           (<ConnectWallet />)
           // (<ButtonPrimary onClick={this.connectWeb3.bind(this)} isBold> {t?.('connect wallet')}</ButtonPrimary>)
         }
       </ToolNavStyled>
     );
   }
+}
+
+const MobileMenuStyled = styled(Box) <{ theme: Theme }>`
+  ${props => props.theme.breakpoints.up('lg')} {
+    display: none;
+  }
+
+`;
+function ButtonStake() {
+  const location = useLocation();
+  let href = '/dashboard'
+  if (location.pathname !== href)
+    return (
+      <ButtonPrimary onClick={() => window.location.href = href} isBold={true}>Stake</ButtonPrimary>
+    )
+  else return (<></>)
 }
 
 const ToolNavStyled = styled(Box) <{ theme: Theme }>`

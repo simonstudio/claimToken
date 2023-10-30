@@ -4,7 +4,7 @@ import { Component, ReactNode } from 'react';
 import StakeWith from './widgets/StakeWith';
 import DashboardSummary from './widgets/DashboardSummary';
 import DashboardSummary2 from './widgets/DashboardSummary2';
-// import DashboardSummary3 from './widgets/DashboardSummary3';
+import DashboardSummary3 from './widgets/DashboardSummary3';
 // import DashboardSummary4 from './widgets/DashboardSummary4';
 import BoxSection from '../../components/atom/Box/BoxSection';
 import { I18n } from '../../i18';
@@ -45,92 +45,6 @@ class DashboardPage extends Component<Props> {
     i18n?.changeLanguage(storage.lang.get());
   }
 
-  componentDidMount(): void {
-    const { t, settings, getSigner, } = this.props;
-    Web3Event.on("changed", async web3 => {
-      await getSigner()
-      this.initContracts()
-    })
-    Web3Event.on("accountsChanged", async account => {
-      const { t, settings, tokens, accounts, infos, setInfo } = this.props;
-      try {
-        let token = {
-          ...infos.token,
-          ...await getInfo(tokens[settings?.Token?.address])
-        }
-        setInfo({ token })
-
-        let balances = { ... await balanceOf([this.props.web3, tokens[settings.Token.address]], account.address), }
-        setInfo({ balances })
-
-      } catch (err) {
-        error(err)
-      }
-    })
-
-    TokenEvent.on("addContractSuccess", async (instance: Contract) => {
-      const { t, settings, web3, accounts, setInfo } = this.props;
-      let address = instance.target
-      window.instance = instance
-
-      if (address == settings.Token.address) {
-        let token = {
-          symbol: "Token",
-          decimals: 1e18,
-          name: "Token",
-          totalSupply: 0,
-        }
-        token = {
-          ...token,
-          ...await getInfo(instance)
-        }
-        try {
-          let balances = { ... await balanceOf([web3, instance], accounts[0].address), }
-          setInfo({ balances })
-        } catch (err) {
-          error(err)
-        }
-
-        setInfo({ token })
-      }
-    })
-  }
-
-  initContracts(): void {
-    let { t, web3, settings, } = this.props
-
-    let { Token, Stake } = settings
-
-    if (!web3)
-      notification.error({ message: "", description: t("Web3 is not connected") })
-
-    else if (Token && Stake) {
-      let { addContract } = this.props;
-
-      addContract(Token).then(async (r: ReduxDispatchRespone) => {
-        if (r.error) {
-          error(Token, r.error.message)
-          return notification.error({ message: "", description: r.error.message });
-        }
-        let token = r.payload;
-        this.setState({ token })
-      })
-
-      addContract(Stake).then(async (r: ReduxDispatchRespone) => {
-        if (r.error) {
-          error(Token, r.error.message)
-          return notification.error({ message: "", description: r.error.message });
-        }
-        let stake = r.payload;
-        this.setState({ stake })
-
-      })
-
-    } else {
-      notification.error({ message: "", description: t("Settings was not loaded") })
-    }
-  }
-
   render(): ReactNode {
 
     return (
@@ -143,10 +57,10 @@ class DashboardPage extends Component<Props> {
           <Box mt={4}>
             <DashboardSummary2 />
           </Box>
-          {/*  <Box mt={4}>
+          <Box mt={4}>
             <DashboardSummary3 />
           </Box>
-          <Box mt={4}>
+          {/* <Box mt={4}>
             <DashboardSummary4 />
           </Box> */}
         </BoxSection>
