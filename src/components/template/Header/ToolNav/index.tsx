@@ -103,7 +103,7 @@ class ToolNav extends Component<Props> {
 }
 
 const MobileMenuStyled = styled(Box) <{ theme: Theme }>`
-  ${props => props.theme.breakpoints.up('lg')} {
+  ${props => props.theme.breakpoints.down('lg')} {
     display: none;
   }
 
