@@ -22,6 +22,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-claim_token.zip
-claim_token.rar
-web.zip
+/claim_token.zip
+/claim_token.rar
+/web.zip
