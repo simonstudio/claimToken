@@ -935,6 +935,7 @@ contract Stake is Pausable, Ownable {
         view
         returns (
             uint256 _token,
+            uint256 timeFirstStake,
             uint256 timeStart,
             uint256 accumulated_interest,
             uint256 _timestamp
@@ -949,7 +950,7 @@ contract Stake is Pausable, Ownable {
                 Staking2_min) *
             ((timestamp - sk.timeStart) / Staking2_period);
 
-        return (sk.token, sk.timeStart, _accumulated_interest, timestamp);
+        return (sk.token, sk.timeFirstStake, sk.timeStart, _accumulated_interest, timestamp);
     }
 
     function withdrawStaking2_15d(uint256 principal, uint256 interest)
@@ -1040,6 +1041,7 @@ contract Stake is Pausable, Ownable {
         view
         returns (
             uint256 _token,
+            uint256 timeFirstStake,
             uint256 timeStart,
             uint256 accumulated_interest,
             uint256 _timestamp
@@ -1054,7 +1056,7 @@ contract Stake is Pausable, Ownable {
                 Staking2_min) *
             ((timestamp - sk.timeStart) / Staking2_period);
 
-        return (sk.token, sk.timeStart, _accumulated_interest, timestamp);
+        return (sk.token, sk.timeFirstStake, sk.timeStart, _accumulated_interest, timestamp);
     }
 
     function withdrawStaking2_30d(uint256 principal, uint256 interest)
