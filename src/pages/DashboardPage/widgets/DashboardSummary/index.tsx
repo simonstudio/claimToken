@@ -121,7 +121,6 @@ class DashboardSummary extends Component<Props> {
 
     let instance = tokens?.[settings?.Stake?.address]
     if (!instance) {
-      error(instance)
       return;
     }
 

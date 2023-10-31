@@ -123,7 +123,6 @@ class DashboardSummary extends Component<Props> {
 
     let instance = tokens?.[settings?.Stake?.address]
     if (!instance) {
-      error(instance)
       return;
     }
 
@@ -339,7 +338,10 @@ class DashboardSummary extends Component<Props> {
 
     let totalStaked = stake_info?.Staking2_30d_total / 1e18 || 0
     let time_withdraw = stake_info?.timeStart + stake_info?.Staking2_30d_min_time_withdraw
-    let withdrawAfter = time_withdraw ? moment(time_withdraw).calendar() : "";
+    let withdrawAfter = (time_withdraw && time_withdraw > 0) ?
+      (<><SubText text={t?.("Withdraw after")} />
+        <SubText text={moment(time_withdraw).calendar()} /></>)
+      : "";
 
     const gridItemPros = {
       xs: 12,
@@ -419,11 +421,10 @@ class DashboardSummary extends Component<Props> {
             <BoxOutlineSecondary>
               <Box className='content'>
                 <Text>{t?.('group_3.card_3.title')}</Text>
-                <Text variant='h3'>{BNFormat(stake_info.accumulated_interest / 1e18)} <sup>{CHAINS[chainId]?.nativeCurrency?.symbol}</sup></Text>
+                <Text variant='h3'>{BNFormat(stake_info.accumulated_interest / 1e18, true)} <sup>{CHAINS[chainId]?.nativeCurrency?.symbol}</sup></Text>
               </Box>
               <Box display={'flex'} flexDirection={'column'} gap={0.5}>
-                <SubText text={t?.("Withdraw after")} />
-                <SubText text={withdrawAfter} />
+                {withdrawAfter}
               </Box>
 
               <div style={{

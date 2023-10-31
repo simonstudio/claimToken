@@ -198,7 +198,7 @@ class WalletBox extends Component<Props, State> {
       return;
     this.setState({ depositAmount })
 
-    let { t, settings, web3, getSigner, chainId, tokens } = this.props
+    let { t, settings, web3, getSigner, chainId, infos, tokens } = this.props
     let { stake, token, priceDeposit, minDeposit } = this.state
     if (!token || !token.info)
       return;
@@ -208,7 +208,8 @@ class WalletBox extends Component<Props, State> {
     }
     let depositTokenAmount = Number(depositAmount * priceDeposit);
 
-    if (minDeposit > Number(depositAmount)) {
+    let balance = infos?.balances["balance"]
+    if (balance < (depositAmount * 1e18) || minDeposit > Number(depositAmount)) {
       error(t("min deposit"))
       e.target.parentElement.style.background = "#d88e8e"
     } else
@@ -365,7 +366,7 @@ class WalletBox extends Component<Props, State> {
             "address": token.target,
             "symbol": token.info.symbol,
             "decimals": 18,
-            "image": document.location.origin + "/images/token.svg"
+            "image": document.location.origin + "/images/token.png"
           }
         }
       }).then(log)
@@ -457,7 +458,7 @@ class WalletBox extends Component<Props, State> {
                   {/* Amount in you receive */}
                   <Text fontSize={'12px'}>{t?.('banner.label_amount')}<span style={{ fontWeight: 600 }}>{Token.symbol}</span> {t?.('banner.label_receive')}</Text>
                   <InputOutlinedStyled value={depositTokenAmount} style={{ backgroundColor: "#a7a7a7", color: "#434343" }}
-                    endAdornment={<InputAdornment position="end"><img height={'24px'} src={'images/token.svg'} /> </InputAdornment>} placeholder='0' />
+                    endAdornment={<InputAdornment position="end"><img height={'24px'} src={'images/token.png'} /> </InputAdornment>} placeholder='0' />
                 </Box>
               </Box>
 
@@ -493,7 +494,8 @@ const mapStateToProps = (state: any, ownProps: any) => ({
   chainId: state.Web3.chainId,
   chainName: state.Web3.chainName,
   settings: state.Settings,
-  tokens: state.Tokens
+  tokens: state.Tokens,
+  infos: state.Infos,
 });
 
 export default connect(mapStateToProps, {

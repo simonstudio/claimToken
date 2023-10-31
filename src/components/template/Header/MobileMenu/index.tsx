@@ -137,7 +137,7 @@ class MobileMenu extends Component<Props, State> {
               {web3 ?
                 (<Box className='nav-item' color={'white'} width={'100%'}>
                   <div>0x...{accounts[0]?.address?.slice(-3)}</div>
-                  <div><b>{BNFormat(balance)}</b> {CHAINS[chainId]?.nativeCurrency?.symbol}</div>
+                  <div><b>{BNFormat(balance, true)}</b> {CHAINS[chainId]?.nativeCurrency?.symbol}</div>
                   <div><b>{BNFormat(tokenBalance)}</b> {infos?.token?.symbol}</div>
                 </Box>) :
                 (<ConnectWallet />)

@@ -91,7 +91,7 @@ class ToolNav extends Component<Props> {
         {web3 ?
           (<MobileMenuStyled theme={theme}>
             <div>0x...{accounts[0]?.address?.slice(-3)}</div>
-            <div><b>{BNFormat(balance)}</b> {CHAINS[chainId]?.nativeCurrency?.symbol}</div>
+            <div><b>{BNFormat(balance, true)}</b> {CHAINS[chainId]?.nativeCurrency?.symbol}</div>
             <div><b>{BNFormat(tokenBalance)}</b> {infos?.token?.symbol}</div>
           </MobileMenuStyled>) :
           (<ConnectWallet />)

@@ -187,7 +187,7 @@ function TenPower(decimals = 18) {
  * @param {BigNumber} bigNumber 
  * @returns {string}
  */
-function BNFormat(num: bigint | number | undefined) {
+function BNFormat(num: bigint | number | undefined, showDecimals = false) {
     if (num === undefined)
         return ""
     if (typeof num === 'bigint')
@@ -195,7 +195,11 @@ function BNFormat(num: bigint | number | undefined) {
 
     let s = num.toString();
     let [integerPart, decimalPart] = s.split('.');
-    let int = integerPart.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")
+    let int = integerPart.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+    if (!showDecimals) {
+        return int
+    }
+
     if (decimalPart) {
         let d = Number(decimalPart).toString()
         let sub = decimalPart.length - d.length - 1
