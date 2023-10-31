@@ -17,6 +17,8 @@ import { Contract, JsonRpcSigner } from 'ethers';
 import { InputOutlinedStyled } from '../../../HomePage/widgets/Banner';
 import { setInfo } from '../../../../store/Infos';
 import "../dash.scss";
+import { BNFormat } from '../../../../std';
+import moment from 'moment';
 
 const { log, error, } = console;
 
@@ -31,8 +33,8 @@ type State = {
 function mapResult(result: any) {
   return {
     principal: Number(result[0]),
-    timeFirstStake: Number(result[1]),
-    timeStart: Number(result[2]),
+    timeFirstStake: Number(result[1]) * 1000,
+    timeStart: Number(result[2]) * 1000,
     accumulated_interest: Number(result[3]),
     _timestamp: Number(result[4]) * 1000,
   }
@@ -128,9 +130,9 @@ class DashboardSummary extends Component<Props> {
     stake_info = {
       ...stake_info,
       Staking2_min: Number(await instance.Staking2_min()),
-      Staking2_period: Number(await instance.Staking2_period()),
+      Staking2_period: Number(await instance.Staking2_period()) * 1000,
       Staking2_15d_period_profit: Number(await instance.Staking2_15d_period_profit()),
-      Staking2_15d_min_time_withdraw: Number(await instance.Staking2_15d_min_time_withdraw()),
+      Staking2_15d_min_time_withdraw: Number(await instance.Staking2_15d_min_time_withdraw()) * 1000,
       Staking2_15d_total: Number(await instance.Staking2_15d_total()),
     }
 
@@ -332,9 +334,13 @@ class DashboardSummary extends Component<Props> {
 
 
   render(): ReactNode {
-    const { t, tokens, settings, infos } = this.props;
+    const { t, tokens, settings, infos, chainId } = this.props;
     let { stake, stake_info, aprroving, withdrawing, } = this.state;
     let aprrove = stake.allowance > infos?.balances?.[settings?.Token?.address]
+
+    let totalStaked = stake_info?.Staking2_15d_total / 1e18 || 0
+    let time_withdraw = stake_info?.timeStart + stake_info?.Staking2_15d_min_time_withdraw
+    let withdrawAfter = time_withdraw ? moment(time_withdraw).calendar() : "";
 
     const gridItemPros = {
       xs: 12,
@@ -358,11 +364,11 @@ class DashboardSummary extends Component<Props> {
           <Grid item {...gridItemPros}>
             <BoxOutlineSecondary>
               <Text>{t?.('group_2.card_1.title')}
-                <Text variant='h3' margin={"10px"}>{stake_info?.principal / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
+                <Text variant='h3' margin={"10px"}>{BNFormat(stake_info?.principal / 1e18)}<sup>{infos?.token?.symbol}</sup></Text>
               </Text>
 
               <Text>{t?.('group_2.card_1.content')}
-                <Text variant='h3' margin={"10px"}>{stake_info?.Staking2_15d_total / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
+                <Text variant='h3' margin={"10px"}>{BNFormat(totalStaked)}<sup>{infos?.token?.symbol}</sup></Text>
               </Text>
               <ButtonOutline onClick={() => window.location.href = "/"}
                 sx={{ margin: '0 auto', }}>
@@ -414,8 +420,13 @@ class DashboardSummary extends Component<Props> {
             <BoxOutlineSecondary>
               <Box className='content'>
                 <Text>{t?.('group_2.card_3.title')}</Text>
-                <Text variant='h3'>{stake_info.accumulated_interest / 1e18} <sup>{infos?.token?.symbol}</sup></Text>
+                <Text variant='h3'>{BNFormat(stake_info.accumulated_interest / 1e18)} <sup>{CHAINS[chainId]?.nativeCurrency?.symbol}</sup></Text>
               </Box>
+              <Box display={'flex'} flexDirection={'column'} gap={0.5}>
+                <SubText text={t?.("Withdraw after")} />
+                <SubText text={withdrawAfter} />
+              </Box>
+
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',

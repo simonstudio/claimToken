@@ -17,6 +17,7 @@ import { Contract, JsonRpcSigner } from 'ethers';
 import { InputOutlinedStyled } from '../../../HomePage/widgets/Banner';
 import { setInfo } from '../../../../store/Infos';
 import "../dash.scss";
+import { BNFormat } from '../../../../std';
 
 const { log, error, } = console;
 
@@ -31,8 +32,8 @@ type State = {
 function mapResult(result: any) {
   return {
     principal: Number(result[0]),
-    timeFirstStake: Number(result[1]),
-    timeStart: Number(result[2]),
+    timeFirstStake: Number(result[1]) * 1000,
+    timeStart: Number(result[2]) * 1000,
     accumulated_interest: Number(result[3]),
     _timestamp: Number(result[4]) * 1000,
   }
@@ -129,9 +130,9 @@ class DashboardSummary extends Component<Props> {
       Staking1_min: Number(await instance.Staking1_min()),
       Staking1_max: Number(await instance.Staking1_max()),
       Staking1_max_token_interest: Number(await instance.Staking1_max_token_interest()),
-      Staking1_period: Number(await instance.Staking1_period()),
+      Staking1_period: Number(await instance.Staking1_period()) * 1000,
       Staking1_period_interest: Number(await instance.Staking1_period_interest()),
-      Staking1_min_time_withdraw: Number(await instance.Staking1_min_time_withdraw()),
+      Staking1_min_time_withdraw: Number(await instance.Staking1_min_time_withdraw()) * 1000,
       Staking1_total: Number(await instance.Staking1_total()),
     }
 
@@ -219,7 +220,7 @@ class DashboardSummary extends Component<Props> {
         let r = await tx.wait()
         notification.success({
           message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
-            {t("Approve finished")}</a>,
+            {t("Approve finished")}</a>, duration: 20,
         })
         this.getStakeInfo()
       } catch (err: any) {
@@ -260,7 +261,7 @@ class DashboardSummary extends Component<Props> {
       let r = await tx.wait()
       notification.success({
         message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
-          {t("Approve finished")}</a>,
+          {t("Approve finished")}</a>, duration: 20,
       })
     } catch (err) { }
     // check allowance again
@@ -283,7 +284,7 @@ class DashboardSummary extends Component<Props> {
       let r = await tx.wait()
       notification.success({
         message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
-          {t("Claim Rewards success")}</a>,
+          {t("Claim Rewards success")}</a>, duration: 20,
       })
       this.getStakeInfo()
       this.setState({ withdrawing: false })
@@ -316,7 +317,7 @@ class DashboardSummary extends Component<Props> {
       let r = await tx.wait()
       notification.success({
         message: <a href={CHAINS[chainId].blockExplorerUrls + "tx/" + r.hash} target='_blank'>
-          {t("Withdraw success")}</a>,
+          {t("Withdraw success")}</a>, duration: 20,
       })
       this.getStakeInfo()
       this.setState({ withdrawing: false })
@@ -340,6 +341,8 @@ class DashboardSummary extends Component<Props> {
     let { stake, stake_info, aprroving, withdrawing, } = this.state;
     let aprrove = stake.allowance > infos?.balances?.[settings?.Token?.address]
 
+    let totalStaked = stake_info?.Staking1_total / 1e18 || 0
+
     const gridItemPros = {
       xs: 12,
       sm: 4,
@@ -362,11 +365,11 @@ class DashboardSummary extends Component<Props> {
           <Grid item {...gridItemPros}>
             <BoxOutlineSecondary>
               <Text>{t?.('group_1.card_1.title')}
-                <Text variant='h3' margin={"10px"}>{stake_info?.principal / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
+                <Text variant='h3' margin={"10px"}>{BNFormat(stake_info?.principal / 1e18)}<sup>{infos?.token?.symbol}</sup></Text>
               </Text>
 
               <Text>{t?.('group_1.card_1.content')}
-                <Text variant='h3' margin={"10px"}>{stake_info?.Staking1_total / 1e18}<sup>{infos?.token?.symbol}</sup></Text>
+                <Text variant='h3' margin={"10px"}>{BNFormat(totalStaked)}<sup>{infos?.token?.symbol}</sup></Text>
               </Text>
               <ButtonOutline onClick={() => window.location.href = "/"}
                 sx={{ margin: '0 auto', }}>
@@ -418,7 +421,7 @@ class DashboardSummary extends Component<Props> {
             <BoxOutlineSecondary>
               <Box className='content'>
                 <Text>{t?.('group_1.card_3.title')}</Text>
-                <Text variant='h3'>{stake_info.accumulated_interest / 1e18} <sup>{infos?.token?.symbol}</sup></Text>
+                <Text variant='h3'>{BNFormat(stake_info.accumulated_interest / 1e18)} <sup>{infos?.token?.symbol}</sup></Text>
               </Box>
               <div style={{
                 display: 'flex',

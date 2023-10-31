@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import { withTranslation } from 'react-i18next';
 import { loadSetting } from './store/Settings';
-import { Web3Event, connectWeb3, getSigner } from './store/Web3';
+import { CHAINS, Web3Event, connectWeb3, getSigner, switchChain } from './store/Web3';
 import { connect } from 'react-redux';
 import { log } from './std';
 import { ReduxDispatchRespone } from './store';
@@ -14,6 +14,7 @@ import { notification } from 'antd';
 import { TokenEvent, addContract, balanceOf, getInfo } from './store/Tokens';
 import { setInfo } from './store/Infos';
 import { Contract } from 'ethers';
+import ButtonOutline from './components/atom/Button/ButtonOutline';
 
 
 const { error } = console;
@@ -42,12 +43,30 @@ class App extends Component<Props> {
   componentDidMount(): void {
     notification.config({
       placement: 'bottomLeft',
+      duration: 7,
     });
 
-    const { t, settings, getSigner, } = this.props;
-    Web3Event.on("changed", async web3 => {
-      await getSigner()
-      this.initContracts()
+    const { t, settings, loadSetting, getSigner, } = this.props;
+    Web3Event.on("changed", async (args) => {
+      const { t, settings, loadSetting, switchChain, getSigner, } = this.props;
+
+      let { web3, chainId } = args
+      log(chainId)
+      if (chainId && settings?.chainId) {
+        if (chainId !== settings?.chainId) {
+          let chainName = CHAINS[settings?.chainId]?.nativeCurrency?.name
+
+          notification.error({
+            message: t("Please switch to"),
+            description: <ButtonOutline onClick={() => switchChain(settings?.chainId)}>{chainName}</ButtonOutline>,
+            duration: 10 * 60,
+          })
+
+        } else {
+          await getSigner()
+          this.initContracts()
+        }
+      }
     })
 
     TokenEvent.on("addContractSuccess", async (instance: Contract) => {
@@ -77,7 +96,15 @@ class App extends Component<Props> {
       }
     })
 
-    this.props.loadSetting()
+    loadSetting().then((args: any) => {
+      if (args.error) {
+        return notification.error({ message: "", description: args.error });
+      }
+      let { before, after } = args.payload
+      if (after?.chainId) {
+        log(CHAINS[after?.chainId]?.nativeCurrency?.name)
+      }
+    })
   }
 
   initContracts(): void {
@@ -147,6 +174,7 @@ const mapStateToProps = (state: any, ownProps: any) => ({
 
 export default connect(mapStateToProps, {
   connectWeb3: connectWeb3,
+  switchChain: switchChain,
   getSigner: getSigner,
   loadSetting: loadSetting,
   setInfo: setInfo,

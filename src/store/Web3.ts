@@ -124,7 +124,7 @@ export const CHAINS: { [id: string | number]: any } = {
         dev: dev.MAINNET,
     },
 
-    arbitrum: {
+    42161: {
         id: 42161,
         nativeCurrency: {
             name: 'Arbitrum', decimals: 18, symbol: 'ARB'
@@ -136,7 +136,7 @@ export const CHAINS: { [id: string | number]: any } = {
         iconUrls: "https://testnet.arbiscan.io/images/svg/brands/arbitrum.svg",
         dev: dev.MAINNET,
     },
-    arbitrumTest: {
+    421613: {
         id: 421613,
         nativeCurrency: {
             name: 'Arbitrum Test', decimals: 18, symbol: 'ARB'
@@ -276,7 +276,7 @@ async function _switchChain(args: any, thunkAPI: GetThunkAPI<AsyncThunkConfig>):
         try {
             await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId: web3.utils.toHex(chainId) }]
+                params: [{ chainId: numberToHex(chainId) }]
             })
             return window.ethereum.networkVersion;
         } catch (err: any) {
@@ -375,7 +375,7 @@ export const web3Slice = createSlice({
 
             }
             setTimeout(() => {
-                Web3Event.emit("changed", action.payload.web3)
+                Web3Event.emit("changed", action.payload)
             }, 100);
         });
 

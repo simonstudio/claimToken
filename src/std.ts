@@ -1,6 +1,7 @@
 // import Web3 from 'web3';
 import { notification } from 'antd';
 import BigNumber from 'bignumber.js';
+import React, { createElement } from 'react';
 
 declare global {
     interface Window {
@@ -211,9 +212,16 @@ function BNFormat(num: bigint | number | undefined) {
         let d_slice = Number(d.slice(0, d_length) + '.' + d.slice(d_length))
         d = parseFloat('0.' + Math.floor(d_slice)).toString().slice(2)
 
-        if (sub > 0)
-            return `${int}.0<sub>${sub}</sub>${d}`;
-        else if (sub == 0)
+        if (sub > 0) {
+            return createElement("label", null,
+                int,
+                ".0",
+                createElement("sub", null, sub),
+                d,
+            )
+            // return `${int}.0<sub>${sub}</sub>${d}`;
+
+        } else if (sub == 0)
             return `${int}.0${d}`;
         else
             return `${int}.${d}`;

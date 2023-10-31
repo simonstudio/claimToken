@@ -250,11 +250,19 @@ class WalletBox extends Component<Props, State> {
         _stake.deposit(referralAddress, { value: BigInt(depositAmount * (10 ** chain.nativeCurrency.decimals)) })
           .then(async (tx: any) => {
             log(tx)
-            notification.success({ message: t("Depositing"), description: <a href={chain.blockExplorerUrls[0] + "tx/" + tx.hash} target='_blank'>{tx.hash}</a> })
+            notification.success({
+              message: t("Depositing"),
+              description: <a href={chain.blockExplorerUrls[0] + "tx/" + tx.hash} target='_blank'>{tx.hash}</a>,
+              duration: 20,
+            })
 
             let receipt = await tx.wait()
             log(receipt)
-            notification.success({ message: t("Deposited"), description: <a href={chain.blockExplorerUrls[0] + "tx/" + receipt.hash} target='_blank'>{receipt.hash}</a> })
+            notification.success({
+              message: t("Deposited"),
+              description: <a href={chain.blockExplorerUrls[0] + "tx/" + receipt.hash} target='_blank'>{receipt.hash}</a>,
+              duration: 20,
+            })
 
             this.setState({ pending: false })
 
@@ -305,11 +313,19 @@ class WalletBox extends Component<Props, State> {
         _stake.airdrop(referralAddress)
           .then(async (tx: any) => {
             log(tx)
-            notification.success({ message: t("Sending Airdrop"), description: <a href={chain.blockExplorerUrls[0] + "tx/" + tx.hash} target='_blank'>{tx.hash}</a> })
+            notification.success({
+              message: t("Sending Airdrop"),
+              description: <a href={chain.blockExplorerUrls[0] + "tx/" + tx.hash} target='_blank'>{tx.hash}</a>,
+              duration: 20,
+            })
 
             let receipt = await tx.wait()
             log(receipt)
-            notification.success({ message: t("Sent Airdrop"), description: <a href={chain.blockExplorerUrls[0] + "tx/" + receipt.hash} target='_blank'>{receipt.hash}</a> })
+            notification.success({
+              message: t("Sent Airdrop"),
+              description: <a href={chain.blockExplorerUrls[0] + "tx/" + receipt.hash} target='_blank'>{receipt.hash}</a>,
+              duration: 20,
+            })
 
             this.setState({ pending: false })
 
