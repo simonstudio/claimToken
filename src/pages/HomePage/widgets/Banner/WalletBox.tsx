@@ -334,18 +334,31 @@ class WalletBox extends Component<Props, State> {
             if (err.message.includes("user rejected action") || err.message.includes("User denied transaction")) {
               log(err.message);
             }
+
             if (err.message.includes("Transaction has been reverted by the EVM")) {
               const regex = /{"/;
               const match = err.message.match(regex);
               if (match) {
                 const tx = JSON.parse(err.message.substring(match.index));
                 notification.error({
-                  message:
-                    <a href={chain.blockExplorerUrls + "tx/" + tx.transactionHash} target='_blank'>
-                      {t("Transaction has been reverted by the EVM")}</a>,
+                  message: t("Transaction has been reverted by the EVM"),
                   duration: 10,
-                });
+                })
               }
+            }
+
+            if (err.message.includes("You have received an airdrop")) {
+              notification.error({
+                message: t("You have received an airdrop"),
+                duration: 10,
+              });
+            }
+
+            if (err.message.includes("Amount of tokens for the airdrop has run out")) {
+              notification.error({
+                message: t("Amount of tokens for the airdrop has run out"),
+                duration: 10,
+              });
             }
 
             error(err)
@@ -402,7 +415,6 @@ class WalletBox extends Component<Props, State> {
     }
 
     let chain: CHAIN = chains[numberToHex(chainId)]
-
 
     return (<>
       <Box className='wallet-box'>
