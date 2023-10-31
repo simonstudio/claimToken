@@ -152,15 +152,28 @@ class DashboardSummary extends Component<Props> {
 
   async onStakeAmount(e: any) {
     let { value } = e.target
-    let stake = await this.checkStaking(Number(value))
-    this.setState({ stake })
+    if (window.ethereum)
+      try {
+        let stake = await this.checkStaking(Number(value))
+        this.setState({ stake })
+
+      } catch (err) {
+      }
   }
 
   async checkStaking(value: number) {
     let { stake, stake_info, } = this.state;
-    let { t, settings, infos, accounts, tokens, } = this.props;
+    let { t, web3, settings, connectWeb3, infos, accounts, tokens, } = this.props;
+    if (!web3) {
+      return connectWeb3()
+    }
+    if (!accounts || accounts.length == 0) {
+      try {
+        return getSigner()
+      } catch (err) { error(err); return; }
+    }
 
-    stake.amount = value
+    stake.amount = value < 0 ? 0 : value;
     value *= 1e18
     let balance = infos?.balances?.[settings?.Token?.address] || undefined
 
