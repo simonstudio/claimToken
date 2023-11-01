@@ -87,7 +87,10 @@ class ToolNav extends Component<Props> {
             {...data}
           />
         </Box>
-        <ButtonStake />
+        <ButtonStakeStyled theme={theme}>
+          <ButtonStake theme={theme} />
+        </ButtonStakeStyled>
+        {/* <ButtonPrimary style={buttonStake} onClick={() => window.location.href = href} isBold={true}>Stake</ButtonPrimary> */}
         {web3 ?
           (<MobileMenuStyled theme={theme}>
             <div>0x...{accounts[0]?.address?.slice(-3)}</div>
@@ -106,9 +109,15 @@ const MobileMenuStyled = styled(Box) <{ theme: Theme }>`
   ${props => props.theme.breakpoints.down('lg')} {
     display: none;
   }
-
 `;
-function ButtonStake() {
+
+const ButtonStakeStyled = styled(Box) <{ theme: Theme }>`
+  ${props => props.theme.breakpoints.down('lg')} {
+    display: none;
+  }
+`;
+
+function ButtonStake(props: Props) {
   const location = useLocation();
   let href = '/dashboard'
   if (location.pathname !== href)

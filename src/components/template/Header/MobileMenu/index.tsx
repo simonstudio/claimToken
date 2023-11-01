@@ -58,19 +58,24 @@ class MobileMenu extends Component<Props, State> {
         onclick: () => window.location.href = '/dashboard'
       },
       {
-        'title': t?.('header.community')
+        'title': t?.('header.community'),
+        onclick: () => window.location.href = '/#community'
       },
       {
-        'title': t?.('header.how_to_buy')
+        'title': t?.('header.how_to_buy'),
+        onclick: () => window.location.href = '/#howtobuy'
       },
       {
-        'title': t?.('header.tokenomics')
+        'title': t?.('header.tokenomics'),
+        onclick: () => window.location.href = '/#tokenomics'
       },
       {
-        'title': t?.('header.airdrop')
+        'title': t?.('header.airdrop'),
+        onclick: () => window.location.href = '/#airdrop'
       },
       {
-        'title': t?.('header.media')
+        'title': t?.('header.media'),
+        onclick: () => window.location.href = '/#media'
       },
     ];
 

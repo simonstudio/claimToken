@@ -81,9 +81,14 @@ class App extends Component<Props> {
           name: "Token",
           totalSupply: 0,
         }
-        token = {
-          ...token,
-          ...await getInfo(instance)
+        try {
+          token = {
+            ...token,
+            ...await getInfo(instance)
+          }
+          setInfo({ token })
+        } catch (err) {
+          error(err)
         }
         try {
           let balances = { ... await balanceOf([web3, instance], accounts[0].address), }
@@ -92,7 +97,6 @@ class App extends Component<Props> {
           error(err)
         }
 
-        setInfo({ token })
       }
     })
 

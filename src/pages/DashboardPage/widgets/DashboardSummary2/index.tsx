@@ -352,6 +352,7 @@ class DashboardSummary extends Component<Props> {
 
     let totalStaked = stake_info?.Staking2_15d_total / 1e18 || 0
     let time_withdraw = stake_info?.timeStart + stake_info?.Staking2_15d_min_time_withdraw
+    log(time_withdraw)
     let withdrawAfter = (time_withdraw && time_withdraw > 0) ?
       (<><SubText text={t?.("Withdraw after")} />
         <SubText text={moment(time_withdraw).calendar()} /></>)

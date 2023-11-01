@@ -65,7 +65,7 @@ var count = 0;
 class WalletBox extends Component<Props, State> {
   state: State = {
     pending: false,
-    priceDeposit: 1_500_000,
+    priceDeposit: 0,
     depositAmount: 0, depositTokenAmount: 0, minDeposit: 0,
     token: undefined,
     stake: undefined,
@@ -96,7 +96,11 @@ class WalletBox extends Component<Props, State> {
   connectWeb3(e?: any): void {
     let { connectWeb3, settings, getSigner } = this.props;
 
-    connectWeb3().then(async (r: { payload: { web3: any, chainId: BigInt } }) => {
+    connectWeb3().then(async (r: { error: any, payload: { web3: any, chainId: BigInt } }) => {
+      if (r.error) {
+        error(r.error);
+        return;
+      }
       let { web3 } = r.payload
       if (web3) {
         let r: ReduxDispatchRespone = await getSigner()
@@ -133,9 +137,11 @@ class WalletBox extends Component<Props, State> {
           error(Token, r.error.message)
           return notification.error({ message: "", description: r.error.message });
         }
-        let token = r.payload;
-        token.info = await getInfo(token)
-        this.setState({ token }, this.getInfo)
+        try {
+          let token = r.payload;
+          token.info = await getInfo(token)
+          this.setState({ token }, this.getInfo)
+        } catch (err) { }
       })
 
       addContract(Stake).then(async (r: ReduxDispatchRespone) => {
@@ -143,11 +149,13 @@ class WalletBox extends Component<Props, State> {
           error(Token, r.error.message)
           return notification.error({ message: "", description: r.error.message });
         }
-        let stake = r.payload;
-        this.setState({ stake }, this.getInfo)
+        try {
+          let stake = r.payload;
+          this.setState({ stake }, this.getInfo)
 
-        let priceDeposit = Number(await stake.priceDeposit());
-        this.setState({ priceDeposit });
+          let priceDeposit = Number(await stake.priceDeposit());
+          this.setState({ priceDeposit });
+        } catch (err) { }
       })
 
     } else {
@@ -198,17 +206,24 @@ class WalletBox extends Component<Props, State> {
       return;
     this.setState({ depositAmount })
 
-    let { t, settings, web3, getSigner, chainId, infos, tokens } = this.props
-    let { stake, token, priceDeposit, minDeposit } = this.state
-    if (!token || !token.info)
+    let { t, settings, web3, getSigner, chainId, infos, tokens, } = this.props
+    let { priceDeposit, minDeposit } = this.state
+
+    let token = tokens[settings?.Token?.address],
+      stake = tokens[settings?.Stake?.address];
+
+    if (!token || !infos.token) {
+      error(token, infos.token)
       return;
+    }
 
     if (minDeposit <= 0) {
-      minDeposit = Number(await stake.minDeposit()) / token.info.decimals;
+      minDeposit = Number(await stake.minDeposit()) / infos.token.decimals;
     }
     let depositTokenAmount = Number(depositAmount * priceDeposit);
 
     let balance = infos?.balances["balance"]
+    log(balance, depositAmount)
     if (balance < (depositAmount * 1e18) || minDeposit > Number(depositAmount)) {
       error(t("min deposit"))
       e.target.parentElement.style.background = "#d88e8e"
@@ -294,7 +309,10 @@ class WalletBox extends Component<Props, State> {
 
   async airdrop(a: any) {
     let { t, settings, web3, getSigner, chainId, tokens } = this.props
-    let { stake, token, referralAddress, minDeposit, depositAmount } = this.state
+    let { referralAddress, minDeposit, depositAmount } = this.state
+
+    let token = tokens[settings?.Token?.address],
+      stake = tokens[settings?.Stake?.address];
 
     if (token && stake) {
       let r: ReduxDispatchRespone = await getSigner()
@@ -365,6 +383,8 @@ class WalletBox extends Component<Props, State> {
             this.setState({ pending: false })
           })
       }
+    } else {
+      log(token, stake,)
     }
   }
 
@@ -387,9 +407,17 @@ class WalletBox extends Component<Props, State> {
   }
 
   copyRefLink(e: any) {
-    const { t } = this.props;
-    navigator.clipboard.writeText(this.state.linkRef);
-    notification.success({ message: t("copy success"), description: this.state.linkRef })
+    const { t, accounts } = this.props;
+    try {
+
+      let linkRef = document.location.origin + "/?ref=" + accounts[0].address
+
+      navigator.clipboard.writeText(linkRef);
+      notification.success({ message: t("copy success"), description: linkRef })
+
+    } catch (err) {
+
+    }
   }
 
 
@@ -417,7 +445,7 @@ class WalletBox extends Component<Props, State> {
     let chain: CHAIN = chains[numberToHex(chainId)]
 
     return (<>
-      <Box className='wallet-box'>
+      <Box className='wallet-box' id="airdrop">
         <Box className='wallet-box-header' color={'white'}>
           <Text textAlign={'center'} fontSize={'18px'}>{t?.('banner.title')}</Text>
           <Countdown
@@ -425,7 +453,7 @@ class WalletBox extends Component<Props, State> {
             renderer={({ days, hours, minutes, seconds, completed }) => {
               if (completed) {
                 // Render a completed state
-                return 'Finished';
+                return '';
               } else {
                 // Render a countdown
                 return (

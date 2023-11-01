@@ -68,7 +68,7 @@ class AppLayout extends Component<Props, State> {
           date={endDateTime}
           renderer={({ days, hours, minutes, seconds, completed }) => {
             if (completed) {
-              return 'Finished';
+              return '';
             } else {
               return (
                 <Box
