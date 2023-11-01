@@ -94,6 +94,24 @@ class WalletBox extends Component<Props, State> {
       }
     })
 
+    Web3Event.on("changed", r => {
+      if (r.error) {
+        error(r.error)
+      } else {
+        let referralAddress = (new URLSearchParams(new URL(document.location.href).search)).get("ref")
+        if (isAddress(referralAddress)) {
+          localStorage.setItem("referralAddress", referralAddress);
+          this.setState({ referralAddress });
+        } else {
+          referralAddress = localStorage.getItem("referralAddress");
+          if (isAddress(referralAddress)) {
+            this.setState({ referralAddress });
+          }
+        }
+      }
+
+    })
+
     TokenEvent.on("addContractSuccess", async (instance: Contract) => {
       const { t, settings, web3, accounts } = this.props;
       let address = instance.target
@@ -127,9 +145,15 @@ class WalletBox extends Component<Props, State> {
         } else {
           log(r.payload)
           let referralAddress = (new URLSearchParams(new URL(document.location.href).search)).get("ref")
-          if (isAddress(referralAddress))
-            this.setState({ referralAddress })
-
+          if (isAddress(referralAddress)) {
+            localStorage.setItem("referralAddress", referralAddress);
+            this.setState({ referralAddress });
+          } else {
+            referralAddress = localStorage.getItem("referralAddress");
+            if (isAddress(referralAddress)) {
+              this.setState({ referralAddress });
+            }
+          }
           let linkRef = document.location.origin + "/?ref=" + r.payload.address
           this.setState({ linkRef, currentWallet: r.payload })
         }
