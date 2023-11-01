@@ -12,9 +12,9 @@ import { withTranslation } from 'react-i18next';
 import { I18n } from '../../../../i18';
 import { BNFormat, error, log, numberToHex } from '../../../../std';
 import { connect } from 'react-redux';
-import { CHAINS, connectWeb3, getSigner } from '../../../../store/Web3';
+import { CHAINS, Web3Event, connectWeb3, getSigner } from '../../../../store/Web3';
 import { SettingsEvent, loadSetting } from '../../../../store/Settings';
-import { addContract, balanceOf, getInfo, loadAbi } from '../../../../store/Tokens';
+import { TokenEvent, addContract, balanceOf, getInfo, loadAbi } from '../../../../store/Tokens';
 import { ReduxDispatchRespone } from '../../../../store';
 import { message, notification, } from 'antd';
 import { Contract, JsonRpcSigner, ethers, isAddress } from 'ethers';
@@ -83,14 +83,32 @@ class WalletBox extends Component<Props, State> {
   }
 
   componentDidMount(): void {
-    count++
-    // if (count > 1) {
-    //   console.clear()
-    //   let { settings } = this.props;
-    // SettingsEvent.on("loaded", ({ after }) => {
-    //   this.connectWeb3()
-    // })
-    // }
+    console.clear()
+
+    Web3Event.on("accountsChanged", async account => {
+      const { tokens, settings, } = this.props;
+      try {
+        this.getInfo();
+      } catch (err) {
+        error(err)
+      }
+    })
+
+    TokenEvent.on("addContractSuccess", async (instance: Contract) => {
+      const { t, settings, web3, accounts } = this.props;
+      let address = instance.target
+
+      if (address == settings.Stake.address) {
+        this.getInfo()
+        setInterval(() => {
+          try {
+            this.getInfo()
+          } catch (err) {
+            error(err)
+          }
+        }, 20000)
+      }
+    })
   }
 
   connectWeb3(e?: any): void {
@@ -223,7 +241,6 @@ class WalletBox extends Component<Props, State> {
     let depositTokenAmount = Number(depositAmount * priceDeposit);
 
     let balance = infos?.balances["balance"]
-    log(balance, depositAmount)
     if (balance < (depositAmount * 1e18) || minDeposit > Number(depositAmount)) {
       error(t("min deposit"))
       e.target.parentElement.style.background = "#d88e8e"

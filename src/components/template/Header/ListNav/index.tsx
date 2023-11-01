@@ -30,7 +30,7 @@ class ListNav extends Component<I18n, State> {
     const items: TNavItem[] = [
       {
         label: t?.('header.stalking'),
-        onclick: () => window.location.href = '/dashboard'
+        onclick: () => window.location.href = '/staking'
 
       },
       {

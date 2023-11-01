@@ -119,7 +119,7 @@ const ButtonStakeStyled = styled(Box) <{ theme: Theme }>`
 
 function ButtonStake(props: Props) {
   const location = useLocation();
-  let href = '/dashboard'
+  let href = '/staking'
   if (location.pathname !== href)
     return (
       <ButtonPrimary onClick={() => window.location.href = href} isBold={true}>Stake</ButtonPrimary>

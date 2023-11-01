@@ -152,7 +152,7 @@ class App extends Component<Props> {
         <Routes>
           <Route path='/' element={<AppLayout />}>
             <Route index path='/' element={<HomePage />} />
-            <Route index path='/dashboard' element={<DashboardPage />} />
+            <Route index path='/staking' element={<DashboardPage />} />
           </Route>
           <Route
             path="*"
