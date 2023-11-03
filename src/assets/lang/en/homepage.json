@@ -1,0 +1,155 @@
+{
+  "header": {
+    "stalking": "Staking",
+    "community": "Community",
+    "about": "About",
+    "media": "Media",
+    "how_to_buy": "How to buy",
+    "tokenomics": "Tokenomics",
+    "airdrop": "Airdrop",
+    "connect_wallet": "Connect Wallet"
+  },
+  "banner": {
+    "title": "Times SquareC will be listed on the exchange at:",
+    "subtitle": "TAKE THE OPPORTUNITY AND BUY ",
+    "description": "Own $TSC Now",
+    "button_connect": "Connect Wallet",
+    "power_by": "Add TSC tokens to your wallet ",
+    "button_deposit": "deposit",
+    "button_airdrop": "Claim airdrop",
+    "button_refer": "Create your refer code",
+    "button_whitepaper": "Whitepaper",
+    "label_pay": "Enter amount ETH",
+    "label_max": "Max",
+    "label_receive": "",
+    "label_amount": "Received amount TSC"
+  },
+  "meme_buss": {
+    "title": "WE HONOR EFFORTS!",
+    "label_community": "PROJECTS",
+    "label_impression": "TRANSACTIONS PER MONTH",
+    "label_unlimited": "UNLIMITED",
+    "label_memes": "PARTICIPANTS",
+    "label_even": "WE ALWAYS SUPPORT POTENTIAL COMMUNITIES!",
+    "description_even": "Times SquareC gives you the opportunity to become an integral part of the largest communities at Web3, even Bitcoin."
+  },
+  "wsm_token": {
+    "title": "$TSC TOKEN",
+    "content_1": "Facing decline in the 1960s and 1970s due to crime, Times Square was revived in the 1980s and 1990s thanks to investment and development policies to become the most visited places in the world, attracting over 50 million visitors annually.",
+    "content_2": "Responding to this change, Times SquareC was born to represent the push, revive the impossible and bring value to deserving communities. We celebrate the collaboration and high values that the Web3 community brings.",
+    "content_3": "We are paving the way for this movement, join us today and become an integral part of Times SquareC."
+  },
+  "wall_meme": {
+    "title": "HOW TO OWN Times SquareC TOKEN?",
+    "subtitle": "Seize the opportunity and own TSC tokens in this round through Airdrop and Presale before it is listed on exchanges.",
+    "speech_1": "Make sure you have ETH in your wallet ready to use on the Arbitrum One chain.",
+    "speech_2": "Connect your wallet at TimesSquareC.io then select Airdrop to receive 10 TSC if you want more than that, please select the desired amount of tokens to make the transaction.",
+    "speech_3": "Confirm purchase at your wallet and done. Don't forget that referring friends to join via your referral code will receive a commission equivalent to 5% of the TSC amount.",
+    "button_helper": "Whitepaper"
+  },
+  "roadmap": {
+    "title": "ROADMAP",
+    "subtitle": "We lay the foundation and create an exchange environment for our community to develop. Like a Times Square, Times SquareC will be a gathering place for giants in the business world.",
+    "phase": "PHASE",
+    "foundation": "INITIATION",
+    "launch": "PLATFORM EXPANSION",
+    "community": "GLOBAL EXPANSION",
+    "smart_contract_1": [
+      {
+        "label": "Market research and analysis: ",
+        "content": "Conduct market research to understand user needs and identify major blockchain projects that need support."
+      },
+      {
+        "label": "Build a development team: ",
+        "content": "Hire and assemble a talented development team with expertise in blockchain technology."
+      },
+      {
+        "label": "Smart contract development: ",
+        "content": "Create basic smart contracts to support staking and integration with large projects."
+      },
+      {
+        "label": "Technical security and planning: ",
+        "content": "Ensure platform security and stability through security testing and technical knowledge."
+      },
+      {
+        "label": "Start Token Sale Round: ",
+        "content": "Crowdfunding with participants who have a certain interest in the project"
+      }
+    ],
+    "smart_contract_2": [
+      {
+        "label": "Listing Pump: ",
+        "content": "List TSC tokens on DEX and CEX exchanges."
+      },
+      {
+        "label": "Promotion and Marketing: ",
+        "content": "Increase Times SquareC's visibility through advertising and marketing campaigns."
+      },
+      {
+        "label": "Wallet Integration: ",
+        "content": "Integrate with popular wallets to enhance user convenience."
+      },
+      {
+        "label": "Staking development: ",
+        "content": "Integrate additional utilities such as managing project lists, tracking stake interest rates, and providing statistical data."
+      },
+      {
+        "label": "Cross-chain support: ",
+        "content": "Expand the platform to facilitate transactions in different blockchain networks, including Bitcoin, Ethereum."
+      }
+    ],
+    "smart_contract_3": [
+      {
+        "label": "International market expansion: ",
+        "content": "Bring Times SquareC to the international market and support more languages."
+      },
+      {
+        "label": "Cooperation with Major projects: ",
+        "content": "Look for opportunities to cooperate with major blockchain projects and provide them with the necessary support."
+      }
+    ]
+  },
+  "tokenomics": {
+    "title": "TOKENOMICS",
+    "subtitle": "The launch of the $TSC token will help keep the Times Square community growing and reward loyal members.",
+    "content_1": "Marketing",
+    "content_2": "Team and Advisors",
+    "content_3": "Partners",
+    "content_4": "Burning Plan",
+    "content_5": "Cex and Dex Listing",
+    "content_6": "Reward"
+  },
+  "wsm_media": {
+    "title": "TSC IN THE MEDIA",
+    "content_1": "Animoca Brands will invest $20 milion in this Q4",
+    "content_2": "Times SquareC releases a Token sale on the Arbitrum network",
+    "content_3": "Join the exciting Staking at Times SquareC to receive ETH and TSC rewards"
+  },
+  "wsm_airdrop": {
+    "title": "$TSC AIRDROP",
+    "subtitle": "We are giving away TSC tokens to the value of 10 TSC generously distributed to participants at Times SquareC. Join us at our website and make sure you get it!",
+    "common_ans": "Common answers to questions about Times SquareC ($TSC) can be found below.",
+    "ques": [
+      "What Times SquareC token serve?",
+      "How to participate in Times Square Airdrop?",
+      "How does the Staking feature work on the platform?",
+      "What are the rewards for participate in Staking?",
+      "What are the security measures at Times SquareC?"
+    ],
+    "ans": [
+      "Times SquareC's native token is called \"TSC\" TSC serves as a utility token in the Times SquareC ecosystem, facilitating various transactions and activities on the platform.",
+      "Participate in receiving Airdrop at Times SquareC official website, connect to your wallet and select \"Claim Airdrop\"",
+      "Staking on the Times SquareC platform involves locking up a certain amount of TSC tokens for a specified period. In return, participants receive rewards, typically in the form of additional TSC tokens or a percentage of the transaction fees generated on the platform.",
+      "Participants in the Times SquareC Staking program can receive rewards in the form of TSC tokens. Rewards are distributed based on the number of tokens staked and the length of the staking period.",
+      "Times SquareC prioritizes security and employs various measures such as smart contract audits, multi-signature wallets, cold storage, regular security audits, DDoS protection, and two-factor authentication to protect users' assets."
+    ]
+  },
+  "footer": {
+    "content_1": "",
+    "content_2": "Times SquareC. All Rights Reserved.",
+    "link_1": "",
+    "link_2": "",
+    "link_3": "",
+    "content_3": ""
+  }
+}

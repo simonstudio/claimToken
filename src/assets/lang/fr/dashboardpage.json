@@ -1,0 +1,95 @@
+{
+  "title": "MISE AVEC DES JETONS $TSC",
+  "subtitle": "Commencez à miser votre $TSC maintenant pour gagner vos récompenses. Les récompenses sont basées sur le package de mise auquel vous participez et la formule est calculée en fonction de votre pourcentage du pool de mise $TSC et du pourcentage de profit annuel.",
+  "button_label": "",
+  "button_header": "Connectez le portefeuille pour acheter et miser",
+  "group_1": {
+    "title": "Miser avec $TSC",
+    "card_1": {
+      "title": "VOTRE SOLDE DE MISE",
+      "button_label": "Ajouter à la mise",
+      "content": "SOLDE TOTAL MISE EN PLACE",
+      "button_label2": " Acheter maintenant "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Recevez le montant de votre mise à tout moment",
+      "content_2": "APY 194%",
+      "content_3": "Temps de réception des récompenses: à tout moment",
+      "button_label": "Misez maintenant"
+    },
+    "card_3": {
+      "title": "RÉCOMPENSES TOTALES",
+      "button_label_1": "Réclamez des récompenses",
+      "button_label_2": "RETIRER"
+    }
+  },
+  "group_2": {
+    "title": "Mise avec ETH pendant 15 jours",
+    "card_1": {
+      "title": "VOTRE SOLDE DE MISE",
+      "button_label": "Ajouter à la mise",
+      "content": "SOLDE TOTAL MISE EN PLACE",
+      "button_label2": " Acheter maintenant "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Recevez le montant de la mise après 15 jours",
+      "content_2": "APY 73%",
+      "content_3": "Temps de réception des récompenses: 24 heures",
+      "button_label": "Misez maintenant"
+    },
+    "card_3": {
+      "title": "RÉCOMPENSES TOTALES",
+      "button_label_1": "Réclamez des récompenses",
+      "button_label_2": "RETIRER"
+    }
+  },
+  "group_3": {
+    "title": "Mise avec ETH pendant 30 jours",
+    "card_1": {
+      "title": "VOTRE SOLDE DE MISE",
+      "button_label": "Ajouter à la mise",
+      "content": "SOLDE TOTAL MISE EN PLACE",
+      "button_label2": " Acheter maintenant "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Recevez le montant de la mise après 30 jours",
+      "content_2": "APY 97%",
+      "content_3": "Temps de réception des récompenses: 24 heures",
+      "button_label": "Misez maintenant"
+    },
+    "card_3": {
+      "title": "RÉCOMPENSES TOTALES",
+      "button_label_1": "Réclamez des récompenses",
+      "button_label_2": "RETIRER"
+    }
+  },
+  "group_4": {
+    "title": "Jalonnement limité",
+    "card_1": {
+      "title": "VOTRE SOLDE DE MISE",
+      "button_label": "Ajouter à la mise",
+      "content": "SOLDE TOTAL MISE EN PLACE",
+      "button_label2": " Acheter maintenant "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "La participation est limitée",
+      "content_2": "Recevez le montant de la mise et les récompenses après ??? jours",
+      "content_3": "APY ???%",
+      "content_4": "Le temps reçoit des récompenses: ???",
+      "button_label": "Misez maintenant"
+    },
+    "card_3": {
+      "title": "RÉCOMPENSES TOTALES",
+      "button_label_1": "Réclamez des récompenses",
+      "button_label_2": ""
+    }
+  }
+}

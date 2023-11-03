@@ -1,0 +1,17 @@
+{
+    "Token": {
+        "address": "0x29a1BE2928D3eA71EAf6FB0EC97b38827524dBBE",
+        "abi": "contracts/Token.json"
+    },
+    "USDT": {
+        "address": "0xb418BABb78fc21f01b162308C6fEADa8764f75E6",
+        "abi": "contracts/USDT.json"
+    },
+    "Stake": {
+        "address": "0x77bd46d38Dc053f2b9917090585c204a4Eade87F",
+        "abi": "contracts/Stake.json"
+    },
+    "chainId": 5,
+    "language": "en",
+    "endDateTime": "2023-12-31 23:59:59"
+}

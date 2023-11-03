@@ -1,0 +1,50 @@
+import styled from '@emotion/styled';
+import { Box } from '@mui/material';
+import { Component, ReactNode } from 'react';
+import LogoIcon from '../../../assets/icon/logo.png';
+import ListNav from './ListNav';
+import ToolNav from './ToolNav';
+import MobileMenu from './MobileMenu';
+import { TScreen } from '../../../HOCs/useDetachScreen';
+
+
+
+type Props = TScreen & {}
+
+type State = {
+  isMobile: boolean
+}
+
+class Header extends Component<Props, State> {
+
+  constructor(props: Props) {
+    super(props);
+  }
+
+  render(): ReactNode {
+    return (
+      <HeaderStyled zIndex={1300}>
+        <a href='/'>
+          <img src={LogoIcon} width={40} />
+        </a>
+        
+        <ListNav />
+        <ToolNav />
+        <MobileMenu />
+      </HeaderStyled>
+    );
+  }
+}
+
+export default Header;
+
+
+const HeaderStyled = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+  position: sticky;
+  align-items: center;
+  top: 0;
+  padding: 15px 25px;
+  background: rgba(255,255,255,.85);
+`;

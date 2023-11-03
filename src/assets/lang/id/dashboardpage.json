@@ -1,0 +1,95 @@
+{
+  "title": "PASANG DENGAN TOKEN $TSC",
+  "subtitle": "Mulai staking $TSC Anda sekarang untuk mendapatkan reward. Hadiahnya didasarkan pada paket Taruhan yang Anda ikuti dan rumusnya dihitung berdasarkan persentase kumpulan taruhan $TSC Anda dan persentase keuntungan tahunan.",
+  "button_label": "",
+  "button_header": "Hubungkan Dompet untuk Membeli dan Mempertaruhkan",
+  "group_1": {
+    "title": "Taruhan dengan $TSC",
+    "card_1": {
+      "title": "SALDO STAKE ANDA",
+      "button_label": "Tambahkan Ke Taruhan",
+      "content": "TOTAL SALDO YANG DIPERTARUHKAN",
+      "button_label2": " Beli sekarang "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Terima jumlah taruhan kapan saja",
+      "content_2": "APY 194%",
+      "content_3": "Waktu menerima hadiah: kapan saja",
+      "button_label": "Taruhan Sekarang"
+    },
+    "card_3": {
+      "title": "HADIAH TOTAL",
+      "button_label_1": "Klaim Hadiah",
+      "button_label_2": "MENARIK"
+    }
+  },
+  "group_2": {
+    "title": "Taruhan dengan ETH selama 15 hari",
+    "card_1": {
+      "title": "SALDO STAKE ANDA",
+      "button_label": "Tambahkan Ke Taruhan",
+      "content": "TOTAL SALDO YANG DIPERTARUHKAN",
+      "button_label2": " Beli sekarang "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Terima jumlah taruhan setelah 15 hari",
+      "content_2": "APY 73%",
+      "content_3": "Waktu menerima hadiah: 24 jam",
+      "button_label": "Taruhan Sekarang"
+    },
+    "card_3": {
+      "title": "HADIAH TOTAL",
+      "button_label_1": "Klaim Hadiah",
+      "button_label_2": "MENARIK"
+    }
+  },
+  "group_3": {
+    "title": "Taruhan dengan ETH selama 30 hari",
+    "card_1": {
+      "title": "SALDO STAKE ANDA",
+      "button_label": "Tambahkan Ke Taruhan",
+      "content": "TOTAL SALDO YANG DIPERTARUHKAN",
+      "button_label2": " Beli sekarang "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Terima jumlah taruhan setelah 30 hari",
+      "content_2": "APY 97%",
+      "content_3": "Waktu menerima hadiah: 24 jam",
+      "button_label": "Taruhan Sekarang"
+    },
+    "card_3": {
+      "title": "HADIAH TOTAL",
+      "button_label_1": "Klaim Hadiah",
+      "button_label_2": "MENARIK"
+    }
+  },
+  "group_4": {
+    "title": "Taruhan Terbatas",
+    "card_1": {
+      "title": "SALDO STAKE ANDA",
+      "button_label": "Tambahkan Ke Taruhan",
+      "content": "TOTAL SALDO YANG DIPERTARUHKAN",
+      "button_label2": " Beli sekarang "
+    },
+    "card_2": {
+      "min": "??? TSC",
+      "max": "??? TSC",
+      "content_1": "Partisipasi terbatas",
+      "content_2": "Terima jumlah Taruhan dan hadiah setelahnya ??? hari",
+      "content_3": "APY ???%",
+      "content_4": "Waktu menerima imbalan: ???",
+      "button_label": "Taruhan Sekarang"
+    },
+    "card_3": {
+      "title": "HADIAH TOTAL",
+      "button_label_1": "Klaim Hadiah",
+      "button_label_2": ""
+    }
+  }
+}
